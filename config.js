@@ -7,11 +7,11 @@ export default {
   mode: 'wholesale',
 
   // MAO = ARV × arvPercent − repairs − assignmentFee
-  arvPercent: 0.70,
+  arvPercent: 0.75,
   assignmentFee: 10000,
 
   // Opening offer = MAO × (1 − negotiationBuffer). Gives you room to come up.
-  negotiationBuffer: 0.08,
+  negotiationBuffer: 0.05,
 
   // ARV = this percentile of comp $/sqft × subject sqft.
   // Upper-percentile comps approximate renovated condition.
