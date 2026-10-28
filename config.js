@@ -7,7 +7,7 @@ export default {
   mode: 'wholesale',
 
   // MAO = ARV × arvPercent − repairs − assignmentFee
-  arvPercent: 0.75,
+  arvPercent: 0.70,
   assignmentFee: 10000,
 
   // Opening offer = MAO × (1 − negotiationBuffer). Gives you room to come up.
