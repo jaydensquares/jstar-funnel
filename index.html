@@ -149,6 +149,7 @@
   .secure svg { width: 13px; height: 13px; }
 
   .consent { display: flex; gap: 10px; align-items: flex-start; font-size: 11.5px; color: var(--muted); line-height: 1.5; margin-top: 16px; }
+  .consent a, .fine a { color: var(--brand); text-decoration: underline; }
   .consent input { margin-top: 2px; width: 17px; height: 17px; flex: none; accent-color: var(--brand); }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
@@ -408,15 +409,18 @@
   const tel = 'tel:' + S.phone.replace(/[^\d+]/g, '');
   $('callbtn').href = tel; $('callnum').textContent = S.phone;
   $('doneCall').href = tel; $('doneCall').textContent = S.phone;
-  const consentText = `By checking this box, I agree to receive calls and text messages from ${S.brand} at the number provided, including messages sent using automated technology, about selling my property. Consent is not a condition of any purchase. Msg & data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help.`;
-  $('consentText').textContent = consentText;
+  const consentBase = `By checking this box, I agree to receive calls and text messages from ${S.brand} at the number provided, including messages sent using automated technology, about selling my property. Consent is not a condition of any purchase. Msg & data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help.`;
+  // Saved with each lead (plain text, with full policy URLs)
+  const consentText = `${consentBase} Privacy Policy: ${location.origin}/privacy.html. Terms: ${location.origin}/terms.html.`;
+  $('consentText').textContent = consentBase + ' ';
+  $('consentText').insertAdjacentHTML('beforeend', 'See our <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="/terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>.');
   $('disclosure').innerHTML = `
     <h4>Disclaimers</h4>
     <p>${S.brand} is a real estate investment company. We are not licensed real estate agents or brokers, and we do not represent you in the sale of your property.</p>
     <p><b>How our offers work:</b> If you accept our offer, we sign a purchase contract to buy your property. We may close on the purchase ourselves, or we may assign (transfer) our rights under that contract to another buyer before closing. If we assign it, that buyer takes our place and closes on the same price and terms you agreed to. We may be paid an assignment fee by that buyer, which does not come out of your proceeds.</p>
     <p>Until closing, we hold only an equitable interest in your property under the contract, not legal title. We will give you this disclosure in writing before you sign any contract, and we follow the wholesaling and disclosure laws of the state where your property is located.</p>
     <p>Submitting this form does not obligate you to sell. You are welcome to talk with a real estate agent or attorney before signing anything.</p>
-    <p>&copy; ${new Date().getFullYear()} ${S.brand}</p>`;
+    <p>&copy; ${new Date().getFullYear()} ${S.brand} &nbsp;·&nbsp; <a href="/privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="/terms.html">Terms &amp; Conditions</a></p>`;
 
   // Tracking: UTMs, click IDs, Meta cookies — persisted across the session
   const qs = new URLSearchParams(location.search);
