@@ -23,7 +23,8 @@ http.createServer(async (req, res) => {
     try { await handler(req, res); } catch (e) { console.error(e); res.statusCode = 500; res.end('{"error":"server error"}'); }
     return;
   }
-  const file = path.join(root, req.url === '/' ? 'index.html' : decodeURIComponent(req.url.split('?')[0]));
+  const pathname = decodeURIComponent(req.url.split('?')[0]);
+  const file = path.join(root, pathname === '/' ? 'index.html' : pathname);
   if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.statusCode = 404; return res.end('Not found'); }
   res.setHeader('Content-Type', file.endsWith('.html') ? 'text/html' : 'text/plain');
   fs.createReadStream(file).pipe(res);

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Get a Cash Offer | JStar Acquisitions</title>
+<title>JStar Acquisitions | Cash Home Buyers</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Sell your house as-is for cash, anywhere in the U.S. No repairs, no commissions, close on your timeline.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -189,12 +189,22 @@
   @media (prefers-reduced-motion: reduce) { .step.active { animation: none; } * { transition: none !important; } }
 </style>
 </head>
-<body>
-
+<body class="landing">
+<style>
+  .landing main { margin-top: 0; }
+  .landing .band { padding-block: 0 72px; }
+  .cta-card { background: var(--card); color: var(--ink); border-radius: 18px; padding: 28px 24px 24px; box-shadow: 0 30px 60px -20px rgba(5,12,28,.45), 0 0 0 1px var(--line); }
+  .cta-card h2 { margin-bottom: 8px; }
+  .cta-card .next { text-decoration: none; width: 100%; margin-top: 8px; }
+  .cta-card .help { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 16px 0 0; text-align: center; }
+  .cta-card .help a { color: var(--brand); font-weight: 600; }
+  .landing .how { padding-block: 64px 24px; }
+  @media (min-width: 900px) { .cta-card { padding: 34px 32px 28px; margin-top: 24px; } }
+</style>
 <div class="band">
   <div class="inner gutter">
     <header>
-      <a class="logo" href="#" aria-label="JStar Acquisitions home">
+      <a class="logo" href="/" aria-label="JStar Acquisitions home">
         <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="none" stroke="currentColor" stroke-opacity=".25"/><path d="M16 6.5l2.6 6.1 6.6.5-5 4.3 1.6 6.4L16 20.4l-5.8 3.4 1.6-6.4-5-4.3 6.6-.5z" fill="#c6a052"/></svg>
         <b id="brand"></b>
       </a>
@@ -212,337 +222,58 @@
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div>Close in as little as 7 days<small>Or wait until you're ready</small></div></li>
         </ul>
       </div>
-      <div class="formwrap formwrap-desktop" id="slot-desktop"></div>
+      <div class="cta-wrap">
+        <div class="cta-card">
+          <span class="k" style="font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Free cash offer</span>
+          <h2 style="margin-top:10px">Find out what we'd pay for your house</h2>
+          <p class="sub">Answer a few quick questions about the property. It takes about 60 seconds, and there's no obligation.</p>
+          <a class="next" id="ctaBtn" href="/offer.html"><span>Get my cash offer</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <p class="help">Questions first? Use the chat bubble on this page or call <a id="ctaCall" href="tel:+18328330125">(832) 833-0125</a>.</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <main class="inner gutter">
-  <div class="formwrap formwrap-mobile" id="slot-mobile">
-  <form class="card" id="f" novalidate autocomplete="on">
-    <div class="card-top">
-      <span class="k">Free cash offer</span>
-      <span class="k" id="stepcount">Step <b>1</b> of 5</span>
-    </div>
-    <div class="segs" id="segs"><i></i><i></i><i></i><i></i><i></i></div>
-
-    <!-- 1 · Address -->
-    <section class="step active" data-step="1">
-      <h2>Where's the property?</h2>
-      <p class="sub">We'll pull the public records so you don't have to.</p>
-      <label class="f" for="street">Street address</label>
-      <input type="text" id="street" name="street" autocomplete="address-line1" placeholder="123 Main St" required>
-      <label class="f" for="city">City</label>
-      <input type="text" id="city" name="city" autocomplete="address-level2" required>
-      <div class="row">
-        <div><label class="f" for="state">State</label><select id="state" name="state" autocomplete="address-level1" required><option value="">Select</option></select></div>
-        <div><label class="f" for="zip">ZIP</label><input type="text" id="zip" name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" required></div>
-      </div>
-    </section>
-
-    <!-- 2 · Property basics -->
-    <section class="step" data-step="2">
-      <h2>Tell us about the house</h2>
-      <p class="sub">Your best guess is fine.</p>
-      <label class="f" for="propertyType">Property type</label>
-      <select id="propertyType" name="propertyType">
-        <option value="single_family">Single family</option>
-        <option value="townhouse">Townhouse</option>
-        <option value="condo">Condo</option>
-        <option value="multi_family">Duplex / multi-family (2–4)</option>
-        <option value="manufactured">Mobile / manufactured</option>
-      </select>
-      <div class="row3">
-        <div><label class="f" for="bedrooms">Beds</label>
-          <select id="bedrooms" name="bedrooms"><option value="">—</option><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option value="6">6+</option></select></div>
-        <div><label class="f" for="bathrooms">Baths</label>
-          <select id="bathrooms" name="bathrooms"><option value="">—</option><option>1</option><option>1.5</option><option selected>2</option><option>2.5</option><option>3</option><option value="3.5">3.5+</option></select></div>
-        <div><label class="f" for="sqft">Sq ft</label><input type="number" id="sqft" name="sqft" inputmode="numeric" placeholder="Not sure"></div>
-      </div>
-      <label class="f" for="yearBuilt">Year built <span class="opt-tag">(approx.)</span></label>
-      <input type="number" id="yearBuilt" name="yearBuilt" inputmode="numeric" placeholder="Not sure">
-    </section>
-
-    <!-- 3 · Condition -->
-    <section class="step" data-step="3">
-      <h2>What shape is it in?</h2>
-      <p class="sub">We buy in any condition. An honest answer gets you a more accurate offer.</p>
-      <div class="opts">
-        <label class="opt"><input type="radio" name="condition" value="turnkey"><span><div>Move-in ready<small>Updated, nothing needed</small></div></span></label>
-        <label class="opt"><input type="radio" name="condition" value="cosmetic"><span><div>Needs a little TLC<small>Paint, carpet, minor fixes</small></div></span></label>
-        <label class="opt"><input type="radio" name="condition" value="moderate"><span><div>Needs updating<small>Dated kitchen or bathrooms</small></div></span></label>
-        <label class="opt"><input type="radio" name="condition" value="heavy"><span><div>Needs major repairs<small>Roof, foundation, HVAC, water damage</small></div></span></label>
-        <label class="opt"><input type="radio" name="condition" value="gut"><span><div>Needs everything<small>Full renovation or teardown</small></div></span></label>
-      </div>
-      <label class="f" style="margin-top:20px">Any known issues? <span class="opt-tag">(optional)</span></label>
-      <div class="opts two">
-        <label class="opt"><input type="checkbox" name="issues" value="roof"><span>Roof</span></label>
-        <label class="opt"><input type="checkbox" name="issues" value="foundation"><span>Foundation</span></label>
-        <label class="opt"><input type="checkbox" name="issues" value="hvac"><span>AC / heating</span></label>
-        <label class="opt"><input type="checkbox" name="issues" value="plumbing"><span>Plumbing</span></label>
-        <label class="opt"><input type="checkbox" name="issues" value="electrical"><span>Electrical</span></label>
-        <label class="opt"><input type="checkbox" name="issues" value="water_damage"><span>Water damage</span></label>
-      </div>
-    </section>
-
-    <!-- 4 · Situation -->
-    <section class="step" data-step="4">
-      <h2>Your situation</h2>
-      <p class="sub">This helps us shape an offer that works for you.</p>
-      <label class="f" for="timeline">How soon do you want to sell?</label>
-      <select id="timeline" name="timeline" required>
-        <option value="">Select</option>
-        <option value="asap">As soon as possible</option>
-        <option value="30">Within 30 days</option>
-        <option value="90">1–3 months</option>
-        <option value="later">3+ months</option>
-        <option value="unsure">Just exploring</option>
-      </select>
-      <label class="f" for="reason">Main reason for selling</label>
-      <select id="reason" name="reason">
-        <option value="">Select</option>
-        <option value="inherited">Inherited / estate</option>
-        <option value="repairs">Too many repairs</option>
-        <option value="landlord">Tired landlord / bad tenants</option>
-        <option value="relocating">Relocating</option>
-        <option value="divorce">Divorce</option>
-        <option value="behind">Behind on payments</option>
-        <option value="downsizing">Downsizing</option>
-        <option value="other">Other</option>
-      </select>
-      <label class="f" for="reasonDetail">Tell us a little about your situation <span class="opt-tag">(optional)</span></label>
-      <textarea id="reasonDetail" name="reasonDetail" rows="3" maxlength="1000" placeholder="e.g. Mom's house, nobody's lived there in a year and it needs a new roof"></textarea>
-      <div class="row">
-        <div><label class="f" for="occupancy">Who lives there?</label>
-          <select id="occupancy" name="occupancy"><option value="">Select</option><option value="owner">I do</option><option value="tenant">Tenant</option><option value="vacant">Vacant</option></select></div>
-        <div><label class="f" for="owed">Mortgage?</label>
-          <select id="owed" name="owed"><option value="">Select</option><option value="free_clear">Paid off</option><option value="mortgage">Yes</option><option value="unsure">Not sure</option></select></div>
-      </div>
-      <div class="tenant" id="tenantBlock" hidden>
-        <div class="tenant-head">About the rental</div>
-        <div class="row">
-          <div><label class="f" for="currentRent">Monthly rent</label><input type="text" id="currentRent" name="currentRent" inputmode="numeric" placeholder="$"></div>
-          <div><label class="f" for="leaseEnd">Lease</label>
-            <select id="leaseEnd" name="leaseEnd"><option value="">Select</option><option value="mtm">Month-to-month</option><option value="lt3">Ends in under 3 months</option><option value="3to6">Ends in 3–6 months</option><option value="6to12">Ends in 6–12 months</option><option value="gt12">12+ months left</option></select></div>
-        </div>
-        <label class="f" for="tenantPaying">Is the tenant paying?</label>
-        <select id="tenantPaying" name="tenantPaying"><option value="">Select</option><option value="yes">Yes, on time</option><option value="late">Sometimes late</option><option value="behind">Behind / not paying</option></select>
-      </div>
-      <label class="f" for="asking">Price you have in mind <span class="opt-tag">(optional)</span></label>
-      <input type="text" id="asking" name="asking" inputmode="numeric" placeholder="$">
-    </section>
-
-    <!-- 5 · Contact -->
-    <section class="step" data-step="5">
-      <h2>Where should we send your offer?</h2>
-      <p class="sub">A member of our acquisitions team will reach out within 24 hours.</p>
-      <div class="row">
-        <div><label class="f" for="firstName">First name</label><input type="text" id="firstName" name="firstName" autocomplete="given-name" required></div>
-        <div><label class="f" for="lastName">Last name</label><input type="text" id="lastName" name="lastName" autocomplete="family-name"></div>
-      </div>
-      <label class="f" for="phone">Phone</label>
-      <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="(555) 555-0123" required>
-      <label class="f" for="email">Email</label>
-      <input type="email" id="email" name="email" autocomplete="email">
-      <label class="consent">
-        <input type="checkbox" name="smsConsent" id="smsConsent">
-        <span id="consentText"></span>
-      </label>
-      <div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-    </section>
-
-    <!-- Done -->
-    <section class="step" data-step="6">
-      <div class="done">
-        <div class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
-        <h2>Thank you, <span id="doneName"></span>.</h2>
-        <p class="sub">We're reviewing your property now. Expect a call or text from our team shortly, usually within a few hours during business hours.</p>
-        <p class="sub">Prefer to talk now? Call <a id="doneCall" href="#" style="font-weight:700;color:var(--brand)"></a></p>
-      </div>
-    </section>
-
-    <div class="err" id="err" role="alert"></div>
-    <div class="nav" id="nav">
-      <button type="button" class="back" id="back" hidden>Back</button>
-      <button type="button" class="next" id="next"><span id="nextLabel">Get my cash offer</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-    </div>
-    <div class="secure" id="secure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Free, no obligation. Your info stays private.</div>
-  </form>
-  </div>
-
   <section class="how">
     <h3>How it works</h3>
     <ol>
-      <li><span class="n">01</span><b>Tell us about the property</b><p>Takes about 60 seconds. No obligation, no pressure.</p></li>
+      <li><span class="n">01</span><b>Tell us about the property</b><p>Answer a few quick questions. Takes about 60 seconds, no obligation.</p></li>
       <li><span class="n">02</span><b>Get your cash offer</b><p>We review recent sales nearby and come back with a clear number, usually within 24 hours.</p></li>
       <li><span class="n">03</span><b>Pick your closing date</b><p>Close with a title company near you in as little as 7 days, or whenever works for you.</p></li>
     </ol>
   </section>
 
   <footer>
-    <div class="fine" id="disclosure"></div>
+    <div class="fine">
+      <h4>Disclaimers</h4>
+      <p>JStar Acquisitions is a real estate investment company. We are not licensed real estate agents or brokers, and we do not represent you in the sale of your property.</p>
+      <p><b>How our offers work:</b> If you accept our offer, we sign a purchase contract to buy your property. We may close on the purchase ourselves, or we may assign (transfer) our rights under that contract to another buyer before closing. If we assign it, that buyer takes our place and closes on the same price and terms you agreed to. We may be paid an assignment fee by that buyer, which does not come out of your proceeds.</p>
+      <p>Until closing, we hold only an equitable interest in your property under the contract, not legal title. We will give you this disclosure in writing before you sign any contract, and we follow the wholesaling and disclosure laws of the state where your property is located.</p>
+      <p>Requesting an offer does not obligate you to sell. You are welcome to talk with a real estate agent or attorney before signing anything.</p>
+      <p><b>JStar Acquisitions</b> · 45704 Corte Mislanca, Temecula, CA 92592 · <a href="tel:+18328330125">(832) 833-0125</a></p>
+      <p>&copy; <span id="yr"></span> JStar Acquisitions &nbsp;·&nbsp; <a href="/privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="/terms.html">Terms &amp; Conditions</a> &nbsp;·&nbsp; <a href="/contact.html">Contact</a></p>
+    </div>
   </footer>
 </main>
 
 <script>
 (() => {
-  const S = window.SITE;
-  const $ = id => document.getElementById(id);
-  const form = $('f');
-  const steps = [...form.querySelectorAll('.step')];
-  const TOTAL = 5;
-  let cur = 1;
-  let announcing = false; // true while we fire a native submit for GoHighLevel tracking
-
-  // Put the form in the right column on desktop, under the hero on phones
-  const mq = window.matchMedia('(min-width: 900px)');
-  const place = () => (mq.matches ? $('slot-desktop') : $('slot-mobile')).appendChild(form);
-  place(); mq.addEventListener ? mq.addEventListener('change', place) : mq.addListener(place);
-
-  // States
-  'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'
-    .split(' ').forEach(s => $('state').add(new Option(s, s)));
-
-  // Branding
+  const S = window.SITE, $ = id => document.getElementById(id);
   const parts = S.brand.split(' ');
   $('brand').innerHTML = parts.length > 1 ? `${parts[0]} <span>${parts.slice(1).join(' ')}</span>` : S.brand;
   const tel = 'tel:' + S.phone.replace(/[^\d+]/g, '');
   $('callbtn').href = tel; $('callnum').textContent = S.phone;
-  $('doneCall').href = tel; $('doneCall').textContent = S.phone;
-  const consentBase = `By checking this box, I agree to receive calls and text messages from ${S.brand} at the number provided, including messages sent using automated technology, about selling my property. Consent is not a condition of any purchase. Msg & data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help.`;
-  // Saved with each lead (plain text, with full policy URLs)
-  const consentText = `${consentBase} Privacy Policy: ${location.origin}/privacy.html. Terms: ${location.origin}/terms.html.`;
-  $('consentText').textContent = consentBase + ' ';
-  $('consentText').insertAdjacentHTML('beforeend', 'See our <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="/terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>.');
-  $('disclosure').innerHTML = `
-    <h4>Disclaimers</h4>
-    <p>${S.brand} is a real estate investment company. We are not licensed real estate agents or brokers, and we do not represent you in the sale of your property.</p>
-    <p><b>How our offers work:</b> If you accept our offer, we sign a purchase contract to buy your property. We may close on the purchase ourselves, or we may assign (transfer) our rights under that contract to another buyer before closing. If we assign it, that buyer takes our place and closes on the same price and terms you agreed to. We may be paid an assignment fee by that buyer, which does not come out of your proceeds.</p>
-    <p>Until closing, we hold only an equitable interest in your property under the contract, not legal title. We will give you this disclosure in writing before you sign any contract, and we follow the wholesaling and disclosure laws of the state where your property is located.</p>
-    <p>Submitting this form does not obligate you to sell. You are welcome to talk with a real estate agent or attorney before signing anything.</p>
-    <p><b>${S.brand}</b> · 45704 Corte Mislanca, Temecula, CA 92592 · <a href="tel:+18328330125">(832) 833-0125</a></p>
-    <p>&copy; ${new Date().getFullYear()} ${S.brand} &nbsp;·&nbsp; <a href="/privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="/terms.html">Terms &amp; Conditions</a> &nbsp;·&nbsp; <a href="/contact.html">Contact</a></p>`;
-
-  // Tracking: UTMs, click IDs, Meta cookies — persisted across the session
-  const qs = new URLSearchParams(location.search);
-  const trackKeys = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','gbraid','wbraid','fbclid'];
-  let tracking = {};
-  try { tracking = JSON.parse(sessionStorage.getItem('trk') || '{}'); } catch {}
-  trackKeys.forEach(k => { if (qs.get(k)) tracking[k] = qs.get(k); });
-  tracking.landing = tracking.landing || location.href;
-  tracking.referrer = tracking.referrer || document.referrer || '';
-  try { sessionStorage.setItem('trk', JSON.stringify(tracking)); } catch {}
-  const cookie = n => (document.cookie.match('(^|;)\\s*' + n + '=([^;]+)') || [])[2];
-
-  // Input masks
-  $('phone').addEventListener('input', e => {
-    const d = e.target.value.replace(/\D/g, '').replace(/^1/, '').slice(0, 10);
-    e.target.value = d.length > 6 ? `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}` : d.length > 3 ? `(${d.slice(0,3)}) ${d.slice(3)}` : d;
-  });
-  ['asking', 'currentRent'].forEach(id => $(id).addEventListener('input', e => {
-    const d = e.target.value.replace(/\D/g, '');
-    e.target.value = d ? '$' + Number(d).toLocaleString() : '';
-  }));
-  // Rental questions only when it's tenant-occupied
-  const syncTenant = () => { $('tenantBlock').hidden = $('occupancy').value !== 'tenant'; };
-  $('occupancy').addEventListener('change', syncTenant); syncTenant();
-
-  function show(n) {
-    cur = n;
-    steps.forEach(s => s.classList.toggle('active', +s.dataset.step === n));
-    [...$('segs').children].forEach((el, i) => { el.className = i + 1 < n ? 'on' : i + 1 === n ? 'now' : ''; if (n > TOTAL) el.className = 'on'; });
-    $('stepcount').innerHTML = n <= TOTAL ? `Step <b>${n}</b> of ${TOTAL}` : 'Complete';
-    $('back').hidden = n === 1 || n > TOTAL;
-    $('nextLabel').textContent = n === 1 ? 'Get my cash offer' : n === TOTAL ? 'Send my offer request' : 'Continue';
-    $('nav').hidden = n > TOTAL;
-    $('secure').hidden = n > TOTAL;
-    $('err').textContent = '';
-    if (n > 1) {
-      const top = form.getBoundingClientRect().top;
-      if (top < 0) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }
-
-  function validate(n) {
-    const v = name => (form.elements[name]?.value || '').trim();
-    if (n === 1) {
-      if (!v('street') || !v('city')) return 'Please enter the property address.';
-      if (!v('state')) return 'Please pick the state.';
-      if (!/^\d{5}$/.test(v('zip'))) return 'Please enter a 5-digit ZIP.';
-    }
-    if (n === 3 && !form.querySelector('input[name=condition]:checked')) return 'Pick the closest match.';
-    if (n === 4 && !v('timeline')) return 'Let us know your timeline.';
-    if (n === 5) {
-      if (!v('firstName')) return 'Please enter your first name.';
-      if (v('phone').replace(/\D/g, '').length !== 10) return 'Please enter a valid 10-digit phone number.';
-      const em = v('email');
-      if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) return 'That email doesn\'t look right.';
-    }
-    return '';
-  }
-
-  function trackStep(n) {
-    if (window.fbq) fbq('trackCustom', 'FunnelStep', { step: n });
-    if (window.gtag) gtag('event', 'funnel_step', { step: n });
-  }
-
-  async function submit() {
-    const fd = new FormData(form);
-    const eventId = 'lead_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-    const body = Object.fromEntries(fd.entries());
-    body.issues = fd.getAll('issues');
-    if (body.occupancy !== 'tenant') { delete body.currentRent; delete body.leaseEnd; delete body.tenantPaying; }
-    body.smsConsent = $('smsConsent').checked;
-    body.consentText = body.smsConsent ? consentText : '';
-    body.tracking = { ...tracking, fbc: cookie('_fbc') || (tracking.fbclid ? `fb.1.${Date.now()}.${tracking.fbclid}` : undefined), fbp: cookie('_fbp') };
-    body.eventId = eventId;
-    body.pageUrl = location.href;
-
-    $('next').disabled = true; $('nextLabel').textContent = 'Sending…';
-    try {
-      if (S.demo) {
-        await new Promise(r => setTimeout(r, 700));
-      } else {
-        const r = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-        const j = await r.json().catch(() => ({}));
-        if (!r.ok) throw new Error(j.error || 'Something went wrong');
-        if (window.fbq) fbq('track', 'Lead', {}, { eventID: eventId });
-        if (window.gtag && S.googleAdsLeadLabel) {
-          gtag('set', 'user_data', { email: body.email || undefined, phone_number: '+1' + body.phone.replace(/\D/g, '') });
-          gtag('event', 'conversion', { send_to: `${S.googleAdsId}/${S.googleAdsLeadLabel}`, transaction_id: eventId });
-        }
-      }
-      // Let GoHighLevel's external tracking see this as a normal form submit (contact fields are still visible)
-      announcing = true;
-      try { form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); } catch {}
-      announcing = false;
-      $('doneName').textContent = body.firstName.trim();
-      $('next').disabled = false;
-      show(6);
-    } catch (e) {
-      $('err').textContent = e.message + '. You can also call us at ' + S.phone + '.';
-      $('next').disabled = false; $('nextLabel').textContent = 'Try again';
-    }
-  }
-
-  $('next').addEventListener('click', () => {
-    const msg = validate(cur);
-    if (msg) { $('err').textContent = msg; return; }
-    trackStep(cur);
-    if (cur === TOTAL) submit(); else show(cur + 1);
-  });
-  $('back').addEventListener('click', () => show(cur - 1));
-  form.querySelectorAll('input[name=condition]').forEach(r => r.addEventListener('change', () => setTimeout(() => $('next').click(), 200)));
-  form.addEventListener('submit', e => { e.preventDefault(); if (announcing) return; $('next').click(); });
-  form.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') { e.preventDefault(); $('next').click(); } });
-
-  show(1);
+  $('yr').textContent = new Date().getFullYear();
+  // Keep ad tracking (UTMs, click IDs) when visitors click through to the offer form
+  $('ctaBtn').href = '/offer.html' + location.search;
+  const qs = new URLSearchParams(location.search), keys = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','gbraid','wbraid','fbclid'];
+  try { const t = JSON.parse(sessionStorage.getItem('trk') || '{}'); keys.forEach(k => { if (qs.get(k)) t[k] = qs.get(k); }); t.landing = t.landing || location.href; t.referrer = t.referrer || document.referrer || ''; sessionStorage.setItem('trk', JSON.stringify(t)); } catch {}
+  $('ctaBtn').addEventListener('click', () => { if (window.fbq) fbq('trackCustom', 'StartOffer'); if (window.gtag) gtag('event', 'start_offer'); });
 })();
 </script>
-<!-- GoHighLevel external tracking -->
-<script
-  src="https://link.msgsndr.com/js/external-tracking.js"
-  data-tracking-id="tk_8447c92fc12842a9a70c52bcfefa95d9">
-</script>
+<!-- GoHighLevel chat widget (homepage has no phone/SMS form, per A2P checklist) -->
+<script src="https://widgets.leadconnectorhq.com/loader.js" data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js" data-widget-id="6ae18a90547e4f9d120f1bc4" data-source="WEB_USER"></script>
 </body>
 </html>

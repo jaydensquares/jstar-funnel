@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Get a Cash Offer | JStar Acquisitions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Sell your house as-is for cash, anywhere in the U.S. No repairs, no commissions, close on your timeline.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+  // ═══ EDIT THESE ═══════════════════════════════════════════════
+  window.SITE = {
+    brand: 'JStar Acquisitions',
+    phone: '(832) 833-0125',             // shown in header; tap-to-call
+    metaPixelId: '',                     // e.g. '1234567890'
+    googleAdsId: '',                     // e.g. 'AW-123456789'
+    googleAdsLeadLabel: '',              // conversion label, e.g. 'AbC-D_efG-h12_34-567'
+    demo: false,                         // true = fake the submit (for previews)
+  };
+  // ══════════════════════════════════════════════════════════════
+</script>
+
+<!-- Meta Pixel -->
+<script>
+  if (SITE.metaPixelId) {
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', SITE.metaPixelId); fbq('track', 'PageView');
+  }
+</script>
+<!-- Google Ads -->
+<script>
+  if (SITE.googleAdsId) {
+    const s = document.createElement('script'); s.async = true;
+    s.src = 'https://www.googletagmanager.com/gtag/js?id=' + SITE.googleAdsId;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function(){ dataLayer.push(arguments); };
+    gtag('js', new Date()); gtag('config', SITE.googleAdsId);
+  }
+</script>
+
+<style>
+  /* Layout: navy hero band with copy left / form card right (stacked on phones, card overlaps the band edge); quiet light page below. */
+  :root {
+    --navy: #0c1a33; --navy-2: #13254a; --on-navy: #f2f5fb; --on-navy-muted: #a9b5cc;
+    --bg: #f4f6fa; --card: #ffffff; --ink: #0f1729; --muted: #5b6578; --line: #e0e5ee; --input: #ffffff;
+    --brand: #1a3f8f; --brand-hover: #15347a; --brand-ink: #ffffff; --brand-soft: #ebf0fa;
+    --gold: #c6a052; --gold-soft: #f6efdf; --err: #b42318;
+    --display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+    --body: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --navy: #0a1427; --navy-2: #102042; --bg: #0d121c; --card: #151c2a; --ink: #eef2f8; --muted: #98a3b5; --line: #273148; --input: #111827;
+    --brand: #4f7fe0; --brand-hover: #6b93ea; --brand-ink: #ffffff; --brand-soft: #1a2640; --gold: #d8b468; --gold-soft: #2a2416; --err: #ff8a7a; color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --navy: #0a1427; --navy-2: #102042; --bg: #0d121c; --card: #151c2a; --ink: #eef2f8; --muted: #98a3b5; --line: #273148; --input: #111827;
+    --brand: #4f7fe0; --brand-hover: #6b93ea; --brand-ink: #ffffff; --brand-soft: #1a2640; --gold: #d8b468; --gold-soft: #2a2416; --err: #ff8a7a; color-scheme: dark }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  .gutter { padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+  .inner { max-width: 1120px; margin: 0 auto; }
+
+  /* ── Hero band ── */
+  .band { background: radial-gradient(1200px 500px at 85% -10%, var(--navy-2), transparent 60%), var(--navy); color: var(--on-navy); padding-block: 0 120px; position: relative; }
+  .band::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: .5; }
+  header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-block: 22px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .logo svg { width: 26px; height: 26px; flex: none; }
+  .logo b { font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: .01em; }
+  .logo b span { color: var(--gold); }
+  .call { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-size: 14px; font-weight: 600; color: var(--on-navy); border: 1px solid rgba(255,255,255,.22); padding: 9px 14px; border-radius: 999px; white-space: nowrap; transition: border-color .2s, background .2s; }
+  .call:hover { border-color: var(--gold); background: rgba(255,255,255,.04); }
+  .call svg { width: 14px; height: 14px; }
+
+  .hero { display: grid; gap: 40px; grid-template-columns: 1fr; padding-top: 28px; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+  .eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--gold); }
+  h1 { font-family: var(--display); font-weight: 800; font-size: clamp(34px, 5.4vw, 56px); line-height: 1.02; letter-spacing: -.035em; margin: 18px 0 18px; text-wrap: balance; }
+  h1 em { font-style: normal; color: var(--gold); }
+  .lede { color: var(--on-navy-muted); font-size: 18px; line-height: 1.55; margin: 0 0 28px; max-width: 30em; }
+  .proof { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .proof li { display: flex; gap: 12px; align-items: flex-start; font-size: 15.5px; color: var(--on-navy); }
+  .proof li svg { width: 20px; height: 20px; flex: none; margin-top: 1px; color: var(--gold); }
+  .proof li small { display: block; color: var(--on-navy-muted); font-size: 13.5px; margin-top: 2px; }
+
+  /* ── Form card ── */
+  .formwrap { position: relative; }
+  .card { background: var(--card); color: var(--ink); border-radius: 18px; padding: 28px 24px 24px; box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 30px 60px -20px rgba(5,12,28,.45), 0 0 0 1px var(--line); }
+  .card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+  .card-top .k { font-size: 11.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .card-top .k b { color: var(--brand); }
+  .segs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 24px; }
+  .segs i { height: 4px; border-radius: 4px; background: var(--line); transition: background .3s; }
+  .segs i.on { background: var(--brand); }
+  .segs i.now { background: var(--gold); }
+
+  .step { display: none; }
+  .step.active { display: block; animation: rise .3s ease; }
+  @keyframes rise { from { opacity: .4; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  h2 { font-family: var(--display); font-weight: 700; font-size: 24px; letter-spacing: -.02em; line-height: 1.15; margin: 0 0 6px; text-wrap: balance; }
+  .sub { color: var(--muted); font-size: 15px; line-height: 1.5; margin: 0 0 18px; }
+
+  label.f { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 7px; color: var(--ink); }
+  label.f .opt-tag { font-weight: 400; color: var(--muted); }
+  input[type=text], input[type=tel], input[type=email], input[type=number], select, textarea {
+    width: 100%; font: inherit; font-size: 16px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--input); color: var(--ink); transition: border-color .15s, box-shadow .15s;
+  }
+  textarea { resize: vertical; min-height: 88px; line-height: 1.45; }
+  input::placeholder, textarea::placeholder { color: var(--muted); opacity: .7; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-soft); }
+  .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+  .row3 { display: grid; gap: 12px; grid-template-columns: 1fr 1fr 1fr; }
+  .row > div, .row3 > div { min-width: 0; }
+
+  .tenant { margin-top: 16px; padding: 4px 16px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
+  .tenant-head { font-size: 11.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--brand); margin-top: 12px; }
+  .opts { display: grid; gap: 8px; }
+  .opts.two { grid-template-columns: 1fr 1fr; }
+  .opt { position: relative; display: block; }
+  .opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .opt span { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 13px 14px; cursor: pointer; font-weight: 600; font-size: 15px; background: var(--input); transition: border-color .15s, background .15s; }
+  .opt span small { display: block; color: var(--muted); font-weight: 400; font-size: 13px; margin-top: 2px; }
+  .opt span::after { content: ""; width: 18px; height: 18px; flex: none; border-radius: 50%; border: 1.5px solid var(--line); transition: all .15s; }
+  .opt input[type=checkbox] + span::after { border-radius: 5px; }
+  .opt:hover span { border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); }
+  .opt input:checked + span { border-color: var(--brand); background: var(--brand-soft); }
+  .opt input:checked + span::after { border-color: var(--brand); background: var(--brand); box-shadow: inset 0 0 0 3px var(--card); }
+  .opt input:focus-visible + span { box-shadow: 0 0 0 4px var(--brand-soft); }
+
+  .nav { display: flex; gap: 10px; margin-top: 24px; align-items: center; }
+  button { font: inherit; cursor: pointer; border: 0; }
+  .next { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 10px; background: var(--brand); color: var(--brand-ink); border-radius: 10px; padding: 16px 20px; font-family: var(--display); font-weight: 700; font-size: 16px; letter-spacing: .005em; box-shadow: 0 10px 24px -12px var(--brand); transition: background .15s, transform .1s; }
+  .next:hover { background: var(--brand-hover); }
+  .next:active { transform: translateY(1px); }
+  .next:disabled { opacity: .65; cursor: wait; }
+  .next:focus-visible, .back:focus-visible, .call:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+  .back { background: transparent; color: var(--muted); padding: 16px 8px; font-weight: 600; font-size: 15px; }
+  .err { color: var(--err); font-size: 13.5px; margin-top: 12px; min-height: 18px; }
+  .secure { display: flex; align-items: center; justify-content: center; gap: 6px; color: var(--muted); font-size: 12.5px; margin-top: 12px; }
+  .secure svg { width: 13px; height: 13px; }
+
+  .consent { display: flex; gap: 10px; align-items: flex-start; font-size: 11.5px; color: var(--muted); line-height: 1.5; margin-top: 16px; }
+  .consent a, .fine a { color: var(--brand); text-decoration: underline; }
+  .consent input { margin-top: 2px; width: 17px; height: 17px; flex: none; accent-color: var(--brand); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  .done { text-align: center; padding: 18px 4px 8px; }
+  .done .seal { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 16px; background: var(--gold-soft); color: var(--gold); }
+  .done .seal svg { width: 30px; height: 30px; }
+
+  /* ── Below the fold ── */
+  main { margin-top: -96px; position: relative; z-index: 1; }
+  .how { padding-block: 72px 24px; }
+  .how h3 { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 24px; }
+  .how ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+  .how li { border-top: 1px solid var(--line); padding-top: 18px; }
+  .how .n { font-family: var(--display); font-weight: 800; font-size: 14px; color: var(--gold); letter-spacing: .04em; }
+  .how b { display: block; font-family: var(--display); font-size: 19px; font-weight: 700; letter-spacing: -.01em; margin: 8px 0 6px; }
+  .how p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; max-width: 32em; }
+
+  footer { padding-block: 40px 56px; }
+  .fine { border-top: 1px solid var(--line); padding-top: 28px; color: var(--muted); font-size: 12.5px; line-height: 1.6; max-width: 820px; }
+  .fine h4 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .14em; margin: 0 0 12px; color: var(--ink); }
+  .fine p { margin: 0 0 10px; }
+  .fine b { color: var(--ink); }
+
+  @media (min-width: 900px) {
+    .band { padding-block: 0 80px; }
+    .hero { grid-template-columns: 1.05fr 1fr; gap: 64px; align-items: start; padding-top: 48px; }
+    .hero-copy { padding-top: 24px; position: sticky; top: 24px; }
+    main { margin-top: 0; }
+    .how { padding-block: 80px 24px; }
+    .card { padding: 34px 32px 28px; }
+  }
+  @media (max-width: 899px) {
+    .formwrap-desktop { display: none; }
+  }
+  @media (min-width: 900px) { .formwrap-mobile { display: none; } }
+  @media (max-width: 380px) { .row3 { grid-template-columns: 1fr 1fr; } .opts.two { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .step.active { animation: none; } * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="band">
+  <div class="inner gutter">
+    <header>
+      <a class="logo" href="/" aria-label="JStar Acquisitions home">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="none" stroke="currentColor" stroke-opacity=".25"/><path d="M16 6.5l2.6 6.1 6.6.5-5 4.3 1.6 6.4L16 20.4l-5.8 3.4 1.6-6.4-5-4.3 6.6-.5z" fill="#c6a052"/></svg>
+        <b id="brand"></b>
+      </a>
+      <a class="call" id="callbtn" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span id="callnum"></span></a>
+    </header>
+
+    <div class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow">Cash home buyers · All 50 states</span>
+        <h1>Sell your house as-is. <em>Get a cash offer in 24 hours.</em></h1>
+        <p class="lede">No repairs, no showings, no agent commissions. Tell us about the property and we'll come back with a straightforward cash offer. You pick the closing date.</p>
+        <ul class="proof">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div>Any condition<small>Outdated, damaged, vacant, inherited, tenant-occupied</small></div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div>Zero fees or commissions<small>We pay standard closing costs</small></div></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div>Close in as little as 7 days<small>Or wait until you're ready</small></div></li>
+        </ul>
+      </div>
+      <div class="formwrap formwrap-desktop" id="slot-desktop"></div>
+    </div>
+  </div>
+</div>
+
+<main class="inner gutter">
+  <div class="formwrap formwrap-mobile" id="slot-mobile">
+  <form class="card" id="f" novalidate autocomplete="on">
+    <div class="card-top">
+      <span class="k">Free cash offer</span>
+      <span class="k" id="stepcount">Step <b>1</b> of 5</span>
+    </div>
+    <div class="segs" id="segs"><i></i><i></i><i></i><i></i><i></i></div>
+
+    <!-- 1 · Address -->
+    <section class="step active" data-step="1">
+      <h2>Where's the property?</h2>
+      <p class="sub">We'll pull the public records so you don't have to.</p>
+      <label class="f" for="street">Street address</label>
+      <input type="text" id="street" name="street" autocomplete="address-line1" placeholder="123 Main St" required>
+      <label class="f" for="city">City</label>
+      <input type="text" id="city" name="city" autocomplete="address-level2" required>
+      <div class="row">
+        <div><label class="f" for="state">State</label><select id="state" name="state" autocomplete="address-level1" required><option value="">Select</option></select></div>
+        <div><label class="f" for="zip">ZIP</label><input type="text" id="zip" name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="5" required></div>
+      </div>
+    </section>
+
+    <!-- 2 · Property basics -->
+    <section class="step" data-step="2">
+      <h2>Tell us about the house</h2>
+      <p class="sub">Your best guess is fine.</p>
+      <label class="f" for="propertyType">Property type</label>
+      <select id="propertyType" name="propertyType">
+        <option value="single_family">Single family</option>
+        <option value="townhouse">Townhouse</option>
+        <option value="condo">Condo</option>
+        <option value="multi_family">Duplex / multi-family (2–4)</option>
+        <option value="manufactured">Mobile / manufactured</option>
+      </select>
+      <div class="row3">
+        <div><label class="f" for="bedrooms">Beds</label>
+          <select id="bedrooms" name="bedrooms"><option value="">—</option><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option value="6">6+</option></select></div>
+        <div><label class="f" for="bathrooms">Baths</label>
+          <select id="bathrooms" name="bathrooms"><option value="">—</option><option>1</option><option>1.5</option><option selected>2</option><option>2.5</option><option>3</option><option value="3.5">3.5+</option></select></div>
+        <div><label class="f" for="sqft">Sq ft</label><input type="number" id="sqft" name="sqft" inputmode="numeric" placeholder="Not sure"></div>
+      </div>
+      <label class="f" for="yearBuilt">Year built <span class="opt-tag">(approx.)</span></label>
+      <input type="number" id="yearBuilt" name="yearBuilt" inputmode="numeric" placeholder="Not sure">
+    </section>
+
+    <!-- 3 · Condition -->
+    <section class="step" data-step="3">
+      <h2>What shape is it in?</h2>
+      <p class="sub">We buy in any condition. An honest answer gets you a more accurate offer.</p>
+      <div class="opts">
+        <label class="opt"><input type="radio" name="condition" value="turnkey"><span><div>Move-in ready<small>Updated, nothing needed</small></div></span></label>
+        <label class="opt"><input type="radio" name="condition" value="cosmetic"><span><div>Needs a little TLC<small>Paint, carpet, minor fixes</small></div></span></label>
+        <label class="opt"><input type="radio" name="condition" value="moderate"><span><div>Needs updating<small>Dated kitchen or bathrooms</small></div></span></label>
+        <label class="opt"><input type="radio" name="condition" value="heavy"><span><div>Needs major repairs<small>Roof, foundation, HVAC, water damage</small></div></span></label>
+        <label class="opt"><input type="radio" name="condition" value="gut"><span><div>Needs everything<small>Full renovation or teardown</small></div></span></label>
+      </div>
+      <label class="f" style="margin-top:20px">Any known issues? <span class="opt-tag">(optional)</span></label>
+      <div class="opts two">
+        <label class="opt"><input type="checkbox" name="issues" value="roof"><span>Roof</span></label>
+        <label class="opt"><input type="checkbox" name="issues" value="foundation"><span>Foundation</span></label>
+        <label class="opt"><input type="checkbox" name="issues" value="hvac"><span>AC / heating</span></label>
+        <label class="opt"><input type="checkbox" name="issues" value="plumbing"><span>Plumbing</span></label>
+        <label class="opt"><input type="checkbox" name="issues" value="electrical"><span>Electrical</span></label>
+        <label class="opt"><input type="checkbox" name="issues" value="water_damage"><span>Water damage</span></label>
+      </div>
+    </section>
+
+    <!-- 4 · Situation -->
+    <section class="step" data-step="4">
+      <h2>Your situation</h2>
+      <p class="sub">This helps us shape an offer that works for you.</p>
+      <label class="f" for="timeline">How soon do you want to sell?</label>
+      <select id="timeline" name="timeline" required>
+        <option value="">Select</option>
+        <option value="asap">As soon as possible</option>
+        <option value="30">Within 30 days</option>
+        <option value="90">1–3 months</option>
+        <option value="later">3+ months</option>
+        <option value="unsure">Just exploring</option>
+      </select>
+      <label class="f" for="reason">Main reason for selling</label>
+      <select id="reason" name="reason">
+        <option value="">Select</option>
+        <option value="inherited">Inherited / estate</option>
+        <option value="repairs">Too many repairs</option>
+        <option value="landlord">Tired landlord / bad tenants</option>
+        <option value="relocating">Relocating</option>
+        <option value="divorce">Divorce</option>
+        <option value="behind">Behind on payments</option>
+        <option value="downsizing">Downsizing</option>
+        <option value="other">Other</option>
+      </select>
+      <label class="f" for="reasonDetail">Tell us a little about your situation <span class="opt-tag">(optional)</span></label>
+      <textarea id="reasonDetail" name="reasonDetail" rows="3" maxlength="1000" placeholder="e.g. Mom's house, nobody's lived there in a year and it needs a new roof"></textarea>
+      <div class="row">
+        <div><label class="f" for="occupancy">Who lives there?</label>
+          <select id="occupancy" name="occupancy"><option value="">Select</option><option value="owner">I do</option><option value="tenant">Tenant</option><option value="vacant">Vacant</option></select></div>
+        <div><label class="f" for="owed">Mortgage?</label>
+          <select id="owed" name="owed"><option value="">Select</option><option value="free_clear">Paid off</option><option value="mortgage">Yes</option><option value="unsure">Not sure</option></select></div>
+      </div>
+      <div class="tenant" id="tenantBlock" hidden>
+        <div class="tenant-head">About the rental</div>
+        <div class="row">
+          <div><label class="f" for="currentRent">Monthly rent</label><input type="text" id="currentRent" name="currentRent" inputmode="numeric" placeholder="$"></div>
+          <div><label class="f" for="leaseEnd">Lease</label>
+            <select id="leaseEnd" name="leaseEnd"><option value="">Select</option><option value="mtm">Month-to-month</option><option value="lt3">Ends in under 3 months</option><option value="3to6">Ends in 3–6 months</option><option value="6to12">Ends in 6–12 months</option><option value="gt12">12+ months left</option></select></div>
+        </div>
+        <label class="f" for="tenantPaying">Is the tenant paying?</label>
+        <select id="tenantPaying" name="tenantPaying"><option value="">Select</option><option value="yes">Yes, on time</option><option value="late">Sometimes late</option><option value="behind">Behind / not paying</option></select>
+      </div>
+      <label class="f" for="asking">Price you have in mind <span class="opt-tag">(optional)</span></label>
+      <input type="text" id="asking" name="asking" inputmode="numeric" placeholder="$">
+    </section>
+
+    <!-- 5 · Contact -->
+    <section class="step" data-step="5">
+      <h2>Where should we send your offer?</h2>
+      <p class="sub">A member of our acquisitions team will reach out within 24 hours.</p>
+      <div class="row">
+        <div><label class="f" for="firstName">First name</label><input type="text" id="firstName" name="firstName" autocomplete="given-name" required></div>
+        <div><label class="f" for="lastName">Last name</label><input type="text" id="lastName" name="lastName" autocomplete="family-name"></div>
+      </div>
+      <label class="f" for="phone">Phone</label>
+      <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="(555) 555-0123" required>
+      <label class="f" for="email">Email</label>
+      <input type="email" id="email" name="email" autocomplete="email">
+      <label class="consent">
+        <input type="checkbox" name="smsConsent" id="smsConsent">
+        <span id="consentText"></span>
+      </label>
+      <div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+    </section>
+
+    <!-- Done -->
+    <section class="step" data-step="6">
+      <div class="done">
+        <div class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <h2>Thank you, <span id="doneName"></span>.</h2>
+        <p class="sub">We're reviewing your property now. Expect a call or text from our team shortly, usually within a few hours during business hours.</p>
+        <p class="sub">Prefer to talk now? Call <a id="doneCall" href="#" style="font-weight:700;color:var(--brand)"></a></p>
+      </div>
+    </section>
+
+    <div class="err" id="err" role="alert"></div>
+    <div class="nav" id="nav">
+      <button type="button" class="back" id="back" hidden>Back</button>
+      <button type="button" class="next" id="next"><span id="nextLabel">Get my cash offer</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </div>
+    <div class="secure" id="secure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Free, no obligation. Your info stays private.</div>
+  </form>
+  </div>
+
+  <section class="how">
+    <h3>How it works</h3>
+    <ol>
+      <li><span class="n">01</span><b>Tell us about the property</b><p>Takes about 60 seconds. No obligation, no pressure.</p></li>
+      <li><span class="n">02</span><b>Get your cash offer</b><p>We review recent sales nearby and come back with a clear number, usually within 24 hours.</p></li>
+      <li><span class="n">03</span><b>Pick your closing date</b><p>Close with a title company near you in as little as 7 days, or whenever works for you.</p></li>
+    </ol>
+  </section>
+
+  <footer>
+    <div class="fine" id="disclosure"></div>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const S = window.SITE;
+  const $ = id => document.getElementById(id);
+  const form = $('f');
+  const steps = [...form.querySelectorAll('.step')];
+  const TOTAL = 5;
+  let cur = 1;
+  let announcing = false; // true while we fire a native submit for GoHighLevel tracking
+
+  // Put the form in the right column on desktop, under the hero on phones
+  const mq = window.matchMedia('(min-width: 900px)');
+  const place = () => (mq.matches ? $('slot-desktop') : $('slot-mobile')).appendChild(form);
+  place(); mq.addEventListener ? mq.addEventListener('change', place) : mq.addListener(place);
+
+  // States
+  'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'
+    .split(' ').forEach(s => $('state').add(new Option(s, s)));
+
+  // Branding
+  const parts = S.brand.split(' ');
+  $('brand').innerHTML = parts.length > 1 ? `${parts[0]} <span>${parts.slice(1).join(' ')}</span>` : S.brand;
+  const tel = 'tel:' + S.phone.replace(/[^\d+]/g, '');
+  $('callbtn').href = tel; $('callnum').textContent = S.phone;
+  $('doneCall').href = tel; $('doneCall').textContent = S.phone;
+  const consentBase = `By checking this box, I agree to receive calls and text messages from ${S.brand} at the number provided, including messages sent using automated technology, about selling my property. Consent is not a condition of any purchase. Msg & data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help.`;
+  // Saved with each lead (plain text, with full policy URLs)
+  const consentText = `${consentBase} Privacy Policy: ${location.origin}/privacy.html. Terms: ${location.origin}/terms.html.`;
+  $('consentText').textContent = consentBase + ' ';
+  $('consentText').insertAdjacentHTML('beforeend', 'See our <a href="/privacy.html" target="_blank" rel="noopener">Privacy Policy</a> and <a href="/terms.html" target="_blank" rel="noopener">Terms &amp; Conditions</a>.');
+  $('disclosure').innerHTML = `
+    <h4>Disclaimers</h4>
+    <p>${S.brand} is a real estate investment company. We are not licensed real estate agents or brokers, and we do not represent you in the sale of your property.</p>
+    <p><b>How our offers work:</b> If you accept our offer, we sign a purchase contract to buy your property. We may close on the purchase ourselves, or we may assign (transfer) our rights under that contract to another buyer before closing. If we assign it, that buyer takes our place and closes on the same price and terms you agreed to. We may be paid an assignment fee by that buyer, which does not come out of your proceeds.</p>
+    <p>Until closing, we hold only an equitable interest in your property under the contract, not legal title. We will give you this disclosure in writing before you sign any contract, and we follow the wholesaling and disclosure laws of the state where your property is located.</p>
+    <p>Submitting this form does not obligate you to sell. You are welcome to talk with a real estate agent or attorney before signing anything.</p>
+    <p><b>${S.brand}</b> · 45704 Corte Mislanca, Temecula, CA 92592 · <a href="tel:+18328330125">(832) 833-0125</a></p>
+    <p>&copy; ${new Date().getFullYear()} ${S.brand} &nbsp;·&nbsp; <a href="/privacy.html">Privacy Policy</a> &nbsp;·&nbsp; <a href="/terms.html">Terms &amp; Conditions</a> &nbsp;·&nbsp; <a href="/contact.html">Contact</a></p>`;
+
+  // Tracking: UTMs, click IDs, Meta cookies — persisted across the session
+  const qs = new URLSearchParams(location.search);
+  const trackKeys = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','gbraid','wbraid','fbclid'];
+  let tracking = {};
+  try { tracking = JSON.parse(sessionStorage.getItem('trk') || '{}'); } catch {}
+  trackKeys.forEach(k => { if (qs.get(k)) tracking[k] = qs.get(k); });
+  tracking.landing = tracking.landing || location.href;
+  tracking.referrer = tracking.referrer || document.referrer || '';
+  try { sessionStorage.setItem('trk', JSON.stringify(tracking)); } catch {}
+  const cookie = n => (document.cookie.match('(^|;)\\s*' + n + '=([^;]+)') || [])[2];
+
+  // Input masks
+  $('phone').addEventListener('input', e => {
+    const d = e.target.value.replace(/\D/g, '').replace(/^1/, '').slice(0, 10);
+    e.target.value = d.length > 6 ? `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}` : d.length > 3 ? `(${d.slice(0,3)}) ${d.slice(3)}` : d;
+  });
+  ['asking', 'currentRent'].forEach(id => $(id).addEventListener('input', e => {
+    const d = e.target.value.replace(/\D/g, '');
+    e.target.value = d ? '$' + Number(d).toLocaleString() : '';
+  }));
+  // Rental questions only when it's tenant-occupied
+  const syncTenant = () => { $('tenantBlock').hidden = $('occupancy').value !== 'tenant'; };
+  $('occupancy').addEventListener('change', syncTenant); syncTenant();
+
+  function show(n) {
+    cur = n;
+    steps.forEach(s => s.classList.toggle('active', +s.dataset.step === n));
+    [...$('segs').children].forEach((el, i) => { el.className = i + 1 < n ? 'on' : i + 1 === n ? 'now' : ''; if (n > TOTAL) el.className = 'on'; });
+    $('stepcount').innerHTML = n <= TOTAL ? `Step <b>${n}</b> of ${TOTAL}` : 'Complete';
+    $('back').hidden = n === 1 || n > TOTAL;
+    $('nextLabel').textContent = n === 1 ? 'Get my cash offer' : n === TOTAL ? 'Send my offer request' : 'Continue';
+    $('nav').hidden = n > TOTAL;
+    $('secure').hidden = n > TOTAL;
+    $('err').textContent = '';
+    if (n > 1) {
+      const top = form.getBoundingClientRect().top;
+      if (top < 0) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  function validate(n) {
+    const v = name => (form.elements[name]?.value || '').trim();
+    if (n === 1) {
+      if (!v('street') || !v('city')) return 'Please enter the property address.';
+      if (!v('state')) return 'Please pick the state.';
+      if (!/^\d{5}$/.test(v('zip'))) return 'Please enter a 5-digit ZIP.';
+    }
+    if (n === 3 && !form.querySelector('input[name=condition]:checked')) return 'Pick the closest match.';
+    if (n === 4 && !v('timeline')) return 'Let us know your timeline.';
+    if (n === 5) {
+      if (!v('firstName')) return 'Please enter your first name.';
+      if (v('phone').replace(/\D/g, '').length !== 10) return 'Please enter a valid 10-digit phone number.';
+      const em = v('email');
+      if (em && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) return 'That email doesn\'t look right.';
+    }
+    return '';
+  }
+
+  function trackStep(n) {
+    if (window.fbq) fbq('trackCustom', 'FunnelStep', { step: n });
+    if (window.gtag) gtag('event', 'funnel_step', { step: n });
+  }
+
+  async function submit() {
+    const fd = new FormData(form);
+    const eventId = 'lead_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+    const body = Object.fromEntries(fd.entries());
+    body.issues = fd.getAll('issues');
+    if (body.occupancy !== 'tenant') { delete body.currentRent; delete body.leaseEnd; delete body.tenantPaying; }
+    body.smsConsent = $('smsConsent').checked;
+    body.consentText = body.smsConsent ? consentText : '';
+    body.tracking = { ...tracking, fbc: cookie('_fbc') || (tracking.fbclid ? `fb.1.${Date.now()}.${tracking.fbclid}` : undefined), fbp: cookie('_fbp') };
+    body.eventId = eventId;
+    body.pageUrl = location.href;
+
+    $('next').disabled = true; $('nextLabel').textContent = 'Sending…';
+    try {
+      if (S.demo) {
+        await new Promise(r => setTimeout(r, 700));
+      } else {
+        const r = await fetch('/api/lead', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(j.error || 'Something went wrong');
+        if (window.fbq) fbq('track', 'Lead', {}, { eventID: eventId });
+        if (window.gtag && S.googleAdsLeadLabel) {
+          gtag('set', 'user_data', { email: body.email || undefined, phone_number: '+1' + body.phone.replace(/\D/g, '') });
+          gtag('event', 'conversion', { send_to: `${S.googleAdsId}/${S.googleAdsLeadLabel}`, transaction_id: eventId });
+        }
+      }
+      // Let GoHighLevel's external tracking see this as a normal form submit (contact fields are still visible)
+      announcing = true;
+      try { form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); } catch {}
+      announcing = false;
+      $('doneName').textContent = body.firstName.trim();
+      $('next').disabled = false;
+      show(6);
+    } catch (e) {
+      $('err').textContent = e.message + '. You can also call us at ' + S.phone + '.';
+      $('next').disabled = false; $('nextLabel').textContent = 'Try again';
+    }
+  }
+
+  $('next').addEventListener('click', () => {
+    const msg = validate(cur);
+    if (msg) { $('err').textContent = msg; return; }
+    trackStep(cur);
+    if (cur === TOTAL) submit(); else show(cur + 1);
+  });
+  $('back').addEventListener('click', () => show(cur - 1));
+  form.querySelectorAll('input[name=condition]').forEach(r => r.addEventListener('change', () => setTimeout(() => $('next').click(), 200)));
+  form.addEventListener('submit', e => { e.preventDefault(); if (announcing) return; $('next').click(); });
+  form.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') { e.preventDefault(); $('next').click(); } });
+
+  show(1);
+})();
+</script>
+<!-- GoHighLevel external tracking -->
+<script
+  src="https://link.msgsndr.com/js/external-tracking.js"
+  data-tracking-id="tk_8447c92fc12842a9a70c52bcfefa95d9">
+</script>
+</body>
+</html>
