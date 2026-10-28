@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Operator | JStar Acquisitions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0c1a33; --bg:#f4f6fa; --card:#fff; --ink:#0f1729; --muted:#5b6578; --line:#e0e5ee; --input:#fff;
+    --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#ebf0fa; --gold:#c6a052; --err:#b42318;
+    --display:'Archivo','Helvetica Neue',Arial,sans-serif; --body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg:#0d121c; --card:#151c2a; --ink:#eef2f8; --muted:#98a3b5; --line:#273148; --input:#111827;
+    --brand:#4f7fe0; --brand-soft:#1a2640; --err:#ff8a7a; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; -webkit-font-smoothing:antialiased; }
+  header { background:var(--navy); color:#f2f5fb; padding-block:16px; }
+  .wrap { max-width:760px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+  header .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .logo { font-family:var(--display); font-weight:700; text-decoration:none; color:inherit; }
+  .logo span { color:var(--gold); }
+  .tag { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); }
+  main { padding-block:20px 60px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:14px; }
+  h1 { font-family:var(--display); font-size:24px; margin:0 0 4px; letter-spacing:-.02em; }
+  h2 { font-family:var(--display); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 10px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 14px; }
+  label.f { display:block; font-size:13px; font-weight:600; margin:10px 0 6px; }
+  label.f .opt { font-weight:400; color:var(--muted); }
+  input[type=text], input[type=number], input[type=password], input[type=tel], select, textarea {
+    width:100%; font:inherit; font-size:16px; padding:11px 12px; border:1px solid var(--line); border-radius:10px; background:var(--input); color:var(--ink); }
+  textarea { min-height:70px; resize:vertical; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
+  .row { display:grid; gap:10px; grid-template-columns:1fr 1fr; }
+  .row3 { display:grid; gap:10px; grid-template-columns:1fr 1fr 1fr; }
+  .row > *, .row3 > * { min-width:0; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { position:relative; }
+  .chip input { position:absolute; opacity:0; pointer-events:none; }
+  .chip span { display:inline-block; padding:9px 12px; border:1px solid var(--line); border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; background:var(--input); }
+  .chip input:checked + span { border-color:var(--brand); background:var(--brand-soft); color:var(--brand); }
+  .chip input:focus-visible + span { box-shadow:0 0 0 3px var(--brand-soft); }
+  .rep { display:grid; grid-template-columns:1fr 120px 36px; gap:8px; margin-bottom:8px; }
+  .rep button { border:1px solid var(--line); background:var(--input); color:var(--muted); border-radius:10px; font-size:18px; cursor:pointer; }
+  .link { background:none; border:0; color:var(--brand); font:inherit; font-weight:600; padding:4px 0; cursor:pointer; }
+  .btn { width:100%; border:0; border-radius:10px; padding:15px; background:var(--brand); color:var(--brand-ink); font-family:var(--display); font-weight:700; font-size:16px; cursor:pointer; }
+  .btn:disabled { opacity:.6; cursor:wait; }
+  .btn.ghost { background:transparent; color:var(--brand); border:1px solid var(--line); }
+  .err { color:var(--err); font-size:14px; min-height:18px; margin-top:10px; }
+  .check { display:flex; gap:10px; align-items:center; font-size:14px; margin-top:12px; }
+  .check input { width:18px; height:18px; accent-color:var(--brand); }
+  .summary { white-space:pre-wrap; font-size:14px; line-height:1.5; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:14px; font-variant-numeric:tabular-nums; }
+  .sheet { overflow-x:auto; border-radius:12px; }
+  .sheet > div { padding:0 !important; background:transparent !important; }
+  .tenant { border:1px dashed var(--line); border-radius:10px; padding:4px 12px 12px; margin-top:10px; }
+  @media (max-width:380px) { .row3 { grid-template-columns:1fr 1fr; } }
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><span class="tag">Operator</span></div></header>
+
+<main class="wrap">
+  <!-- PIN gate -->
+  <section id="gate" class="card">
+    <h1>Operator access</h1>
+    <p class="sub">Enter your PIN to run a property.</p>
+    <form id="pinForm" autocomplete="off">
+      <label class="f" for="pin">PIN</label>
+      <input type="password" id="pin" inputmode="numeric" autocomplete="current-password" required>
+      <div class="err" id="pinErr" role="alert"></div>
+      <button class="btn" id="pinBtn" type="submit">Unlock</button>
+    </form>
+  </section>
+
+  <!-- Property form -->
+  <form id="prop" hidden autocomplete="off">
+    <section class="card">
+      <h2>Address</h2>
+      <label class="f" for="street">Street</label>
+      <input type="text" id="street" name="street" required placeholder="123 Main St">
+      <label class="f" for="city">City</label>
+      <input type="text" id="city" name="city" required>
+      <div class="row">
+        <div><label class="f" for="state">State</label><select id="state" name="state" required><option value="">—</option></select></div>
+        <div><label class="f" for="zip">ZIP</label><input type="text" id="zip" name="zip" inputmode="numeric" maxlength="5" required></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>House <span style="text-transform:none;letter-spacing:0;font-weight:400">(blank = pull from public record)</span></h2>
+      <label class="f" for="propertyType">Type</label>
+      <select id="propertyType" name="propertyType">
+        <option value="single_family">Single family</option><option value="townhouse">Townhouse</option><option value="condo">Condo</option>
+        <option value="multi_family">Multi-family (2–4)</option><option value="manufactured">Mobile / manufactured</option>
+      </select>
+      <div class="row3">
+        <div><label class="f" for="bedrooms">Beds</label><input type="number" id="bedrooms" name="bedrooms" inputmode="numeric"></div>
+        <div><label class="f" for="bathrooms">Baths</label><input type="number" id="bathrooms" name="bathrooms" inputmode="decimal" step="0.5"></div>
+        <div><label class="f" for="sqft">Sq ft</label><input type="number" id="sqft" name="sqft" inputmode="numeric"></div>
+      </div>
+      <label class="f" for="yearBuilt">Year built</label>
+      <input type="number" id="yearBuilt" name="yearBuilt" inputmode="numeric">
+    </section>
+
+    <section class="card">
+      <h2>Condition</h2>
+      <div class="chips" id="condChips">
+        <label class="chip"><input type="radio" name="condition" value="turnkey"><span>Move-in ready</span></label>
+        <label class="chip"><input type="radio" name="condition" value="cosmetic"><span>Cosmetic</span></label>
+        <label class="chip"><input type="radio" name="condition" value="moderate" checked><span>Needs updating</span></label>
+        <label class="chip"><input type="radio" name="condition" value="heavy"><span>Major repairs</span></label>
+        <label class="chip"><input type="radio" name="condition" value="gut"><span>Full gut</span></label>
+      </div>
+      <label class="f">Known issues <span class="opt">(added to estimate)</span></label>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" name="issues" value="roof"><span>Roof</span></label>
+        <label class="chip"><input type="checkbox" name="issues" value="foundation"><span>Foundation</span></label>
+        <label class="chip"><input type="checkbox" name="issues" value="hvac"><span>HVAC</span></label>
+        <label class="chip"><input type="checkbox" name="issues" value="plumbing"><span>Plumbing</span></label>
+        <label class="chip"><input type="checkbox" name="issues" value="electrical"><span>Electrical</span></label>
+        <label class="chip"><input type="checkbox" name="issues" value="water_damage"><span>Water damage</span></label>
+      </div>
+      <label class="f">Exact repairs <span class="opt">(optional: replaces the estimate, +10% contingency)</span></label>
+      <div id="reps"></div>
+      <button type="button" class="link" id="addRep">+ Add repair line</button>
+    </section>
+
+    <section class="card">
+      <h2>Situation <span style="text-transform:none;letter-spacing:0;font-weight:400">(optional)</span></h2>
+      <div class="row">
+        <div><label class="f" for="asking">Asking price</label><input type="text" id="asking" name="asking" inputmode="numeric" placeholder="$"></div>
+        <div><label class="f" for="owed">Mortgage</label><select id="owed" name="owed"><option value="">—</option><option value="free_clear">Paid off</option><option value="mortgage">Has mortgage</option><option value="unsure">Not sure</option></select></div>
+      </div>
+      <div class="row">
+        <div><label class="f" for="timeline">Timeline</label><select id="timeline" name="timeline"><option value="">—</option><option value="asap">ASAP</option><option value="30">&lt; 30 days</option><option value="90">1–3 months</option><option value="later">3+ months</option><option value="unsure">Exploring</option></select></div>
+        <div><label class="f" for="reason">Reason</label><select id="reason" name="reason"><option value="">—</option><option value="inherited">Inherited</option><option value="repairs">Too many repairs</option><option value="landlord">Tired landlord</option><option value="relocating">Relocating</option><option value="divorce">Divorce</option><option value="behind">Behind on payments</option><option value="downsizing">Downsizing</option><option value="other">Other</option></select></div>
+      </div>
+      <label class="f" for="occupancy">Occupancy</label>
+      <select id="occupancy" name="occupancy"><option value="">—</option><option value="owner">Owner</option><option value="tenant">Tenant</option><option value="vacant">Vacant</option></select>
+      <div class="tenant" id="tenantBlock" hidden>
+        <div class="row">
+          <div><label class="f" for="currentRent">Rent / mo</label><input type="text" id="currentRent" name="currentRent" inputmode="numeric" placeholder="$"></div>
+          <div><label class="f" for="leaseEnd">Lease</label><select id="leaseEnd" name="leaseEnd"><option value="">—</option><option value="mtm">Month-to-month</option><option value="lt3">&lt; 3 mo</option><option value="3to6">3–6 mo</option><option value="6to12">6–12 mo</option><option value="gt12">12+ mo</option></select></div>
+        </div>
+        <label class="f" for="tenantPaying">Tenant paying?</label>
+        <select id="tenantPaying" name="tenantPaying"><option value="">—</option><option value="yes">On time</option><option value="late">Sometimes late</option><option value="behind">Behind / not paying</option></select>
+      </div>
+      <label class="f" for="notes">Notes</label>
+      <textarea id="notes" name="notes" placeholder="Anything from the call or walkthrough"></textarea>
+    </section>
+
+    <label class="check"><input type="checkbox" id="notify"> Also send this deal sheet to my email / phone alerts</label>
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn" id="runBtn" type="submit">Run numbers</button>
+  </form>
+
+  <!-- Results -->
+  <section id="results" hidden>
+    <div class="summary" id="summary"></div>
+    <div class="sheet" id="sheet"></div>
+    <div class="row" style="margin-top:14px">
+      <button class="btn ghost" id="editBtn" type="button">Edit this property</button>
+      <button class="btn" id="newBtn" type="button">New property</button>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  let pin = '';
+  try { pin = sessionStorage.getItem('opPin') || ''; } catch {}
+
+  'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'
+    .split(' ').forEach(s => $('state').add(new Option(s, s, s === 'TX', s === 'TX')));
+
+  const post = body => fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, pin }) })
+    .then(async r => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }));
+
+  const unlock = () => { $('gate').hidden = true; $('prop').hidden = false; $('street').focus(); };
+
+  $('pinForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    pin = $('pin').value.trim(); $('pinErr').textContent = ''; $('pinBtn').disabled = true;
+    const r = await post({ checkOnly: true }).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
+    $('pinBtn').disabled = false;
+    if (!r.ok) { $('pinErr').textContent = r.j.error || 'Wrong PIN.'; return; }
+    try { sessionStorage.setItem('opPin', pin); } catch {}
+    unlock();
+  });
+  if (pin) unlock();
+
+  // Money inputs
+  ['asking', 'currentRent'].forEach(id => $(id).addEventListener('input', e => {
+    const d = e.target.value.replace(/\D/g, ''); e.target.value = d ? '$' + Number(d).toLocaleString() : '';
+  }));
+  const syncTenant = () => { $('tenantBlock').hidden = $('occupancy').value !== 'tenant'; };
+  $('occupancy').addEventListener('change', syncTenant);
+
+  // Exact repair lines
+  const addRep = (item = '', cost = '') => {
+    const row = document.createElement('div'); row.className = 'rep';
+    row.innerHTML = '<input type="text" placeholder="e.g. Kitchen" aria-label="Repair item"><input type="text" inputmode="numeric" placeholder="$" aria-label="Cost"><button type="button" aria-label="Remove">×</button>';
+    const [i, c, x] = row.children; i.value = item; c.value = cost;
+    c.addEventListener('input', () => { const d = c.value.replace(/\D/g, ''); c.value = d ? '$' + Number(d).toLocaleString() : ''; });
+    x.addEventListener('click', () => row.remove());
+    $('reps').appendChild(row); return i;
+  };
+  $('addRep').addEventListener('click', () => addRep().focus());
+
+  $('prop').addEventListener('submit', async e => {
+    e.preventDefault();
+    const f = $('prop'), fd = new FormData(f);
+    const body = Object.fromEntries(fd.entries());
+    body.issues = fd.getAll('issues');
+    body.customRepairs = [...$('reps').children].map(r => ({ item: r.children[0].value, cost: r.children[1].value })).filter(r => r.item && r.cost);
+    body.notify = $('notify').checked;
+    for (const k of ['street', 'city', 'state', 'zip']) if (!String(body[k] || '').trim()) { $('err').textContent = 'Enter the full address.'; return; }
+    if (!/^\d{5}$/.test(body.zip.trim())) { $('err').textContent = 'ZIP needs 5 digits.'; return; }
+
+    $('err').textContent = ''; $('runBtn').disabled = true; $('runBtn').textContent = 'Pulling comps…';
+    const r = await post(body).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
+    $('runBtn').disabled = false; $('runBtn').textContent = 'Run numbers';
+    if (r.status === 401) { try { sessionStorage.removeItem('opPin'); } catch {} $('prop').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'PIN expired or changed. Enter it again.'; return; }
+    if (!r.ok) { $('err').textContent = r.j.error || 'Something went wrong.'; return; }
+
+    $('summary').textContent = r.j.summary;
+    $('sheet').innerHTML = r.j.html;
+    $('prop').hidden = true; $('results').hidden = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  $('editBtn').addEventListener('click', () => { $('results').hidden = true; $('prop').hidden = false; window.scrollTo({ top: 0 }); });
+  $('newBtn').addEventListener('click', () => {
+    $('prop').reset(); $('reps').innerHTML = ''; syncTenant();
+    $('results').hidden = true; $('prop').hidden = false; window.scrollTo({ top: 0 }); $('street').focus();
+  });
+})();
+</script>
+</body>
+</html>

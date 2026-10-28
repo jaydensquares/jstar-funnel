@@ -9,11 +9,15 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 process.env.DEV_SAVE_DIR ||= path.join(root, 'leads');
-const { default: handler } = await import(path.join(root, 'api/lead.js'));
+const handlers = {};
+for (const f of fs.readdirSync(path.join(root, 'api')).filter(f => f.endsWith('.js'))) {
+  handlers['/api/' + f.replace(/\.js$/, '')] = (await import(path.join(root, 'api', f))).default;
+}
 const PORT = Number(process.env.PORT) || 3000;
 
 http.createServer(async (req, res) => {
-  if (req.url.startsWith('/api/lead')) {
+  const handler = handlers[req.url.split('?')[0]];
+  if (handler) {
     let raw = '';
     for await (const chunk of req) raw += chunk;
     try { req.body = raw ? JSON.parse(raw) : {}; } catch { req.body = {}; }
