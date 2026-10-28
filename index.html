@@ -391,6 +391,7 @@
   const steps = [...form.querySelectorAll('.step')];
   const TOTAL = 5;
   let cur = 1;
+  let announcing = false; // true while we fire a native submit for GoHighLevel tracking
 
   // Put the form in the right column on desktop, under the hero on phones
   const mq = window.matchMedia('(min-width: 900px)');
@@ -506,6 +507,10 @@
           gtag('event', 'conversion', { send_to: `${S.googleAdsId}/${S.googleAdsLeadLabel}`, transaction_id: eventId });
         }
       }
+      // Let GoHighLevel's external tracking see this as a normal form submit (contact fields are still visible)
+      announcing = true;
+      try { form.requestSubmit ? form.requestSubmit() : form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); } catch {}
+      announcing = false;
       $('doneName').textContent = body.firstName.trim();
       $('next').disabled = false;
       show(6);
@@ -523,11 +528,16 @@
   });
   $('back').addEventListener('click', () => show(cur - 1));
   form.querySelectorAll('input[name=condition]').forEach(r => r.addEventListener('change', () => setTimeout(() => $('next').click(), 200)));
-  form.addEventListener('submit', e => { e.preventDefault(); $('next').click(); });
+  form.addEventListener('submit', e => { e.preventDefault(); if (announcing) return; $('next').click(); });
   form.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') { e.preventDefault(); $('next').click(); } });
 
   show(1);
 })();
+</script>
+<!-- GoHighLevel external tracking -->
+<script
+  src="https://link.msgsndr.com/js/external-tracking.js"
+  data-tracking-id="tk_8447c92fc12842a9a70c52bcfefa95d9">
 </script>
 </body>
 </html>
