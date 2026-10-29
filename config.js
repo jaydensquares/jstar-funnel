@@ -104,6 +104,17 @@ export default {
     wrapPriceOfArv: 1.0, wrapDownPct: 0.10, wrapRate: 0.095,
   },
 
+  // ── Vacant lots / land (operator page) ──
+  land: {
+    buyerPercent: 0.65,   // what a builder / land investor pays, as % of lot value
+    assignmentFee: 10000, // your fee, taken out of the buyer price → MAO
+    radiusMiles: 3,       // land comps are sparse, so search wider
+    daysOld: 365,
+    lotTolerance: 2.5,    // keep comps between 1/2.5× and 2.5× the lot size
+    // Knock lot value down for problems (multiplied together)
+    issueDiscounts: { no_utilities: 0.15, no_access: 0.30, flood: 0.20, hoa_restrict: 0.10 },
+  },
+
   // Buy box: above this ARV, cash buyers are scarce and 70%-rule offers won't land
   maxArv: 1000000,
 

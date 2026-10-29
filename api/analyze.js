@@ -12,7 +12,7 @@ const num = v => {
 };
 const TYPE_LABEL = {
   single_family: 'Single family', townhouse: 'Townhouse', condo: 'Condo',
-  multi_family: 'Multi-family (2–4)', manufactured: 'Mobile/manufactured',
+  multi_family: 'Multi-family (2–4)', manufactured: 'Mobile/manufactured', land: 'Vacant lot / land',
 };
 
 function pinMatches(given) {
@@ -52,6 +52,8 @@ export default async function handler(req, res) {
     condition: b.condition || 'moderate',
     issues: Array.isArray(b.issues) ? b.issues : [],
     customRepairs: customRepairs.length ? customRepairs : undefined,
+    lotSqft: num(b.lotAcres) ? Math.round(num(b.lotAcres) * 43560) : num(b.lotSqft),
+    landIssues: Array.isArray(b.landIssues) ? b.landIssues : [],
     occupancy: b.occupancy || '', timeline: b.timeline || '', reason: b.reason || '',
     owed: b.owed || '', asking: b.asking || '',
     currentRent: b.occupancy === 'tenant' ? num(b.currentRent) : null,

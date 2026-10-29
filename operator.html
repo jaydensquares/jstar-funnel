@@ -92,12 +92,27 @@
     </section>
 
     <section class="card">
-      <h2>House <span style="text-transform:none;letter-spacing:0;font-weight:400">(blank = pull from public record)</span></h2>
+      <h2>Property <span style="text-transform:none;letter-spacing:0;font-weight:400">(blank = pull from public record)</span></h2>
       <label class="f" for="propertyType">Type</label>
       <select id="propertyType" name="propertyType">
         <option value="single_family">Single family</option><option value="townhouse">Townhouse</option><option value="condo">Condo</option>
         <option value="multi_family">Multi-family (2–4)</option><option value="manufactured">Mobile / manufactured</option>
+        <option value="land">Vacant lot / land</option>
       </select>
+      <div id="lotBlock" hidden>
+        <div class="row">
+          <div><label class="f" for="lotAcres">Acres</label><input type="number" id="lotAcres" name="lotAcres" inputmode="decimal" step="0.01" placeholder="0.25"></div>
+          <div><label class="f" for="lotSqft">or lot sq ft</label><input type="number" id="lotSqft" name="lotSqft" inputmode="numeric" placeholder="10,890"></div>
+        </div>
+        <label class="f">Lot issues <span class="opt">(lowers value)</span></label>
+        <div class="chips">
+          <label class="chip"><input type="checkbox" name="landIssues" value="no_utilities"><span>No utilities</span></label>
+          <label class="chip"><input type="checkbox" name="landIssues" value="no_access"><span>No road access</span></label>
+          <label class="chip"><input type="checkbox" name="landIssues" value="flood"><span>Flood zone</span></label>
+          <label class="chip"><input type="checkbox" name="landIssues" value="hoa_restrict"><span>HOA / restrictions</span></label>
+        </div>
+      </div>
+      <div id="houseBlock">
       <div class="row3">
         <div><label class="f" for="bedrooms">Beds</label><input type="number" id="bedrooms" name="bedrooms" inputmode="numeric"></div>
         <div><label class="f" for="bathrooms">Baths</label><input type="number" id="bathrooms" name="bathrooms" inputmode="decimal" step="0.5"></div>
@@ -105,9 +120,10 @@
       </div>
       <label class="f" for="yearBuilt">Year built</label>
       <input type="number" id="yearBuilt" name="yearBuilt" inputmode="numeric">
+      </div>
     </section>
 
-    <section class="card">
+    <section class="card" id="condCard">
       <h2>Condition</h2>
       <div class="chips" id="condChips">
         <label class="chip"><input type="radio" name="condition" value="turnkey"><span>Move-in ready</span></label>
@@ -201,6 +217,11 @@
   }));
   const syncTenant = () => { $('tenantBlock').hidden = $('occupancy').value !== 'tenant'; };
   $('occupancy').addEventListener('change', syncTenant);
+  const syncType = () => {
+    const land = $('propertyType').value === 'land';
+    $('lotBlock').hidden = !land; $('houseBlock').hidden = land; $('condCard').hidden = land;
+  };
+  $('propertyType').addEventListener('change', syncType);
 
   // Exact repair lines
   const addRep = (item = '', cost = '') => {
@@ -218,6 +239,8 @@
     const f = $('prop'), fd = new FormData(f);
     const body = Object.fromEntries(fd.entries());
     body.issues = fd.getAll('issues');
+    body.landIssues = fd.getAll('landIssues');
+    if (body.propertyType === 'land') { body.issues = []; body.condition = ''; }
     body.customRepairs = [...$('reps').children].map(r => ({ item: r.children[0].value, cost: r.children[1].value })).filter(r => r.item && r.cost);
     body.notify = $('notify').checked;
     for (const k of ['street', 'city', 'state', 'zip']) if (!String(body[k] || '').trim()) { $('err').textContent = 'Enter the full address.'; return; }
@@ -237,7 +260,7 @@
 
   $('editBtn').addEventListener('click', () => { $('results').hidden = true; $('prop').hidden = false; window.scrollTo({ top: 0 }); });
   $('newBtn').addEventListener('click', () => {
-    $('prop').reset(); $('reps').innerHTML = ''; syncTenant();
+    $('prop').reset(); $('reps').innerHTML = ''; syncTenant(); syncType();
     $('results').hidden = true; $('prop').hidden = false; window.scrollTo({ top: 0 }); $('street').focus();
   });
 })();
