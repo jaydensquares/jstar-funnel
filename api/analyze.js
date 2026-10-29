@@ -1,6 +1,6 @@
 // Operator endpoint: PIN-protected. Runs the same deal analysis as the seller form,
 // but takes property details only (no seller contact info) and returns the deal sheet.
-import crypto from 'node:crypto';
+import { pinMatches } from '../lib/pin.js';
 import { analyzeLead } from '../lib/pipeline.js';
 import { dealSheetHtml, smsText, sendEmail, sendPush } from '../lib/notify.js';
 
@@ -14,13 +14,6 @@ const TYPE_LABEL = {
   single_family: 'Single family', townhouse: 'Townhouse', condo: 'Condo',
   multi_family: 'Multi-family (2–4)', manufactured: 'Mobile/manufactured', land: 'Vacant lot / land',
 };
-
-function pinMatches(given) {
-  const want = String(process.env.OPERATOR_PIN || '');
-  const a = crypto.createHash('sha256').update(String(given || '')).digest();
-  const b = crypto.createHash('sha256').update(want).digest();
-  return want.length >= 4 && crypto.timingSafeEqual(a, b);
-}
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
