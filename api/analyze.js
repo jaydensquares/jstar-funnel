@@ -71,5 +71,22 @@ export default async function handler(req, res) {
     r.forEach(x => x.status === 'rejected' && console.error('operator notify', x.reason));
   }
 
-  return res.status(200).json({ ok: true, html: dealSheetHtml(payload), summary: smsText(payload) });
+  return res.status(200).json({ ok: true, html: dealSheetHtml(payload), summary: smsText(payload), brief: brief(payload) });
+}
+
+// Compact numbers for the batch table
+function brief(p) {
+  const asking = num(p.lead.asking);
+  const base = { label: p.score?.label || null, score: p.score?.score ?? null, asking, land: !!p.land };
+  if (p.land) {
+    const d = p.deal;
+    return { ...base, value: d?.value ?? p.valuation?.value ?? null, mao: d?.mao ?? null, opening: d?.opening ?? null,
+      call: d?.call?.text || 'No numbers (thin land comps or no lot size).', confidence: p.valuation?.confidence || null };
+  }
+  const a = p.analysis;
+  const ws = a?.strategies?.find(s => s.key === 'wholesale');
+  return { ...base, value: p.valuation?.arv ?? null, repairs: p.repairs?.total ?? null,
+    mao: ws?.headline?.value ?? null, opening: ws?.headline?.opening ?? null,
+    call: !a ? 'No numbers (check comps/sqft).' : a.outOfBox ? 'Outside buy box.' : !a.recommended ? (a.why || 'Pass.') : a.why,
+    confidence: p.valuation?.confidence || null };
 }

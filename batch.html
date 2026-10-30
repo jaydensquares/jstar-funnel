@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Batch Run | JStar Acquisitions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0c1a33; --bg:#f4f6fa; --card:#fff; --ink:#0f1729; --muted:#5b6578; --line:#e0e5ee; --input:#fff;
+    --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#ebf0fa; --gold:#c6a052; --err:#b42318;
+    --hot:#b42318; --hot-bg:#fdecea; --warm:#9a6200; --warm-bg:#fff4dc; --cold:#3d5a8a; --cold-bg:#eaf0f9;
+    --display:'Archivo','Helvetica Neue',Arial,sans-serif; --body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg:#0d121c; --card:#151c2a; --ink:#eef2f8; --muted:#98a3b5; --line:#273148; --input:#111827;
+    --brand:#4f7fe0; --brand-soft:#1a2640; --err:#ff8a7a;
+    --hot:#ff8a7a; --hot-bg:#3a1a1a; --warm:#f0c060; --warm-bg:#33280f; --cold:#9db8e8; --cold-bg:#1a2640; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; -webkit-font-smoothing:antialiased; }
+  header { background:var(--navy); color:#f2f5fb; padding-block:16px; }
+  .wrap { max-width:980px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+  header .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+  .logo { font-family:var(--display); font-weight:700; text-decoration:none; color:inherit; }
+  .logo span { color:var(--gold); }
+  .nav a { color:#c3cde0; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
+  .nav a.on { color:var(--gold); }
+  main { padding-block:20px 60px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:14px; }
+  h1 { font-family:var(--display); font-size:24px; margin:0 0 4px; letter-spacing:-.02em; }
+  h2 { font-family:var(--display); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 10px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 14px; }
+  label.f { display:block; font-size:13px; font-weight:600; margin:10px 0 6px; }
+  label.f .opt { font-weight:400; color:var(--muted); }
+  input[type=text], input[type=number], input[type=password], select, textarea {
+    width:100%; font:inherit; font-size:16px; padding:11px 12px; border:1px solid var(--line); border-radius:10px; background:var(--input); color:var(--ink); }
+  textarea { min-height:120px; resize:vertical; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
+  .row3 { display:grid; gap:10px; grid-template-columns:2fr 1fr 1fr; }
+  .row3 > * { min-width:0; }
+  .btn { width:100%; border:0; border-radius:10px; padding:15px; background:var(--brand); color:var(--brand-ink); font-family:var(--display); font-weight:700; font-size:16px; cursor:pointer; }
+  .btn:disabled { opacity:.6; cursor:wait; }
+  .btn.ghost { background:transparent; color:var(--brand); border:1px solid var(--line); }
+  .btn.sm { width:auto; padding:10px 14px; font-size:14px; }
+  .link { background:none; border:0; color:var(--brand); font:inherit; font-weight:600; padding:4px 0; cursor:pointer; }
+  .err { color:var(--err); font-size:14px; min-height:18px; margin-top:10px; }
+  .check { display:flex; gap:10px; align-items:center; font-size:14px; margin-top:12px; }
+  .check input { width:18px; height:18px; accent-color:var(--brand); }
+
+  /* Address rows */
+  .prow { display:grid; grid-template-columns:22px 1fr 108px 92px 120px 32px; gap:8px; align-items:center; margin-bottom:8px; }
+  .prow .n { font-size:12px; font-weight:700; color:var(--muted); text-align:right; font-variant-numeric:tabular-nums; }
+  .prow input, .prow select { padding:10px; font-size:15px; }
+  .prow button.x { border:1px solid var(--line); background:var(--input); color:var(--muted); border-radius:10px; height:42px; font-size:18px; cursor:pointer; }
+  .prow input[data-k=acres]:disabled { opacity:.35; }
+  .phead { display:grid; grid-template-columns:22px 1fr 108px 92px 120px 32px; gap:8px; font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+  @media (max-width:700px) {
+    .phead { display:none; }
+    .prow { grid-template-columns:22px 1fr 1fr 32px; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:10px; }
+    .prow [data-k=addr] { grid-column:2 / 4; }
+    .prow button.x { grid-column:4; grid-row:1; }
+    .prow [data-k=type] { grid-column:2; } .prow [data-k=acres] { grid-column:3; } .prow [data-k=asking] { grid-column:2 / 4; }
+  }
+
+  /* Results */
+  .tbl { width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums; }
+  .tbl th { text-align:left; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); padding:8px 10px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  .tbl td { padding:10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .tbl td.num, .tbl th.num { text-align:right; white-space:nowrap; }
+  .tbl tr.res { cursor:pointer; }
+  .tbl tr.res:hover td { background:var(--brand-soft); }
+  .tbl .addr { font-weight:600; }
+  .tbl .call { color:var(--muted); font-size:13px; margin-top:3px; max-width:38ch; }
+  .pill { display:inline-block; font-size:11px; font-weight:800; letter-spacing:.08em; padding:3px 8px; border-radius:999px; }
+  .pill.HOT { color:var(--hot); background:var(--hot-bg); } .pill.WARM { color:var(--warm); background:var(--warm-bg); } .pill.COLD { color:var(--cold); background:var(--cold-bg); }
+  .pill.wait, .pill.ERR { color:var(--muted); background:var(--bg); border:1px solid var(--line); }
+  .pill.ERR { color:var(--err); }
+  .tblwrap { overflow-x:auto; margin:0 -18px; padding:0 18px; }
+  .sheetrow td { padding:0 0 16px; background:transparent !important; }
+  .sheet { overflow-x:auto; border-radius:12px; border:1px solid var(--line); }
+  .sheet > div { padding:0 !important; background:transparent !important; }
+  .bar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:12px; }
+  .prog { font-size:14px; color:var(--muted); }
+  .tbl .inl { display:none; }
+  @media (max-width:700px) { .tbl .hide-sm, .tbl .c-lead { display:none; } .tbl .inl { display:inline-block; margin-bottom:4px; } .tbl td, .tbl th { padding:10px 6px; } }
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a href="/operator.html">Run deal</a><a class="on" href="/batch.html">Batch</a><a href="/list.html">Pull list</a></nav></div></header>
+
+<main class="wrap">
+  <section id="gate" class="card">
+    <h1>Operator access</h1>
+    <p class="sub">Enter your PIN to run a batch.</p>
+    <form id="pinForm" autocomplete="off">
+      <label class="f" for="pin">PIN</label>
+      <input type="password" id="pin" inputmode="numeric" autocomplete="current-password" required>
+      <div class="err" id="pinErr" role="alert"></div>
+      <button class="btn" id="pinBtn" type="submit">Unlock</button>
+    </form>
+  </section>
+
+  <form id="batch" hidden autocomplete="off">
+    <section class="card">
+      <h1>Batch run</h1>
+      <p class="sub">Up to 10 properties at once. Beds, baths, sq ft and year come from public record. Condition defaults to "Needs updating"; use Run deal for exact repairs.</p>
+      <label class="f" for="paste">Paste addresses <span class="opt">(one per line; fills the rows below)</span></label>
+      <textarea id="paste" placeholder="422 Martin St, Houston, TX 77018&#10;865 Wakefield Dr&#10;3002 N Shepherd Dr, Houston, TX 77018"></textarea>
+      <button type="button" class="btn ghost sm" id="fillBtn" style="margin-top:10px">Fill rows</button>
+    </section>
+
+    <section class="card">
+      <h2>Default city / state / ZIP <span style="text-transform:none;letter-spacing:0;font-weight:400">(used when a line is just the street)</span></h2>
+      <div class="row3">
+        <div><input type="text" id="dCity" value="Houston" aria-label="Default city"></div>
+        <div><select id="dState" aria-label="Default state"></select></div>
+        <div><input type="text" id="dZip" inputmode="numeric" maxlength="5" placeholder="ZIP" aria-label="Default ZIP"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Properties</h2>
+      <div class="phead"><span></span><span>Address</span><span>Type</span><span>Acres</span><span>Asking</span><span></span></div>
+      <div id="rows"></div>
+      <button type="button" class="link" id="addRow">+ Add property</button>
+    </section>
+
+    <label class="check"><input type="checkbox" id="notify"> Also send each deal sheet to my email / phone alerts</label>
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn" id="runBtn" type="submit">Run all</button>
+  </form>
+
+  <section id="results" hidden>
+    <div class="card">
+      <div class="bar">
+        <h1 style="margin:0">Results</h1>
+        <span class="prog" id="prog" aria-live="polite"></span>
+      </div>
+      <div class="tblwrap">
+        <table class="tbl">
+          <thead><tr><th class="c-lead">Lead</th><th>Property</th><th class="num">Value</th><th class="num">Open</th><th class="num">Max</th><th class="num hide-sm">Asking</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <p class="sub" style="margin:12px 0 0">Tap a row for the full deal sheet.</p>
+    </div>
+    <div class="bar" style="justify-content:flex-start">
+      <button class="btn ghost sm" id="csvBtn" type="button" disabled>Download CSV</button>
+      <button class="btn ghost sm" id="editBtn" type="button">Edit list</button>
+      <button class="btn sm" id="newBtn" type="button">New batch</button>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const MAX = 10, CONCURRENCY = 3;
+  let pin = '';
+  try { pin = sessionStorage.getItem('opPin') || ''; } catch {}
+
+  'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'
+    .split(' ').forEach(s => $('dState').add(new Option(s, s, s === 'TX', s === 'TX')));
+
+  const post = body => fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, pin }) })
+    .then(async r => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }));
+
+  const lock = msg => { try { sessionStorage.removeItem('opPin'); } catch {} pin = ''; $('batch').hidden = true; $('results').hidden = true; $('gate').hidden = false; $('pinErr').textContent = msg; };
+  const unlock = () => { $('gate').hidden = true; $('batch').hidden = false; if (!$('rows').children.length) addRow(); };
+
+  $('pinForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    pin = $('pin').value.trim(); $('pinErr').textContent = ''; $('pinBtn').disabled = true;
+    const r = await post({ checkOnly: true }).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
+    $('pinBtn').disabled = false;
+    if (!r.ok) { $('pinErr').textContent = r.j.error || 'Wrong PIN.'; return; }
+    try { sessionStorage.setItem('opPin', pin); } catch {}
+    unlock();
+  });
+
+  // ── Rows ──
+  const money = el => el.addEventListener('input', () => { const d = el.value.replace(/\D/g, ''); el.value = d ? '$' + Number(d).toLocaleString() : ''; });
+  const renumber = () => [...$('rows').children].forEach((r, i) => r.querySelector('.n').textContent = i + 1);
+  function addRow(v = {}) {
+    if ($('rows').children.length >= MAX) return null;
+    const r = document.createElement('div'); r.className = 'prow';
+    r.innerHTML = `<span class="n"></span>
+      <input type="text" data-k="addr" placeholder="123 Main St, City, ST 12345" aria-label="Address">
+      <select data-k="type" aria-label="Type"><option value="single_family">House</option><option value="land">Lot / land</option><option value="townhouse">Townhouse</option><option value="multi_family">Multi (2–4)</option><option value="condo">Condo</option><option value="manufactured">Mobile</option></select>
+      <input type="number" data-k="acres" inputmode="decimal" step="0.01" placeholder="Acres" aria-label="Lot acres">
+      <input type="text" data-k="asking" inputmode="numeric" placeholder="Asking $" aria-label="Asking price">
+      <button type="button" class="x" aria-label="Remove">×</button>`;
+    const q = k => r.querySelector(`[data-k=${k}]`);
+    q('addr').value = v.addr || ''; q('type').value = v.type || 'single_family'; q('acres').value = v.acres || ''; q('asking').value = v.asking || '';
+    const sync = () => { q('acres').disabled = q('type').value !== 'land'; };
+    q('type').addEventListener('change', sync); sync();
+    money(q('asking'));
+    r.querySelector('.x').addEventListener('click', () => { r.remove(); if (!$('rows').children.length) addRow(); renumber(); syncAdd(); });
+    $('rows').appendChild(r); renumber(); syncAdd();
+    return q('addr');
+  }
+  const syncAdd = () => { $('addRow').hidden = $('rows').children.length >= MAX; };
+  $('addRow').addEventListener('click', () => addRow()?.focus());
+
+  // Paste: "addr" or "addr | lot | 0.46 | 625000" (pipes or tabs optional)
+  $('fillBtn').addEventListener('click', () => {
+    const lines = $('paste').value.split('\n').map(s => s.trim()).filter(Boolean);
+    if (!lines.length) return;
+    const extra = lines.length - MAX;
+    $('rows').innerHTML = '';
+    lines.slice(0, MAX).forEach(line => {
+      const parts = line.split(/\s*[|\t]\s*/);
+      const v = { addr: parts[0] };
+      for (const p of parts.slice(1)) {
+        if (/^(lot|land)$/i.test(p)) v.type = 'land';
+        else if (/^\d*\.\d+$|^\d+(\.\d+)?\s*ac/i.test(p)) { v.type = 'land'; v.acres = parseFloat(p); }
+        else if (/\d{4,}/.test(p.replace(/[$,]/g, ''))) v.asking = '$' + Number(p.replace(/\D/g, '')).toLocaleString();
+      }
+      addRow(v);
+    });
+    $('err').textContent = extra > 0 ? `Only the first ${MAX} were added (${extra} skipped).` : '';
+  });
+
+  const parseAddr = (s, d) => {
+    const m = s.match(/^(.+?),\s*([^,]+?),\s*([A-Za-z]{2})\s*,?\s*(\d{5})(?:-\d{4})?\s*$/);
+    if (m) return { street: m[1].trim(), city: m[2].trim(), state: m[3].toUpperCase(), zip: m[4] };
+    const z = s.match(/^(.+?),\s*([A-Za-z]{2})?\s*(\d{5})\s*$/);            // "street, TX 77018" or "street, 77018"
+    if (z) return { street: z[1].trim(), city: d.city, state: (z[2] || d.state).toUpperCase(), zip: z[3] };
+    const c = s.match(/^(.+?),\s*([^,]+)$/);                                   // "street, city"
+    if (c && !/\d/.test(c[2])) return { street: c[1].trim(), city: c[2].trim(), state: d.state, zip: d.zip };
+    return { street: s.replace(/,\s*$/, '').trim(), city: d.city, state: d.state, zip: d.zip };
+  };
+
+  // ── Run ──
+  const $k = n => n == null ? '—' : '$' + (n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : Math.round(n / 1000) + 'k');
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let jobs = [];
+
+  $('batch').addEventListener('submit', async e => {
+    e.preventDefault();
+    const d = { city: $('dCity').value.trim(), state: $('dState').value, zip: $('dZip').value.trim() };
+    const rows = [...$('rows').children].map(r => {
+      const q = k => r.querySelector(`[data-k=${k}]`).value.trim();
+      return { raw: q('addr'), type: q('type'), acres: q('acres'), asking: q('asking') };
+    }).filter(r => r.raw);
+    if (!rows.length) { $('err').textContent = 'Add at least one address.'; return; }
+    const bad = [];
+    jobs = rows.map((r, i) => {
+      const a = parseAddr(r.raw, d);
+      if (!a.city || !a.state || !/^\d{5}$/.test(a.zip || '')) bad.push(i + 1);
+      return { ...a, raw: r.raw, propertyType: r.type, lotAcres: r.type === 'land' ? r.acres : '', asking: r.asking, status: 'wait' };
+    });
+    if (bad.length) { $('err').textContent = `Row ${bad.join(', ')}: need city, state and 5-digit ZIP (type them in the line or set the defaults).`; return; }
+    $('err').textContent = '';
+
+    $('batch').hidden = true; $('results').hidden = false; $('csvBtn').disabled = true;
+    $('runBtn').disabled = true; $('newBtn').disabled = true; $('editBtn').disabled = true;
+    render(); window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    const notify = $('notify').checked;
+    let next = 0, expired = false;
+    const worker = async () => {
+      while (next < jobs.length && !expired) {
+        const j = jobs[next++]; j.status = 'run'; render();
+        const body = { street: j.street, city: j.city, state: j.state, zip: j.zip, propertyType: j.propertyType,
+          lotAcres: j.lotAcres, asking: j.asking, condition: j.propertyType === 'land' ? '' : 'moderate', notify };
+        let r = await post(body).catch(() => null);
+        if (r && r.status >= 500 && r.status !== 503) r = await post(body).catch(() => null); // one retry for timeouts
+        if (r?.status === 401) { expired = true; break; }
+        if (!r || !r.ok) { j.status = 'err'; j.error = r?.j?.error || 'Network error.'; }
+        else { j.status = 'done'; j.brief = r.j.brief || {}; j.html = r.j.html; j.summary = r.j.summary; }
+        render();
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, jobs.length) }, worker));
+    $('runBtn').disabled = false; $('newBtn').disabled = false; $('editBtn').disabled = false;
+    if (expired) return lock('PIN expired or changed. Enter it again.');
+    $('csvBtn').disabled = !jobs.some(j => j.status === 'done');
+    sortDone(); render();
+  });
+
+  const rank = j => j.status !== 'done' ? -1 : ({ HOT: 3, WARM: 2, COLD: 1 }[j.brief.label] || 0) * 1e9 + (j.brief.mao || 0) / 1e3;
+  const sortDone = () => jobs.sort((a, b) => rank(b) - rank(a));
+  let open = new Set();
+
+  function render() {
+    const done = jobs.filter(j => j.status === 'done' || j.status === 'err').length;
+    $('prog').textContent = done < jobs.length ? `Running ${done} / ${jobs.length}…` : `${jobs.filter(j => j.status === 'done').length} done${jobs.some(j => j.status === 'err') ? `, ${jobs.filter(j => j.status === 'err').length} failed` : ''}`;
+    $('tbody').innerHTML = jobs.map((j, i) => {
+      const b = j.brief || {};
+      const pill = j.status === 'done' ? `<span class="pill ${esc(b.label)}">${esc(b.label || '—')}</span>`
+        : j.status === 'err' ? '<span class="pill ERR">ERROR</span>'
+        : `<span class="pill wait">${j.status === 'run' ? 'RUNNING' : 'QUEUED'}</span>`;
+      const kind = j.propertyType === 'land' ? `Lot${j.lotAcres ? ' · ' + j.lotAcres + ' ac' : ''}` : 'House';
+      const sub = j.status === 'err' ? esc(j.error) : j.status === 'done' ? esc((b.call || '').split('. ')[0]) + (b.confidence === 'low' ? ' · <b>low confidence</b>' : '') : '';
+      const row = `<tr class="res" data-i="${i}" ${j.status === 'done' ? 'tabindex="0" aria-expanded="' + open.has(j) + '"' : ''}>
+        <td class="c-lead">${pill}</td>
+        <td>${pill.replace('class="pill', 'class="inl pill')}<div class="addr">${esc(j.street)}</div><div class="call">${kind} · ${esc(j.city)}, ${esc(j.state)} ${esc(j.zip)}${sub ? '<br>' + sub : ''}</div></td>
+        <td class="num">${j.status === 'done' ? $k(b.value) : ''}</td>
+        <td class="num">${j.status === 'done' ? $k(b.opening) : ''}</td>
+        <td class="num"><b>${j.status === 'done' ? $k(b.mao) : ''}</b></td>
+        <td class="num hide-sm">${j.asking ? esc(j.asking) : '—'}</td></tr>`;
+      return row + (open.has(j) && j.html ? `<tr class="sheetrow"><td colspan="6"><div class="sheet">${j.html}</div></td></tr>` : '');
+    }).join('');
+  }
+  const toggle = tr => { const j = jobs[+tr.dataset.i]; if (!j || j.status !== 'done') return; open.has(j) ? open.delete(j) : open.add(j); render(); };
+  $('tbody').addEventListener('click', e => { if (e.target.closest('.sheet')) return; const tr = e.target.closest('tr.res'); if (tr) toggle(tr); });
+  $('tbody').addEventListener('keydown', e => { const tr = e.target.closest('tr.res'); if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); toggle(tr); } });
+
+  $('csvBtn').addEventListener('click', () => {
+    const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const head = ['Lead', 'Score', 'Address', 'City', 'State', 'ZIP', 'Type', 'Acres', 'Value', 'Repairs', 'Opening offer', 'Max offer (MAO)', 'Asking', 'Call', 'Confidence', 'Error'];
+    const lines = jobs.map(j => { const b = j.brief || {}; return [b.label, b.score, j.street, j.city, j.state, j.zip, j.propertyType === 'land' ? 'Lot' : 'House', j.lotAcres,
+      b.value, b.repairs, b.opening, b.mao, (j.asking || '').replace(/\D/g, ''), b.call, b.confidence, j.error].map(q).join(','); });
+    const blob = new Blob([[head.map(q).join(','), ...lines].join('\n')], { type: 'text/csv' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `jstar-batch-${new Date().toISOString().slice(0, 10)}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+
+  $('editBtn').addEventListener('click', () => { $('results').hidden = true; $('batch').hidden = false; window.scrollTo({ top: 0 }); });
+  $('newBtn').addEventListener('click', () => {
+    $('rows').innerHTML = ''; $('paste').value = ''; addRow(); jobs = []; open = new Set();
+    $('results').hidden = true; $('batch').hidden = false; window.scrollTo({ top: 0 });
+  });
+
+  if (pin) unlock();
+})();
+</script>
+</body>
+</html>
