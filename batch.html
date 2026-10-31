@@ -51,18 +51,18 @@
   .check input { width:18px; height:18px; accent-color:var(--brand); }
 
   /* Address rows */
-  .prow { display:grid; grid-template-columns:22px 1fr 108px 92px 120px 32px; gap:8px; align-items:center; margin-bottom:8px; }
+  .prow { display:grid; grid-template-columns:22px 1fr 108px 132px 84px 112px 32px; gap:8px; align-items:center; margin-bottom:8px; }
   .prow .n { font-size:12px; font-weight:700; color:var(--muted); text-align:right; font-variant-numeric:tabular-nums; }
   .prow input, .prow select { padding:10px; font-size:15px; }
   .prow button.x { border:1px solid var(--line); background:var(--input); color:var(--muted); border-radius:10px; height:42px; font-size:18px; cursor:pointer; }
-  .prow input[data-k=acres]:disabled { opacity:.35; }
-  .phead { display:grid; grid-template-columns:22px 1fr 108px 92px 120px 32px; gap:8px; font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
+  .prow input[data-k=acres]:disabled, .prow select[data-k=cond]:disabled { opacity:.35; }
+  .phead { display:grid; grid-template-columns:22px 1fr 108px 132px 84px 112px 32px; gap:8px; font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; }
   @media (max-width:700px) {
     .phead { display:none; }
     .prow { grid-template-columns:22px 1fr 1fr 32px; padding-bottom:10px; border-bottom:1px solid var(--line); margin-bottom:10px; }
     .prow [data-k=addr] { grid-column:2 / 4; }
     .prow button.x { grid-column:4; grid-row:1; }
-    .prow [data-k=type] { grid-column:2; } .prow [data-k=acres] { grid-column:3; } .prow [data-k=asking] { grid-column:2 / 4; }
+    .prow [data-k=type] { grid-column:2; } .prow [data-k=cond] { grid-column:3; } .prow [data-k=acres] { grid-column:2; } .prow [data-k=asking] { grid-column:3; }
   }
 
   /* Results */
@@ -106,7 +106,7 @@
   <form id="batch" hidden autocomplete="off">
     <section class="card">
       <h1>Batch run</h1>
-      <p class="sub">Up to 10 properties at once. Beds, baths, sq ft and year come from public record. Condition defaults to "Needs updating"; use Run deal for exact repairs.</p>
+      <p class="sub">Up to 10 properties at once. Beds, baths, sq ft and year come from public record. Pick a condition for each house (sets the repair estimate); use Run deal for exact repairs.</p>
       <label class="f" for="paste">Paste addresses <span class="opt">(one per line; fills the rows below)</span></label>
       <textarea id="paste" placeholder="422 Martin St, Houston, TX 77018&#10;865 Wakefield Dr&#10;3002 N Shepherd Dr, Houston, TX 77018"></textarea>
       <button type="button" class="btn ghost sm" id="fillBtn" style="margin-top:10px">Fill rows</button>
@@ -123,7 +123,7 @@
 
     <section class="card">
       <h2>Properties</h2>
-      <div class="phead"><span></span><span>Address</span><span>Type</span><span>Acres</span><span>Asking</span><span></span></div>
+      <div class="phead"><span></span><span>Address</span><span>Type</span><span>Condition</span><span>Acres</span><span>Asking</span><span></span></div>
       <div id="rows"></div>
       <button type="button" class="link" id="addRow">+ Add property</button>
     </section>
@@ -190,12 +190,13 @@
     r.innerHTML = `<span class="n"></span>
       <input type="text" data-k="addr" placeholder="123 Main St, City, ST 12345" aria-label="Address">
       <select data-k="type" aria-label="Type"><option value="single_family">House</option><option value="land">Lot / land</option><option value="townhouse">Townhouse</option><option value="multi_family">Multi (2–4)</option><option value="condo">Condo</option><option value="manufactured">Mobile</option></select>
+      <select data-k="cond" aria-label="Condition"><option value="turnkey">Move-in ready</option><option value="cosmetic">Cosmetic</option><option value="moderate">Needs updating</option><option value="heavy">Major repairs</option><option value="gut">Full gut</option></select>
       <input type="number" data-k="acres" inputmode="decimal" step="0.01" placeholder="Acres" aria-label="Lot acres">
       <input type="text" data-k="asking" inputmode="numeric" placeholder="Asking $" aria-label="Asking price">
       <button type="button" class="x" aria-label="Remove">×</button>`;
     const q = k => r.querySelector(`[data-k=${k}]`);
-    q('addr').value = v.addr || ''; q('type').value = v.type || 'single_family'; q('acres').value = v.acres || ''; q('asking').value = v.asking || '';
-    const sync = () => { q('acres').disabled = q('type').value !== 'land'; };
+    q('addr').value = v.addr || ''; q('type').value = v.type || 'single_family'; q('acres').value = v.acres || ''; q('asking').value = v.asking || ''; q('cond').value = v.cond || 'moderate';
+    const sync = () => { const land = q('type').value === 'land'; q('acres').disabled = !land; q('cond').disabled = land; };
     q('type').addEventListener('change', sync); sync();
     money(q('asking'));
     r.querySelector('.x').addEventListener('click', () => { r.remove(); if (!$('rows').children.length) addRow(); renumber(); syncAdd(); });
@@ -215,7 +216,9 @@
       const parts = line.split(/\s*[|\t]\s*/);
       const v = { addr: parts[0] };
       for (const p of parts.slice(1)) {
-        if (/^(lot|land)$/i.test(p)) v.type = 'land';
+        const cond = { turnkey: 'turnkey', 'move-in': 'turnkey', ready: 'turnkey', cosmetic: 'cosmetic', updates: 'moderate', updating: 'moderate', moderate: 'moderate', major: 'heavy', heavy: 'heavy', gut: 'gut', teardown: 'gut' }[p.toLowerCase().split(/\s+/)[0]];
+        if (cond) v.cond = cond;
+        else if (/^(lot|land)$/i.test(p)) v.type = 'land';
         else if (/^\d*\.\d+$|^\d+(\.\d+)?\s*ac/i.test(p)) { v.type = 'land'; v.acres = parseFloat(p); }
         else if (/\d{4,}/.test(p.replace(/[$,]/g, ''))) v.asking = '$' + Number(p.replace(/\D/g, '')).toLocaleString();
       }
@@ -244,14 +247,14 @@
     const d = { city: $('dCity').value.trim(), state: $('dState').value, zip: $('dZip').value.trim() };
     const rows = [...$('rows').children].map(r => {
       const q = k => r.querySelector(`[data-k=${k}]`).value.trim();
-      return { raw: q('addr'), type: q('type'), acres: q('acres'), asking: q('asking') };
+      return { raw: q('addr'), type: q('type'), cond: q('cond'), acres: q('acres'), asking: q('asking') };
     }).filter(r => r.raw);
     if (!rows.length) { $('err').textContent = 'Add at least one address.'; return; }
     const bad = [];
     jobs = rows.map((r, i) => {
       const a = parseAddr(r.raw, d);
       if (!a.city || !a.state || !/^\d{5}$/.test(a.zip || '')) bad.push(i + 1);
-      return { ...a, raw: r.raw, propertyType: r.type, lotAcres: r.type === 'land' ? r.acres : '', asking: r.asking, status: 'wait' };
+      return { ...a, raw: r.raw, propertyType: r.type, lotAcres: r.type === 'land' ? r.acres : '', condition: r.type === 'land' ? '' : (r.cond || 'moderate'), asking: r.asking, status: 'wait' };
     });
     if (bad.length) { $('err').textContent = `Row ${bad.join(', ')}: need city, state and 5-digit ZIP (type them in the line or set the defaults).`; return; }
     $('err').textContent = '';
@@ -266,7 +269,7 @@
       while (next < jobs.length && !expired) {
         const j = jobs[next++]; j.status = 'run'; render();
         const body = { street: j.street, city: j.city, state: j.state, zip: j.zip, propertyType: j.propertyType,
-          lotAcres: j.lotAcres, asking: j.asking, condition: j.propertyType === 'land' ? '' : 'moderate', notify };
+          lotAcres: j.lotAcres, asking: j.asking, condition: j.condition, notify };
         let r = await post(body).catch(() => null);
         if (r && r.status >= 500 && r.status !== 503) r = await post(body).catch(() => null); // one retry for timeouts
         if (r?.status === 401) { expired = true; break; }
@@ -294,7 +297,7 @@
       const pill = j.status === 'done' ? `<span class="pill ${esc(b.label)}">${esc(b.label || '—')}</span>`
         : j.status === 'err' ? '<span class="pill ERR">ERROR</span>'
         : `<span class="pill wait">${j.status === 'run' ? 'RUNNING' : 'QUEUED'}</span>`;
-      const kind = j.propertyType === 'land' ? `Lot${j.lotAcres ? ' · ' + j.lotAcres + ' ac' : ''}` : 'House';
+      const kind = j.propertyType === 'land' ? `Lot${j.lotAcres ? ' · ' + j.lotAcres + ' ac' : ''}` : `House · ${({ turnkey: 'Move-in ready', cosmetic: 'Cosmetic', moderate: 'Needs updating', heavy: 'Major repairs', gut: 'Full gut' })[j.condition] || 'Needs updating'}`;
       const sub = j.status === 'err' ? esc(j.error) : j.status === 'done' ? esc((b.call || '').split('. ')[0]) + (b.confidence === 'low' ? ' · <b>low confidence</b>' : '') : '';
       const row = `<tr class="res" data-i="${i}" ${j.status === 'done' ? 'tabindex="0" aria-expanded="' + open.has(j) + '"' : ''}>
         <td class="c-lead">${pill}</td>
@@ -312,8 +315,8 @@
 
   $('csvBtn').addEventListener('click', () => {
     const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
-    const head = ['Lead', 'Score', 'Address', 'City', 'State', 'ZIP', 'Type', 'Acres', 'Value', 'Repairs', 'Opening offer', 'Max offer (MAO)', 'Asking', 'Call', 'Confidence', 'Error'];
-    const lines = jobs.map(j => { const b = j.brief || {}; return [b.label, b.score, j.street, j.city, j.state, j.zip, j.propertyType === 'land' ? 'Lot' : 'House', j.lotAcres,
+    const head = ['Lead', 'Score', 'Address', 'City', 'State', 'ZIP', 'Type', 'Condition', 'Acres', 'Value', 'Repairs', 'Opening offer', 'Max offer (MAO)', 'Asking', 'Call', 'Confidence', 'Error'];
+    const lines = jobs.map(j => { const b = j.brief || {}; return [b.label, b.score, j.street, j.city, j.state, j.zip, j.propertyType === 'land' ? 'Lot' : 'House', j.condition || '', j.lotAcres,
       b.value, b.repairs, b.opening, b.mao, (j.asking || '').replace(/\D/g, ''), b.call, b.confidence, j.error].map(q).join(','); });
     const blob = new Blob([[head.map(q).join(','), ...lines].join('\n')], { type: 'text/csv' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
