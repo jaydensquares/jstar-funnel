@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Photos | JStar Acquisitions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0c1a33; --bg:#f4f6fa; --card:#fff; --ink:#0f1729; --muted:#5b6578; --line:#e0e5ee; --input:#fff;
+    --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#ebf0fa; --gold:#c6a052; --err:#b42318;
+    --display:'Archivo','Helvetica Neue',Arial,sans-serif; --body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg:#0d121c; --card:#151c2a; --ink:#eef2f8; --muted:#98a3b5; --line:#273148; --input:#111827;
+    --brand:#4f7fe0; --brand-soft:#1a2640; --err:#ff8a7a; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; -webkit-font-smoothing:antialiased; }
+  header { background:var(--navy); color:#f2f5fb; padding-block:16px; }
+  .wrap { max-width:760px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+  header .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .logo { font-family:var(--display); font-weight:700; text-decoration:none; color:inherit; }
+  .logo span { color:var(--gold); }
+  .tag { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); }
+  main { padding-block:20px 60px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:14px; }
+  h1 { font-family:var(--display); font-size:24px; margin:0 0 4px; letter-spacing:-.02em; }
+  h2 { font-family:var(--display); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 10px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 14px; }
+  label.f { display:block; font-size:13px; font-weight:600; margin:10px 0 6px; }
+  label.f .opt { font-weight:400; color:var(--muted); }
+  input[type=text], input[type=number], input[type=password], input[type=tel], select, textarea {
+    width:100%; font:inherit; font-size:16px; padding:11px 12px; border:1px solid var(--line); border-radius:10px; background:var(--input); color:var(--ink); }
+  textarea { min-height:70px; resize:vertical; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
+  .row { display:grid; gap:10px; grid-template-columns:1fr 1fr; }
+  .row3 { display:grid; gap:10px; grid-template-columns:1fr 1fr 1fr; }
+  .row > *, .row3 > * { min-width:0; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { position:relative; }
+  .chip input { position:absolute; opacity:0; pointer-events:none; }
+  .chip span { display:inline-block; padding:9px 12px; border:1px solid var(--line); border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; background:var(--input); }
+  .chip input:checked + span { border-color:var(--brand); background:var(--brand-soft); color:var(--brand); }
+  .chip input:focus-visible + span { box-shadow:0 0 0 3px var(--brand-soft); }
+  .rep { display:grid; grid-template-columns:1fr 120px 36px; gap:8px; margin-bottom:8px; }
+  .rep button { border:1px solid var(--line); background:var(--input); color:var(--muted); border-radius:10px; font-size:18px; cursor:pointer; }
+  .link { background:none; border:0; color:var(--brand); font:inherit; font-weight:600; padding:4px 0; cursor:pointer; }
+  .btn { width:100%; border:0; border-radius:10px; padding:15px; background:var(--brand); color:var(--brand-ink); font-family:var(--display); font-weight:700; font-size:16px; cursor:pointer; }
+  .btn:disabled { opacity:.6; cursor:wait; }
+  .btn.ghost { background:transparent; color:var(--brand); border:1px solid var(--line); }
+  .err { color:var(--err); font-size:14px; min-height:18px; margin-top:10px; }
+  .check { display:flex; gap:10px; align-items:center; font-size:14px; margin-top:12px; }
+  .check input { width:18px; height:18px; accent-color:var(--brand); }
+  .summary { white-space:pre-wrap; font-size:14px; line-height:1.5; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:14px; font-variant-numeric:tabular-nums; }
+  .sheet { overflow-x:auto; border-radius:12px; }
+  .sheet > div { padding:0 !important; background:transparent !important; }
+  .tenant { border:1px dashed var(--line); border-radius:10px; padding:4px 12px 12px; margin-top:10px; }
+  @media (max-width:380px) { .row3 { grid-template-columns:1fr 1fr; } }
+  .nav a { color:#c3cde0; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
+  .nav a.on { color:var(--gold); }
+  .stat { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+  .stat div { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  .stat b { display:block; font-family:var(--display); font-size:22px; }
+  .stat span { font-size:12px; color:var(--muted); }
+  .note { font-size:13px; color:var(--muted); line-height:1.5; }
+  .drop { display:block; border:2px dashed var(--line); border-radius:12px; padding:22px; text-align:center; color:var(--muted); font-weight:600; cursor:pointer; }
+  .drop:hover { border-color:var(--brand); color:var(--brand); }
+  .drop input { display:none; }
+  .thumbs { display:grid; grid-template-columns:repeat(auto-fill, minmax(92px, 1fr)); gap:8px; margin-top:12px; }
+  .thumb { position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; border:1px solid var(--line); background:var(--bg); }
+  .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .thumb b { position:absolute; left:6px; top:6px; background:rgba(12,26,51,.8); color:#fff; font-size:11px; padding:2px 6px; border-radius:6px; }
+  .thumb button { position:absolute; right:4px; top:4px; width:26px; height:26px; border-radius:50%; border:0; background:rgba(12,26,51,.8); color:#fff; font-size:15px; cursor:pointer; line-height:1; }
+  .pill { display:inline-block; font-size:12px; font-weight:800; letter-spacing:.06em; padding:4px 10px; border-radius:999px; background:var(--brand-soft); color:var(--brand); text-transform:uppercase; }
+  .big { font-family:var(--display); font-size:28px; letter-spacing:-.02em; margin:6px 0 2px; }
+  .rtbl { width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums; }
+  .rtbl td { padding:10px 4px; border-bottom:1px solid var(--line); vertical-align:top; }
+  .rtbl td.num { text-align:right; white-space:nowrap; font-weight:700; }
+  .rtbl .why { color:var(--muted); font-size:13px; margin-top:3px; line-height:1.4; }
+  .rtbl tr.tot td { border-bottom:0; font-weight:800; }
+  ul.l { margin:0; padding-left:18px; line-height:1.55; font-size:14.5px; }
+  ul.l li { margin-bottom:4px; }
+  .flag { border-left:3px solid var(--err); }
+  .rowb { display:grid; gap:10px; grid-template-columns:1fr 1fr; margin-top:6px; }
+  .nav { display:flex; flex-wrap:nowrap; } .nav a { white-space:nowrap; }
+  @media (max-width:430px) { .nav a { margin-left:10px; font-size:13px; } .logo { font-size:14px; line-height:1.15; } }
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a class="on" href="/photos.html">Photos</a><a href="/list.html">Pull list</a></nav></div></header>
+
+<main class="wrap">
+  <section id="gate" class="card">
+    <h1>Operator access</h1>
+    <p class="sub">Enter your PIN to analyze photos.</p>
+    <form id="pinForm" autocomplete="off">
+      <label class="f" for="pin">PIN</label>
+      <input type="password" id="pin" inputmode="numeric" autocomplete="current-password" required>
+      <div class="err" id="pinErr" role="alert"></div>
+      <button class="btn" id="pinBtn" type="submit">Unlock</button>
+    </form>
+  </section>
+
+  <form id="form" hidden autocomplete="off">
+    <section class="card">
+      <h1>Photo analysis</h1>
+      <p class="sub">Upload listing or walkthrough photos. AI grades the condition and estimates repairs line by line.</p>
+      <label class="drop" id="dropLbl">＋ Add photos <span style="font-weight:400">(up to 12)</span><input type="file" id="files" accept="image/*" multiple></label>
+      <div class="thumbs" id="thumbs"></div>
+    </section>
+
+    <section class="card">
+      <h2>Details <span style="text-transform:none;letter-spacing:0;font-weight:400">(optional, makes the estimate sharper)</span></h2>
+      <label class="f" for="address">Address</label>
+      <input type="text" id="address" placeholder="123 Main St, Houston, TX 77018">
+      <div class="row3">
+        <div><label class="f" for="state">State</label><select id="state"></select></div>
+        <div><label class="f" for="sqft">Sq ft</label><input type="number" id="sqft" inputmode="numeric"></div>
+        <div><label class="f" for="yearBuilt">Year built</label><input type="number" id="yearBuilt" inputmode="numeric"></div>
+      </div>
+      <label class="f" for="notes">Notes</label>
+      <textarea id="notes" placeholder="e.g. Seller says roof is 3 years old, AC went out last summer"></textarea>
+    </section>
+
+    <div class="err" id="err" role="alert"></div>
+    <button class="btn" id="runBtn" type="submit">Analyze photos</button>
+  </form>
+
+  <section id="results" hidden>
+    <section class="card">
+      <span class="pill" id="rCond"></span>
+      <div class="big" id="rTotal"></div>
+      <div class="note" id="rConf"></div>
+      <p style="margin:12px 0 0;line-height:1.55" id="rSummary"></p>
+      <p class="note" style="margin-top:8px" id="rReason"></p>
+    </section>
+    <section class="card"><h2>Repair estimate</h2><table class="rtbl" id="rRepairs"></table></section>
+    <section class="card flag" id="flagCard"><h2>Red flags</h2><ul class="l" id="rFlags"></ul></section>
+    <section class="card"><h2>Can't tell from photos</h2><ul class="l" id="rHidden"></ul></section>
+    <section class="card"><h2>Ask / check on the walkthrough</h2><ul class="l" id="rQs"></ul></section>
+    <button class="btn" id="useBtn" type="button">Run deal with these repairs</button>
+    <div class="rowb">
+      <button class="btn ghost" id="copyBtn" type="button">Copy report</button>
+      <button class="btn ghost" id="againBtn" type="button">New photos</button>
+    </div>
+    <p class="note" style="margin-top:12px">AI estimate from photos only. Verify with a walkthrough and contractor bids before you lock in an offer.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const MAX = 12, BUDGET = 3.6e6; // keep the upload under Vercel's 4.5 MB limit
+  let pin = '';
+  try { pin = sessionStorage.getItem('opPin') || ''; } catch {}
+  'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'
+    .split(' ').forEach(s => $('state').add(new Option(s, s, s === 'TX', s === 'TX')));
+  const unlock = () => { $('gate').hidden = true; $('form').hidden = false; };
+  const lock = msg => { try { sessionStorage.removeItem('opPin'); } catch {} $('form').hidden = true; $('results').hidden = true; $('gate').hidden = false; $('pinErr').textContent = msg; };
+
+  $('pinForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    pin = $('pin').value.trim(); $('pinErr').textContent = ''; $('pinBtn').disabled = true;
+    const r = await fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, checkOnly: true }) }).catch(() => null);
+    $('pinBtn').disabled = false;
+    if (!r || !r.ok) { $('pinErr').textContent = 'Wrong PIN.'; return; }
+    try { sessionStorage.setItem('opPin', pin); } catch {}
+    unlock();
+  });
+  if (pin) unlock();
+
+  // ── Photos: shrink on the phone before upload ──
+  let photos = []; // { url (preview), file }
+  const load = file => new Promise((ok, bad) => { const img = new Image(); img.onload = () => ok(img); img.onerror = bad; img.src = URL.createObjectURL(file); });
+  async function encode(file, maxSide, q) {
+    const img = await load(file);
+    const s = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    URL.revokeObjectURL(img.src);
+    return c.toDataURL('image/jpeg', q);
+  }
+  function renderThumbs() {
+    $('thumbs').innerHTML = '';
+    photos.forEach((p, i) => {
+      const d = document.createElement('div'); d.className = 'thumb';
+      d.innerHTML = `<img alt="Photo ${i + 1}"><b>${i + 1}</b><button type="button" aria-label="Remove photo ${i + 1}">×</button>`;
+      d.querySelector('img').src = p.url;
+      d.querySelector('button').addEventListener('click', () => { URL.revokeObjectURL(p.url); photos.splice(i, 1); renderThumbs(); });
+      $('thumbs').appendChild(d);
+    });
+    $('dropLbl').hidden = photos.length >= MAX;
+  }
+  $('files').addEventListener('change', e => {
+    const room = MAX - photos.length;
+    const add = [...e.target.files].filter(f => f.type.startsWith('image/') || /\.(heic|heif)$/i.test(f.name)).slice(0, room);
+    if (e.target.files.length > room) $('err').textContent = `Only ${MAX} photos max. Extra ones were skipped.`;
+    add.forEach(f => photos.push({ file: f, url: URL.createObjectURL(f) }));
+    e.target.value = ''; renderThumbs();
+  });
+
+  // ── Analyze ──
+  let last = null;
+  $('form').addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!photos.length) { $('err').textContent = 'Add at least one photo.'; return; }
+    $('err').textContent = ''; $('runBtn').disabled = true; $('runBtn').textContent = 'Preparing photos…';
+    let enc;
+    try {
+      for (const [side, q] of [[1280, 0.72], [1024, 0.62], [800, 0.55]]) {
+        enc = [];
+        for (const p of photos) enc.push(await encode(p.file, side, q));
+        if (enc.reduce((s, x) => s + x.length, 0) < BUDGET) break;
+      }
+    } catch { $('runBtn').disabled = false; $('runBtn').textContent = 'Analyze photos'; $('err').textContent = 'Couldn\'t read one of the photos. Try a JPG or PNG.'; return; }
+
+    $('runBtn').textContent = 'AI is looking at the photos…';
+    const body = { pin, photos: enc, address: $('address').value.trim(), state: $('state').value, sqft: $('sqft').value, yearBuilt: $('yearBuilt').value, notes: $('notes').value.trim() };
+    const r = await fetch('/api/photos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(() => null);
+    $('runBtn').disabled = false; $('runBtn').textContent = 'Analyze photos';
+    if (!r) { $('err').textContent = 'Network error. Try again.'; return; }
+    if (r.status === 401) return lock('PIN expired or changed. Enter it again.');
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { $('err').textContent = j.error || (r.status === 413 ? 'Photos too large. Use fewer photos.' : 'Something went wrong.'); return; }
+    last = j; show(j);
+  });
+
+  const COND = { turnkey: 'Move-in ready', cosmetic: 'Cosmetic', moderate: 'Needs updating', heavy: 'Major repairs', gut: 'Full gut' };
+  const $$ = n => '$' + Math.round(n).toLocaleString();
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const mid = x => Math.round((x.low + x.high) / 2 / 100) * 100;
+  const list = (el, arr, empty) => { $(el).innerHTML = arr.length ? arr.map(x => `<li>${esc(x)}</li>`).join('') : `<li style="color:var(--muted)">${empty}</li>`; };
+
+  function show(j) {
+    $('rCond').textContent = COND[j.condition] || j.condition;
+    $('rTotal').textContent = `${$$(j.total.low)} – ${$$(j.total.high)}`;
+    $('rConf').textContent = `Estimated repairs · ${j.confidence} confidence · ${j.photoCount} photo${j.photoCount > 1 ? 's' : ''}`;
+    $('rSummary').textContent = j.summary; $('rReason').textContent = j.condition_reason;
+    $('rRepairs').innerHTML = j.repairs.map(x => `<tr><td><b>${esc(x.item)}</b><div class="why">${esc(x.why)}${x.photos.length ? ` (photo ${x.photos.join(', ')})` : ''}</div></td><td class="num">${$$(x.low)} – ${$$(x.high)}</td></tr>`).join('')
+      + `<tr class="tot"><td>Total</td><td class="num">${$$(j.total.low)} – ${$$(j.total.high)}</td></tr>`;
+    list('rFlags', j.red_flags, 'None spotted'); $('flagCard').hidden = !j.red_flags.length;
+    list('rHidden', j.not_visible, 'Nothing major'); list('rQs', j.walkthrough_questions, '—');
+    $('form').hidden = true; $('results').hidden = false; window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Send to Run deal: condition, issues and repair lines (midpoint of each range)
+  $('useBtn').addEventListener('click', () => {
+    if (!last) return;
+    const prefill = { address: $('address').value.trim(), state: $('state').value, sqft: $('sqft').value, yearBuilt: $('yearBuilt').value,
+      condition: last.condition, issues: last.issues, notes: [$('notes').value.trim(), 'AI photo read: ' + last.summary].filter(Boolean).join('\n'),
+      customRepairs: last.repairs.map(x => ({ item: x.item, cost: mid(x) })) };
+    try { sessionStorage.setItem('opPrefill', JSON.stringify(prefill)); } catch {}
+    location.href = '/operator.html';
+  });
+  $('copyBtn').addEventListener('click', async () => {
+    if (!last) return;
+    const t = [`Condition: ${COND[last.condition]} (${last.confidence} confidence)`, `Repairs: ${$$(last.total.low)} – ${$$(last.total.high)}`, '', last.summary, '',
+      ...last.repairs.map(x => `• ${x.item}: ${$$(x.low)} – ${$$(x.high)}`),
+      ...(last.red_flags.length ? ['', 'Red flags:', ...last.red_flags.map(x => '• ' + x)] : []),
+      '', 'Check on walkthrough:', ...last.walkthrough_questions.map(x => '• ' + x)].join('\n');
+    try { await navigator.clipboard.writeText(t); } catch { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); }
+    $('copyBtn').textContent = 'Copied ✓'; setTimeout(() => $('copyBtn').textContent = 'Copy report', 1500);
+  });
+  $('againBtn').addEventListener('click', () => {
+    photos.forEach(p => URL.revokeObjectURL(p.url)); photos = []; last = null; renderThumbs();
+    $('results').hidden = true; $('form').hidden = false; window.scrollTo({ top: 0 });
+  });
+})();
+</script>
+</body>
+</html>
