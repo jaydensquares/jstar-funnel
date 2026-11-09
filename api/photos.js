@@ -74,7 +74,8 @@ export default async function handler(req, res) {
 Judge condition only from what the photos show. Estimate repairs at investor-grade contractor pricing (not retail, not luxury finishes) for the property's state; if no state is given assume Texas.
 Price each line item for the whole house where relevant (e.g. "Interior paint, whole house", "LVP flooring throughout") using the sqft if given. Include everything a flipper would do to make it sell at full ARV, but do not invent problems you can't see.
 List major systems you can't see (roof, HVAC, electrical panel, foundation, plumbing) under not_visible rather than guessing a cost for them, unless the photos show a problem.
-Be direct and practical. Reference photo numbers.`;
+Be direct and practical. Reference photo numbers.
+Always answer by calling the report tool exactly once. Do not reply with plain text.`;
 
   let r;
   try {
@@ -86,7 +87,7 @@ Be direct and practical. Reference photo numbers.`;
         max_tokens: 4000,
         system,
         tools: [REPORT_TOOL],
-        tool_choice: { type: 'tool', name: 'report' },
+        tool_choice: { type: 'auto' },
         messages: [{ role: 'user', content }],
       }),
     });
