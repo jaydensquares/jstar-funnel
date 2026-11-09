@@ -150,7 +150,7 @@
   <!-- Deal editor -->
   <form id="ed" hidden autocomplete="off">
     <div class="sticky">
-      <button type="button" class="btn ghost" id="backBtn" style="width:auto;padding:11px 14px">←</button>
+      <button type="button" class="btn ghost" id="backBtn" style="width:auto;padding:11px 14px" aria-label="Back to deals">Back</button>
       <select id="status" aria-label="Status"></select>
       <button class="btn" id="saveBtn" type="submit">Save</button>
     </div>
@@ -386,7 +386,7 @@
     const buyerPrice = cp + fee, costs = arv * pct, allIn = buyerPrice + rep + costs, profit = arv - allIn;
     const rule70 = arv * 0.7 - rep, room = rule70 - buyerPrice;
     const pctArv = profit / arv;
-    const verdict = room >= 0 && pctArv >= 0.12 ? ['ok', '✓ Works for a cash buyer'] : room >= -0.03 * arv && pctArv >= 0.08 ? ['warn', '~ Tight: some buyers will pass'] : ['bad', '✗ Buyer price too high for most cash buyers'];
+    const verdict = room >= 0 && pctArv >= 0.12 ? ['ok', 'Works for a cash buyer'] : room >= -0.03 * arv && pctArv >= 0.08 ? ['warn', 'Tight: some buyers will pass'] : ['bad', 'Buyer price is too high for most cash buyers'];
     $('calc').innerHTML = [
       ['Your contract price', $$(cp)], ['+ Your assignment fee', $$(fee)], ['= Buyer pays', $$(buyerPrice)],
       ['+ Repairs', $$(rep)], [`+ Buyer's closing / holding / selling (${Math.round(pct * 100)}%)`, $$(costs)], ['= Buyer all-in', $$(allIn)],
@@ -401,8 +401,8 @@
     if (!s?.at) { $('signedBox').innerHTML = ''; $('signBtn').textContent = 'Sign off on these numbers'; return; }
     const keys = ['arv', 'repairs', 'contractPrice', 'assignmentFee'];
     const changed = keys.filter(k => (s.numbers?.[k] ?? null) !== (n[k] ?? null));
-    $('signedBox').innerHTML = `<div class="signed ${changed.length ? 'warn' : 'ok'}">${changed.length ? '⚠ Numbers changed since you signed off (' + changed.join(', ') + ').' : '✓ Signed off'} ${new Date(s.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</div>`;
-    $('signBtn').textContent = changed.length ? 'Sign off again' : 'Signed off ✓';
+    $('signedBox').innerHTML = `<div class="signed ${changed.length ? 'warn' : 'ok'}">${changed.length ? 'Numbers changed since you signed off (' + changed.join(', ') + ').' : 'Signed off'} ${new Date(s.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</div>`;
+    $('signBtn').textContent = changed.length ? 'Sign off again' : 'Signed off';
   }
   $('signBtn').onclick = async () => {
     const n = numbersNow();
@@ -423,7 +423,7 @@
     const isNew = !cur?.id; fill(r.j.deal);
     const i = deals.findIndex(x => x.id === r.j.deal.id); if (i >= 0) deals[i] = r.j.deal; else deals.unshift(r.j.deal);
     if (isNew) history.replaceState(null, '', '#' + r.j.deal.id);
-    $('saveBtn').textContent = 'Saved ✓'; setTimeout(() => { $('saveBtn').textContent = 'Save'; }, 1400);
+    $('saveBtn').textContent = 'Saved'; setTimeout(() => { $('saveBtn').textContent = 'Save'; }, 1400);
     return true;
   }
   $('ed').addEventListener('submit', e => { e.preventDefault(); save(); });

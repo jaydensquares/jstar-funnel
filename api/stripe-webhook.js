@@ -22,10 +22,10 @@ export function verify(payload, header, secret, toleranceSec = 300) {
   return v1s.some(s => s.length === want.length && crypto.timingSafeEqual(Buffer.from(s), Buffer.from(want)));
 }
 
-async function setDomainPlan(uid, on, extra = {}) {
+async function setPlan(uid, patch, extra = {}) {
   const u = await getUserById(uid);
   if (!u) return;
-  await saveUser({ ...u, ...extra, plan: { ...(u.plan || {}), customDomain: on } });
+  await saveUser({ ...u, ...extra, plan: { ...(u.plan || {}), ...patch } });
 }
 
 export default async function handler(req, res) {
@@ -37,16 +37,25 @@ export default async function handler(req, res) {
   const ev = JSON.parse(payload);
   try {
     const o = ev.data?.object || {};
-    if (ev.type === 'checkout.session.completed' && o.metadata?.feature === 'customDomain') {
+    if (ev.type === 'checkout.session.completed') {
       const uid = o.client_reference_id || o.metadata?.uid;
-      if (o.subscription) await putDoc(`idx/stripe-sub/${o.subscription}`.toLowerCase(), { uid });
-      await setDomainPlan(uid, true, { stripeCustomerId: o.customer, stripeSubId: o.subscription });
+      const feature = o.metadata?.feature, tier = o.metadata?.tier;
+      if (uid && o.subscription) await putDoc(`idx/stripe-sub/${o.subscription}`.toLowerCase(), { uid, feature, tier });
+      if (uid && feature === 'customDomain') await setPlan(uid, { customDomain: true, domainSubId: o.subscription }, { stripeCustomerId: o.customer });
+      if (uid && feature === 'plan' && ['starter', 'pro', 'team'].includes(tier)) await setPlan(uid, { tier }, { stripeCustomerId: o.customer, stripeSubId: o.subscription });
     }
     if (ev.type === 'customer.subscription.updated' || ev.type === 'customer.subscription.deleted') {
-      const uid = o.metadata?.uid || (await getDoc(`idx/stripe-sub/${o.id}`.toLowerCase()))?.uid;
-      if (uid && (o.metadata?.feature === 'customDomain' || !o.metadata?.feature)) {
-        const active = ev.type === 'customer.subscription.updated' && ['active', 'trialing', 'past_due'].includes(o.status);
-        await setDomainPlan(uid, active);
+      const ix = await getDoc(`idx/stripe-sub/${o.id}`.toLowerCase());
+      const uid = o.metadata?.uid || ix?.uid;
+      const feature = o.metadata?.feature || ix?.feature;
+      const active = ev.type === 'customer.subscription.updated' && ['active', 'trialing', 'past_due'].includes(o.status);
+      // Plan changes made in the billing portal swap the price; read the tier from the current price
+      const priceToTier = Object.fromEntries(['starter', 'pro', 'team'].map(k => [process.env['STRIPE_PRICE_' + k.toUpperCase()], k]).filter(([p]) => p));
+      const tierNow = priceToTier[o.items?.data?.[0]?.price?.id] || o.metadata?.tier || ix?.tier;
+      if (uid && feature === 'customDomain') await setPlan(uid, { customDomain: active });
+      if (uid && feature === 'plan') {
+        const u = await getUserById(uid);
+        if (u && (!u.stripeSubId || u.stripeSubId === o.id)) await setPlan(uid, { tier: active ? tierNow : 'trial' }, { stripeSubId: active ? o.id : null });
       }
     }
   } catch (e) { console.error('stripe webhook', e); return res.status(500).end(); }

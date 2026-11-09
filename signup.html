@@ -80,11 +80,13 @@
   .pfx { display:flex; align-items:center; border:1px solid var(--line); border-radius:10px; background:var(--input); overflow:hidden; }
   .pfx span { padding:0 0 0 12px; color:var(--muted); font-size:14px; white-space:nowrap; }
   .pfx input { border:0 !important; box-shadow:none !important; padding-left:2px; }
-  .perks { margin:18px 0 0; padding-left:18px; color:var(--muted); font-size:14px; line-height:1.7; }
+  .planpick { border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:6px; display:flex; justify-content:space-between; gap:10px; align-items:center; font-size:14.5px; }
+  .planpick b { font-family:var(--display); font-size:16px; }
+  .planpick a { color:var(--brand); font-weight:600; text-decoration:none; font-size:14px; }
 </style>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="/login">Deal <span>Desk</span></a></div></header>
+<header><div class="wrap"><a class="logo" href="/software">Deal <span>Desk</span></a><nav class="nav"><a href="/software#pricing">Pricing</a></nav></div></header>
 <main class="wrap authwrap">
   <section class="card">
     <div class="tabs" role="tablist">
@@ -102,6 +104,7 @@
     </form>
 
     <form id="signup" hidden autocomplete="on">
+      <div class="planpick" id="planPick" hidden></div>
       <div class="row">
         <div><label class="f" for="sName">Your name</label><input type="text" id="sName" autocomplete="name" required></div>
         <div><label class="f" for="sPhone">Business phone</label><input type="tel" id="sPhone" autocomplete="tel" inputmode="tel" required></div>
@@ -119,11 +122,7 @@
       <div class="hint">At least 8 characters.</div>
       <div class="err" id="sErr" role="alert"></div>
       <button class="btn" id="sBtn" type="submit">Create account</button>
-      <ul class="perks">
-        <li>Your own seller lead funnel, live in a minute</li>
-        <li>Every lead auto-analyzed with comps and an offer</li>
-        <li>Deals, underwriting and contracts in one place</li>
-      </ul>
+      <p class="hint" style="margin-top:12px">By creating an account you agree to use the contracts and data responsibly and to follow the real estate and telemarketing laws in your state.</p>
     </form>
   </section>
 </main>
@@ -140,7 +139,10 @@
   $('tLogin').onclick = () => { history.replaceState(null, '', '#login'); mode('login'); };
   $('tSignup').onclick = () => { history.replaceState(null, '', '#signup'); mode('signup'); };
   $('pfx').textContent = location.host + '/f/';
-  mode(location.hash === '#signup' || location.pathname.includes('signup') ? 'signup' : 'login');
+  const PLANS = { starter: ['Starter', 49], pro: ['Pro', 99], team: ['Team', 199] };
+  const plan = PLANS[new URLSearchParams(location.search).get('plan')] ? new URLSearchParams(location.search).get('plan') : '';
+  if (plan) { $('planPick').hidden = false; $('planPick').innerHTML = `<span><b>${PLANS[plan][0]}</b> · $${PLANS[plan][1]}/month</span><a href="/software#pricing">Change</a>`; $('sBtn').textContent = 'Create account and continue to payment'; }
+  mode(location.hash === '#signup' || location.pathname.includes('signup') || new URLSearchParams(location.search).get('plan') ? 'signup' : 'login');
 
   // Already logged in → straight to the app
   fetch('/api/auth?action=me').then(r => r.ok && location.replace(next)).catch(() => {});
@@ -164,9 +166,13 @@
   $('signup').addEventListener('submit', async e => {
     e.preventDefault(); $('sErr').textContent = ''; $('sBtn').disabled = true; $('sBtn').textContent = 'Creating your account…';
     const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value });
-    $('sBtn').disabled = false; $('sBtn').textContent = 'Create account';
-    if (!r.ok) { $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
-    location.replace('/app?welcome=1');
+    if (!r.ok) { $('sBtn').disabled = false; $('sBtn').textContent = plan ? 'Create account and continue to payment' : 'Create account'; $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
+    if (plan) {
+      $('sBtn').textContent = 'Opening secure checkout…';
+      const c = await fetch('/api/billing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'checkout', plan }) }).then(x => x.json().catch(() => ({}))).catch(() => ({}));
+      if (c.url) { location.href = c.url; return; }
+    }
+    location.replace('/app?welcome=1' + (plan ? '&plan=' + plan : ''));
   });
 })();
 </script>

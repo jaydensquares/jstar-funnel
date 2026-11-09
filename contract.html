@@ -41,7 +41,7 @@
 </head>
 <body>
 <div class="bar">
-  <a href="/underwriting" id="back">← Deal</a>
+  <a href="/underwriting" id="back">Back to deal</a>
   <span class="sp"></span>
   <button class="alt" id="swap" type="button"></button>
   <button id="print" type="button">Print / Save PDF</button>
@@ -73,17 +73,17 @@
   };
 
   $('back').href = '/underwriting#' + (id || '');
-  $('swap').textContent = docType === 'psa' ? 'Assignment →' : '← Purchase agreement';
+  $('swap').textContent = docType === 'psa' ? 'View assignment' : 'View purchase agreement';
   $('swap').onclick = () => { qs.set('doc', docType === 'psa' ? 'assign' : 'psa'); location.search = qs.toString(); };
   $('print').onclick = () => window.print();
 
   let pin = ''; try { pin = sessionStorage.getItem('opPin') || ''; } catch {}
   const fail = m => { $('err').hidden = false; $('err').innerHTML = m; };
-  if (!id) return fail('No deal selected. <a href="/underwriting">Pick a deal →</a>');
+  if (!id) return fail('No deal selected. <a href="/underwriting">Pick a deal</a>');
 
   fetch('/api/deals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, action: 'get', id }) })
     .then(async r => ({ ok: r.ok, j: await r.json().catch(() => ({})) }))
-    .then(({ ok, j }) => { if (!ok) return fail(esc(j.error || 'Could not load the deal.') + ' <a href="/underwriting">Back to deals →</a>'); if (j.biz) Object.assign(BIZ, j.biz); render(j.deal); })
+    .then(({ ok, j }) => { if (!ok) return fail(esc(j.error || 'Could not load the deal.') + ' <a href="/underwriting">Back to deals</a>'); if (j.biz) Object.assign(BIZ, j.biz); render(j.deal); })
     .catch(() => fail('Network error. Refresh to try again.'));
 
   function render(d) {

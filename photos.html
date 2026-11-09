@@ -267,7 +267,7 @@
       ...(last.red_flags.length ? ['', 'Red flags:', ...last.red_flags.map(x => '• ' + x)] : []),
       '', 'Check on walkthrough:', ...last.walkthrough_questions.map(x => '• ' + x)].join('\n');
     try { await navigator.clipboard.writeText(t); } catch { const a = document.createElement('textarea'); a.value = t; document.body.appendChild(a); a.select(); document.execCommand('copy'); a.remove(); }
-    $('copyBtn').textContent = 'Copied ✓'; setTimeout(() => $('copyBtn').textContent = 'Copy report', 1500);
+    $('copyBtn').textContent = 'Copied'; setTimeout(() => $('copyBtn').textContent = 'Copy report', 1500);
   });
   $('againBtn').addEventListener('click', () => {
     photos.forEach(p => URL.revokeObjectURL(p.url)); photos = []; last = null; renderThumbs();

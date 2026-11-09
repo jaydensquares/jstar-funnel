@@ -3,7 +3,7 @@
 // request is saved and the owner is emailed to add it by hand.
 import { currentUser, saveUser } from '../lib/auth.js';
 import { getDoc, putDoc, deleteDoc } from '../lib/db.js';
-import { hasCustomDomain, billingReady } from '../lib/plan.js';
+import { hasCustomDomain, billingReady, planStatus } from '../lib/plan.js';
 
 const PROJECT = process.env.VERCEL_PROJECT_ID_FOR_DOMAINS || 'prj_HFqbTRkTUiddw95yD5WuyNiyZB54';
 const TEAM = process.env.VERCEL_TEAM_ID_FOR_DOMAINS || 'team_KawbQc8YndyEwVaEQdQ1yvzy';
@@ -32,7 +32,7 @@ async function emailOwner(subject, text) {
   }).catch(() => {});
 }
 
-const view = u => ({ entitled: hasCustomDomain(u), billingReady: billingReady(), hasBilling: !!u.stripeCustomerId, domain: u.domain || null, auto: !!process.env.VERCEL_TOKEN });
+const view = u => ({ entitled: hasCustomDomain(u), billingReady: billingReady('domain'), hasBilling: !!u.stripeCustomerId, domain: u.domain || null, auto: !!process.env.VERCEL_TOKEN, plan: planStatus(u) });
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
@@ -46,7 +46,7 @@ export default async function handler(req, res) {
     if (b.action === 'status') return res.status(200).json(view(u));
 
     if (b.action === 'connect') {
-      if (!hasCustomDomain(u)) return res.status(402).json({ error: 'Custom domains are a paid add-on. Upgrade first.' });
+      if (!hasCustomDomain(u)) return res.status(402).json({ error: 'Custom domains come with Pro and Team, or as an add-on to Starter.' });
       if (u.domain?.name) return res.status(400).json({ error: 'Remove your current domain first.' });
       const apex = String(b.domain || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace(/^www\./, '');
       if (!DOMAIN.test(apex) || BLOCK.test(apex)) return res.status(400).json({ error: 'Enter a domain like sellmyhousefast.com' });

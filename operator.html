@@ -191,7 +191,7 @@
       <button class="btn ghost" id="cpEmail" type="button">Copy buyer email</button>
       <button class="btn ghost" id="cpText" type="button">Copy buyer text</button>
     </div>
-    <button class="btn" id="saveDealBtn" type="button" style="margin-bottom:14px">Save to deals →</button>
+    <button class="btn" id="saveDealBtn" type="button" style="margin-bottom:14px">Save to deals</button>
     <div class="sheet" id="sheet"></div>
     <div class="row" style="margin-top:14px">
       <button class="btn ghost" id="editBtn" type="button">Edit this property</button>
@@ -270,7 +270,7 @@
     $('summary').textContent = r.j.summary;
     $('sheet').innerHTML = r.j.html;
     pitch = r.j.pitch || null; $('pitchBtns').hidden = !pitch;
-    lastRun = { body, j: r.j }; $('saveDealBtn').disabled = false; $('saveDealBtn').textContent = 'Save to deals →';
+    lastRun = { body, j: r.j }; $('saveDealBtn').disabled = false; $('saveDealBtn').textContent = 'Save to deals';
     $('prop').hidden = true; $('results').hidden = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
@@ -297,7 +297,7 @@
   const copy = async (btn, txt, label) => {
     try { await navigator.clipboard.writeText(txt); }
     catch { const t = document.createElement('textarea'); t.value = txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
-    btn.textContent = 'Copied ✓'; setTimeout(() => btn.textContent = label, 1500);
+    btn.textContent = 'Copied'; setTimeout(() => btn.textContent = label, 1500);
   };
   $('cpEmail').addEventListener('click', () => pitch && copy($('cpEmail'), `Subject: ${pitch.subject}\n\n${pitch.email}`, 'Copy buyer email'));
   $('cpText').addEventListener('click', () => pitch && copy($('cpText'), pitch.text, 'Copy buyer text'));

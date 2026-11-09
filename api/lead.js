@@ -68,7 +68,7 @@ export default async function handler(req, res) {
   // Comps → ARV → repairs → 3 strategies → score
   let payload;
   try {
-    const over = tenant ? await useQuota({ scope: tenant.id }, 'runs') : null;
+    const over = tenant ? await useQuota({ scope: tenant.id, user: tenant }, 'runs') : null;
     if (over) throw new Error('Monthly analysis limit reached. Run it manually next month or upgrade.');
     payload = await analyzeLead(lead);
   } catch (e) {

@@ -10,6 +10,7 @@
       document.body.classList.add('acct');
       const logo = document.querySelector('header .logo');
       if (logo) { const p = esc(j.user.company || j.user.name).split(' '); logo.innerHTML = p.length > 1 ? `${p[0]} <span>${p.slice(1).join(' ')}</span>` : p[0]; logo.href = '/app'; }
+      document.title = document.title.replace('JStar Acquisitions', j.user.company || j.user.name);
       cb(j.user);
     }).catch(() => {});
   window.acctExpired = () => {

@@ -1,4 +1,5 @@
 // Accounts: signup, login, logout, me, update settings, change password
+import { planStatus } from '../lib/plan.js';
 import { createUser, getUserByEmail, getUserBySlug, checkPassword, hashPassword, sessionCookie, clearCookie, currentUser, publicUser, saveUser, RESERVED } from '../lib/auth.js';
 
 export const maxDuration = 20;
@@ -14,7 +15,7 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     if (req.query?.action !== 'me') return res.status(400).json({ error: 'Unknown action.' });
     const u = await currentUser(req).catch(() => null);
-    return u ? res.status(200).json({ user: publicUser(u) }) : res.status(401).json({ error: 'Not logged in.' });
+    return u ? res.status(200).json({ user: publicUser(u), plan: planStatus(u) }) : res.status(401).json({ error: 'Not logged in.' });
   }
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   if (!String(req.headers['content-type'] || '').includes('application/json')) return res.status(415).json({ error: 'JSON only' });
@@ -35,14 +36,14 @@ export default async function handler(req, res) {
       if (await getUserBySlug(slug)) return res.status(409).json({ error: 'That username is taken.' });
       const u = await createUser({ name, email, password, company, slug, phone });
       res.setHeader('Set-Cookie', sessionCookie(u.id, 0));
-      return res.status(200).json({ user: publicUser(u) });
+      return res.status(200).json({ user: publicUser(u), plan: planStatus(u) });
     }
 
     if (b.action === 'login') {
       const u = await getUserByEmail(str(b.email, 120).toLowerCase());
       if (!u || u.disabled || !checkPassword(String(b.password || ''), u.passHash)) { await slow(); return res.status(401).json({ error: 'Wrong email or password.' }); }
       res.setHeader('Set-Cookie', sessionCookie(u.id, u.sessVer || 0));
-      return res.status(200).json({ user: publicUser(u) });
+      return res.status(200).json({ user: publicUser(u), plan: planStatus(u) });
     }
 
     if (b.action === 'logout') { res.setHeader('Set-Cookie', clearCookie()); return res.status(200).json({ ok: true }); }
@@ -68,7 +69,7 @@ export default async function handler(req, res) {
       const bad = Object.entries({ 'Meta Pixel ID (numbers only)': next.settings.metaPixelId, 'Google tag ID (like AW-123456789)': next.settings.googleAdsId, 'Google conversion label': next.settings.googleAdsLeadLabel }).find(([, v]) => v === null);
       if (bad) return res.status(400).json({ error: `Check your ${bad[0]}.` });
       const saved = await saveUser({ ...u, ...next });
-      return res.status(200).json({ user: publicUser(saved) });
+      return res.status(200).json({ user: publicUser(saved), plan: planStatus(saved) });
     }
 
     if (b.action === 'password') {

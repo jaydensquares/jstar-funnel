@@ -72,13 +72,24 @@
   .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 
-  .tabs { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin:0 0 14px; padding-bottom:2px; }
+  .tabs { display:flex; gap:22px; overflow-x:auto; scrollbar-width:none; margin:4px 0 18px; border-bottom:1px solid var(--line); }
   .tabs::-webkit-scrollbar { display:none; }
-  .tabs a { flex:none; text-decoration:none; color:var(--ink); border:1px solid var(--line); background:var(--card); border-radius:999px; padding:8px 14px; font-weight:700; font-size:14px; }
-  .tabs a.on { border-color:var(--brand); background:var(--brand-soft); color:var(--brand); }
-  .tools { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:14px; }
-  .tools a { text-align:center; text-decoration:none; color:var(--ink); background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 4px; font-size:12.5px; font-weight:700; }
-  .tools a i { display:block; font-style:normal; font-size:18px; margin-bottom:2px; }
+  .tabs a { flex:none; text-decoration:none; color:var(--muted); padding:10px 0 11px; font-weight:600; font-size:15px; border-bottom:2px solid transparent; margin-bottom:-1px; }
+  .tabs a.on { color:var(--ink); border-bottom-color:var(--brand); }
+  .tool { display:block; text-decoration:none; color:inherit; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:10px; }
+  .tool:hover { border-color:var(--brand); }
+  .tool .tt { display:flex; justify-content:space-between; gap:10px; align-items:baseline; }
+  .tool b { font-family:var(--display); font-size:17px; }
+  .tool .open { font-size:13px; font-weight:700; color:var(--brand); white-space:nowrap; }
+  .tool p { margin:6px 0 0; color:var(--muted); font-size:14.5px; line-height:1.5; }
+  .tool .uses { font-size:12.5px; color:var(--muted); margin-top:8px; display:block; }
+  .plans { display:grid; gap:10px; grid-template-columns:1fr; margin-top:10px; }
+  @media (min-width:640px) { .plans { grid-template-columns:repeat(3,1fr); } }
+  .pl { border:1px solid var(--line); border-radius:10px; padding:14px; display:flex; flex-direction:column; gap:6px; }
+  .pl.cur { border-color:var(--brand); box-shadow:0 0 0 1px var(--brand); }
+  .pl b { font-family:var(--display); font-size:17px; } .pl .pp { font-size:14px; color:var(--muted); }
+  .pl ul { list-style:none; padding:0; margin:4px 0 8px; font-size:13.5px; color:var(--muted); line-height:1.6; flex:1; }
+  .pl .btn { padding:10px; font-size:14px; }
   .lead { display:block; width:100%; text-align:left; font:inherit; color:inherit; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:13px 14px; margin-bottom:10px; cursor:pointer; }
   .lead:hover { border-color:var(--brand); }
   .lead .top { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
@@ -106,17 +117,14 @@
 </style>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" id="logo" href="/app">Deal <span>Desk</span></a><nav class="nav"><a href="#account" id="acctLink">Account</a></nav></div></header>
+<header><div class="wrap"><a class="logo" id="logo" href="/app">Deal <span>Desk</span></a><nav class="nav"><a href="/app#leads">Leads</a><a href="/underwriting">Deals</a><a href="/app#account" id="acctLink">Account</a></nav></div></header>
 
 <main class="wrap">
   <p class="note" id="loading">Loading…</p>
   <div id="appBody" hidden>
     <div class="banner" id="welcome" hidden></div>
-    <nav class="tools" aria-label="Tools">
-      <a href="/operator"><i>⚡</i>Run deal</a><a href="/batch"><i>☰</i>Batch</a><a href="/photos"><i>📷</i>Photos</a><a href="/underwriting"><i>📁</i>Deals</a><a href="/list"><i>⬇</i>Lists</a>
-    </nav>
     <div class="tabs" id="tabs">
-      <a href="#leads" data-t="leads">Leads</a><a href="#funnel" data-t="funnel">My funnel</a><a href="#ads" data-t="ads">Ad tracking</a><a href="#domain" data-t="domain">Domain</a><a href="#account" data-t="account">Account</a>
+      <a href="#leads" data-t="leads">Leads</a><a href="#tools" data-t="tools">Tools</a><a href="#funnel" data-t="funnel">Funnel</a><a href="#ads" data-t="ads">Ad tracking</a><a href="#domain" data-t="domain">Domain</a><a href="#account" data-t="account">Plan &amp; account</a>
     </div>
 
     <!-- LEADS -->
@@ -128,19 +136,39 @@
       </div>
       <div id="leadList"><p class="note">Loading leads…</p></div>
       <section class="card" id="leadView" hidden>
-        <button type="button" class="link" id="leadBack">← All leads</button>
+        <button type="button" class="link" id="leadBack">All leads</button>
         <div class="top" style="display:flex;justify-content:space-between;gap:10px;margin-top:6px"><h1 id="lvName" style="font-size:20px"></h1><span class="pill" id="lvLabel"></span></div>
         <p class="sub" id="lvMeta" style="margin-bottom:0"></p>
         <div class="actions">
           <a class="btn" id="lvCall" href="#">Call</a><a class="btn ghost" id="lvText" href="#">Text</a>
         </div>
         <div class="actions">
-          <button class="btn" id="lvConvert" type="button">Move to deals →</button>
+          <button class="btn" id="lvConvert" type="button">Move to deals</button>
           <select id="lvStatus" aria-label="Lead status"><option value="new">New</option><option value="contacted">Contacted</option><option value="converted">In deals</option><option value="dead">Dead</option></select>
         </div>
         <div class="err" id="lvErr" role="alert"></div>
         <div class="sheet" id="lvSheet"></div>
       </section>
+    </section>
+
+
+    <!-- TOOLS -->
+    <section data-p="tools" hidden>
+      <a class="tool" href="/operator"><div class="tt"><b>Run an address</b><span class="open">Open</span></div>
+        <p>Type any address, whether it's a call-in, a list lead or a house you drove by. In about ten seconds you get recent comparable sales, the after-repair value, a repair estimate by condition, your max and opening offer, and a deal sheet with a ready-to-send buyer pitch. Add exact repair line items to replace the estimate. Works for houses and vacant lots.</p>
+        <span class="uses">Uses 1 deal analysis</span></a>
+      <a class="tool" href="/batch"><div class="tt"><b>Batch analysis</b><span class="open">Open</span></div>
+        <p>Paste up to 10 addresses, set the condition for each, and get every offer in one table, sorted by score. Tap any row for its full deal sheet or export the table to CSV.</p>
+        <span class="uses">Uses 1 deal analysis per address</span></a>
+      <a class="tool" href="/photos"><div class="tt"><b>Photo repair estimate</b><span class="open">Open</span></div>
+        <p>Upload up to 12 listing or walkthrough photos. You get a condition grade, line-by-line repair costs with low and high ranges, red flags like water damage or foundation cracks, and what to check on the walkthrough. Send the repair lines straight into Run an address.</p>
+        <span class="uses">Uses 1 photo estimate</span></a>
+      <a class="tool" href="/underwriting"><div class="tt"><b>Deals and underwriting</b><span class="open">Open</span></div>
+        <p>Your pipeline from lead to offer, contract, assigned and closed, with pending and closed fees. Each deal has an underwriting calculator (buyer price, buyer profit, 70% rule), a numbers sign-off, an 18-point due-diligence checklist, and a purchase agreement and assignment filled in from the deal.</p>
+        <span class="uses">Unlimited</span></a>
+      <a class="tool" href="/list"><div class="tt"><b>Owner lists</b><span class="open">Open</span></div>
+        <p>Pull property owners in any ZIP code from public records. Filter for absentee and out-of-state owners, years owned and vacant lots, and leave out LLCs. The most motivated owners are sorted to the top, in a CSV ready for your skip-tracing service.</p>
+        <span class="uses">Uses list records (500 per batch scanned)</span></a>
     </section>
 
     <!-- FUNNEL -->
@@ -186,9 +214,9 @@
     <section data-p="domain" hidden>
       <section class="card" id="dUpsell" hidden>
         <h2>Your own domain</h2>
-        <p style="margin:0 0 6px;line-height:1.55">Put your funnel on your own website address, like <b>sellmyhousefastdallas.com</b>. Your brand only, nothing else.</p>
-        <div class="price" id="dPrice">Add-on</div>
-        <button class="btn" type="button" id="dBuy">Upgrade to connect a domain</button>
+        <p style="margin:0 0 6px;line-height:1.55">Run your funnel on a domain you own, like <b>sellmyhousefastdallas.com</b>. Sellers only see your business name.</p>
+        <p class="note" style="margin:0 0 12px">Included with Pro and Team. On Starter, add it for $19/month.</p>
+        <div class="row"><button class="btn" type="button" id="dPro">Upgrade to Pro</button><button class="btn ghost" type="button" id="dBuy">Add to Starter, $19/mo</button></div>
         <p class="note" id="dBuyNote"></p>
       </section>
       <form class="card" id="dConnect" hidden>
@@ -210,6 +238,13 @@
 
     <!-- ACCOUNT -->
     <section data-p="account" hidden>
+      <section class="card">
+        <h2>Your plan</h2>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div style="font-family:var(--display);font-size:22px;font-weight:800" id="planName"></div><button class="link" type="button" id="manageBilling" hidden>Manage billing</button></div>
+        <p class="note" id="planNote" style="margin:4px 0 0"></p>
+        <div class="plans" id="planCards"></div>
+        <p class="err" id="planErr" role="alert"></p>
+      </section>
       <section class="card">
         <h2>This month's usage</h2>
         <div id="usage"></div>
@@ -241,18 +276,18 @@
     .catch(e => { if (e.message === 'auth') throw e; return { ok: false, j: { error: 'Network error. Try again.' } }; });
   const flash = (btn, txt) => { const o = btn.textContent; btn.textContent = txt; setTimeout(() => btn.textContent = o, 1400); };
 
-  let user = null, leads = [], usage = null;
+  let user = null, leads = [], usage = null, plan = null;
 
   async function boot() {
     const r = await fetch('/api/auth?action=me').catch(() => null);
     if (!r || !r.ok) { location.replace('/login?next=' + encodeURIComponent('/app' + location.hash)); return; }
-    user = (await r.json()).user;
+    const me = await r.json(); user = me.user; plan = me.plan;
     const p = esc(user.company || user.name).split(' ');
     $('logo').innerHTML = p.length > 1 ? `${p[0]} <span>${p.slice(1).join(' ')}</span>` : p[0];
     $('loading').hidden = true; $('appBody').hidden = false;
     const qs = new URLSearchParams(location.search);
-    if (qs.get('welcome')) { $('welcome').hidden = false; $('welcome').innerHTML = `<b>You're set up, ${esc(user.name.split(' ')[0])}.</b> Your seller funnel is live at <a href="${funnelUrl()}" target="_blank" rel="noopener">${esc(funnelUrl().replace(/^https?:\/\//, ''))}</a>. Point your ads at it, and leads land here already analyzed.`; }
-    if (qs.get('paid')) { $('welcome').hidden = false; $('welcome').innerHTML = '<b>Payment received.</b> Connect your domain below. If it says you still need to upgrade, refresh in a few seconds.'; }
+    if (qs.get('welcome')) { $('welcome').hidden = false; $('welcome').innerHTML = `<b>Welcome, ${esc(user.name.split(' ')[0])}.</b> Your seller funnel is live at <a href="${funnelUrl()}" target="_blank" rel="noopener">${esc(funnelUrl().replace(/^https?:\/\//, ''))}</a>. Point your ads at that link. New leads show up here with an offer already worked out.${plan.tier === 'trial' ? ' You\'re on the free trial, so <a href="#account">choose a plan</a> when you\'re ready.' : ''}`; }
+    if (qs.get('paid')) { $('welcome').hidden = false; $('welcome').innerHTML = qs.get('paid') === 'domain' ? '<b>Payment received.</b> You can connect your domain below. If it still asks you to upgrade, refresh in a few seconds.' : '<b>Payment received. Your plan is active.</b> If your plan still shows Trial, refresh in a few seconds.'; }
     fillForms(); tab(); loadLeads();
   }
   const funnelUrl = () => user.domain?.status === 'live' ? `https://${user.domain.name}` : `${location.origin}/f/${user.slug}`;
@@ -260,11 +295,11 @@
   // ── Tabs ──
   function tab() {
     const t = (location.hash.slice(1) || 'leads').split('/')[0];
-    const ok = ['leads', 'funnel', 'ads', 'domain', 'account'].includes(t) ? t : 'leads';
+    const ok = ['leads', 'tools', 'funnel', 'ads', 'domain', 'account'].includes(t) ? t : 'leads';
     document.querySelectorAll('[data-p]').forEach(s => s.hidden = s.dataset.p !== ok);
     document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.t === ok));
     if (ok === 'domain') loadDomain();
-    if (ok === 'account') renderUsage();
+    if (ok === 'account') { renderUsage(); renderPlan(); }
     if (ok === 'leads') { const id = location.hash.split('/')[1]; id ? openLead(id) : closeLead(); }
   }
   window.addEventListener('hashchange', tab);
@@ -301,7 +336,7 @@
     const digits = String(L.phone || '').replace(/\D/g, '');
     $('lvCall').href = 'tel:' + digits; $('lvText').href = 'sms:' + digits;
     $('lvStatus').value = curLead.status;
-    $('lvConvert').textContent = curLead.dealId ? 'Open in deals →' : 'Move to deals →';
+    $('lvConvert').textContent = curLead.dealId ? 'Open in deals' : 'Move to deals';
     $('lvSheet').innerHTML = curLead.html || `<pre>${esc(curLead.summary)}</pre>`;
     if (curLead.status === 'new') { post('/api/leads', { action: 'status', id, status: 'contacted' }).then(x => { if (x.ok) { curLead = { ...curLead, status: 'contacted' }; $('lvStatus').value = 'contacted'; const i = leads.findIndex(l => l.id === id); if (i >= 0) leads[i].status = 'contacted'; } }); }
   }
@@ -313,7 +348,7 @@
     $('lvConvert').disabled = true; $('lvConvert').textContent = 'Moving…';
     const r = await post('/api/leads', { action: 'convert', id: curLead.id });
     $('lvConvert').disabled = false;
-    if (!r.ok) { $('lvErr').textContent = r.j.error || 'Could not move it.'; $('lvConvert').textContent = 'Move to deals →'; return; }
+    if (!r.ok) { $('lvErr').textContent = r.j.error || 'Could not move it.'; $('lvConvert').textContent = 'Move to deals'; return; }
     location.href = '/underwriting#' + r.j.dealId;
   };
   $('lvStatus').onchange = async () => {
@@ -326,18 +361,18 @@
   function fillForms() {
     const s = user.settings || {};
     $('fLink').value = funnelUrl(); $('fOpen').href = funnelUrl(); $('fPriv').href = funnelUrl() + (user.domain?.status === 'live' ? '/privacy' : '/privacy');
-    $('fDomainNote').innerHTML = user.domain?.status === 'live' ? 'Running on your own domain.' : 'Want your own domain instead? <a href="#domain">Connect one →</a>';
+    $('fDomainNote').innerHTML = user.domain?.status === 'live' ? 'Running on your own domain.' : 'Want your own domain instead? <a href="#domain">Connect one</a>';
     $('bCompany').value = user.company || ''; $('bName').value = user.name || ''; $('bPhone').value = user.phone || ''; $('bAddr').value = s.address || ''; $('bNotify').value = s.notifyEmail || user.email;
     $('aPixel').value = s.metaPixelId || ''; $('aCapi').value = s.metaCapiToken || ''; $('aGid').value = s.googleAdsId || ''; $('aLabel').value = s.googleAdsLeadLabel || '';
     $('who').textContent = `Logged in as ${user.email} · username ${user.slug}`;
   }
-  $('fCopy').onclick = async () => { try { await navigator.clipboard.writeText($('fLink').value); } catch { $('fLink').select(); document.execCommand('copy'); } flash($('fCopy'), 'Copied ✓'); };
+  $('fCopy').onclick = async () => { try { await navigator.clipboard.writeText($('fLink').value); } catch { $('fLink').select(); document.execCommand('copy'); } flash($('fCopy'), 'Copied'); };
   async function saveSettings(btn, err, patch) {
     $(err).textContent = ''; $(btn).disabled = true;
     const r = await post('/api/auth', { action: 'update', ...patch });
     $(btn).disabled = false;
     if (!r.ok) { $(err).textContent = r.j.error || 'Could not save.'; return; }
-    user = r.j.user; fillForms(); flash($(btn), 'Saved ✓');
+    user = r.j.user; if (r.j.plan) plan = r.j.plan; fillForms(); flash($(btn), 'Saved');
   }
   $('bizForm').onsubmit = e => { e.preventDefault(); saveSettings('bBtn', 'bErr', { company: $('bCompany').value, name: $('bName').value, phone: $('bPhone').value, settings: { address: $('bAddr').value, notifyEmail: $('bNotify').value, metaPixelId: user.settings.metaPixelId, googleAdsId: user.settings.googleAdsId, googleAdsLeadLabel: user.settings.googleAdsLeadLabel } }); };
   $('adsForm').onsubmit = e => { e.preventDefault(); saveSettings('aBtn', 'aErr', { settings: { metaPixelId: $('aPixel').value.trim(), metaCapiToken: $('aCapi').value.trim(), googleAdsId: $('aGid').value.trim().toUpperCase(), googleAdsLeadLabel: $('aLabel').value.trim() } }); };
@@ -345,18 +380,43 @@
   // ── Domain ──
   let dom = null;
   async function loadDomain() { const r = await post('/api/domain', { action: 'status' }); if (r.ok) { dom = r.j; renderDomain(); } }
+  async function checkout(key, btn, errEl) {
+    if (btn) btn.disabled = true;
+    const r = await post('/api/billing', { action: 'checkout', plan: key });
+    if (btn) btn.disabled = false;
+    if (r.ok && r.j.url) { location.href = r.j.url; return; }
+    $(errEl).textContent = r.j.error || 'Could not open checkout.';
+  }
+  const PLAN_INFO = { starter: ['Starter', 49, ['100 deal analyses / mo', '10 photo estimates / mo', '4,000 list records / mo', 'Custom domain: $19/mo add-on']], pro: ['Pro', 99, ['300 deal analyses / mo', '30 photo estimates / mo', '12,000 list records / mo', 'Custom domain included']], team: ['Team', 199, ['800 deal analyses / mo', '80 photo estimates / mo', '30,000 list records / mo', 'Custom domain included']] };
+  function renderPlan() {
+    if (!plan) return;
+    $('planName').textContent = plan.name;
+    $('planNote').textContent = plan.tier === 'trial' ? 'The trial includes 15 deal analyses, 3 photo estimates and 2,000 list records. Every tool is unlocked.' : `Renews monthly.${plan.domainAddon ? ' Includes the custom domain add-on.' : ''}`;
+    $('manageBilling').hidden = !plan.hasBilling;
+    $('planCards').innerHTML = Object.entries(PLAN_INFO).map(([k, [n, p, f]]) => {
+      const cur = plan.tier === k;
+      return `<div class="pl ${cur ? 'cur' : ''}"><b>${n}</b><span class="pp">$${p}/month</span><ul>${f.map(x => `<li>${x}</li>`).join('')}</ul>${cur ? '<span class="note" style="margin:0">Current plan</span>' : `<button class="btn ${k === 'pro' ? '' : 'ghost'}" type="button" data-plan="${k}" ${plan.ready[k] ? '' : 'disabled'}>${plan.ready[k] ? (plan.tier === 'trial' ? 'Choose ' : 'Switch to ') + n : 'Available soon'}</button>`}</div>`;
+    }).join('');
+    $('planCards').querySelectorAll('[data-plan]').forEach(b => b.onclick = () => checkout(b.dataset.plan, b, 'planErr'));
+  }
+  $('manageBilling').onclick = async () => { const r = await post('/api/billing', { action: 'portal' }); if (r.ok && r.j.url) location.href = r.j.url; else $('planErr').textContent = r.j.error || 'Could not open billing.'; };
+
   function renderDomain() {
     const d = dom.domain;
     $('dUpsell').hidden = dom.entitled; $('dConnect').hidden = !dom.entitled || !!d; $('dStatus').hidden = !d; $('dManage').hidden = !dom.hasBilling;
-    $('dBuy').disabled = !dom.billingReady; $('dBuyNote').textContent = dom.billingReady ? 'Billed monthly. Cancel anytime.' : 'Coming soon.';
+    const p = dom.plan || plan || {}; const ready = p.ready || {};
+    $('dPro').hidden = !(p.tier === 'trial' || p.tier === 'starter'); $('dPro').disabled = !ready.pro;
+    $('dBuy').hidden = p.tier !== 'starter'; $('dBuy').disabled = !ready.domain;
+    $('dBuyNote').textContent = (ready.pro || ready.domain) ? 'Billed monthly. Cancel anytime from Plan & account.' : 'Online checkout is coming soon.';
     if (!d) return;
     $('dShow').textContent = d.name;
-    const st = { live: ['ok', '✓ Live. Your funnel is on your domain.'], pending: ['warn', 'Waiting on DNS. Add the records below at your domain provider. It can take a few minutes to a few hours.'], verify: ['warn', 'Add the verification record below, then check again.'], requested: ['warn', "We're connecting it. Add the records below at your domain provider in the meantime."] }[d.status] || ['warn', d.status];
+    const st = { live: ['ok', 'Live. Your funnel is running on this domain.'], pending: ['warn', 'Waiting on DNS. Add the records below at your domain provider. It can take a few minutes to a few hours.'], verify: ['warn', 'Add the verification record below, then check again.'], requested: ['warn', "We're connecting it. Add the records below at your domain provider in the meantime."] }[d.status] || ['warn', d.status];
     $('dState').className = st[0]; $('dState').textContent = st[1];
     const rows = [...(d.records || []), ...((d.verification || []).map(v => ({ type: v.type, name: v.domain, value: v.value, note: 'verification' })))];
     $('dRecords').innerHTML = d.status === 'live' ? '' : `<table class="rec"><tr><th>Type</th><th>Name / Host</th><th>Value</th></tr>${rows.map(r => `<tr><td>${esc(r.type)}</td><td>${esc(r.name)}</td><td>${esc(r.value)}</td></tr>`).join('')}</table><p class="note">Remove any other A records on "@" and CNAMEs on "www" first.</p>`;
   }
-  $('dBuy').onclick = async () => { $('dBuy').disabled = true; const r = await post('/api/billing', { action: 'checkout' }); $('dBuy').disabled = false; if (r.ok && r.j.url) location.href = r.j.url; else $('dBuyNote').textContent = r.j.error || 'Could not open checkout.'; };
+  $('dBuy').onclick = () => checkout('domain', $('dBuy'), 'dBuyNote');
+  $('dPro').onclick = () => checkout('pro', $('dPro'), 'dBuyNote');
   $('dManage').onclick = async () => { const r = await post('/api/billing', { action: 'portal' }); if (r.ok && r.j.url) location.href = r.j.url; };
   $('dConnect').onsubmit = async e => {
     e.preventDefault(); $('dErr').textContent = ''; $('dBtn').disabled = true; $('dBtn').textContent = 'Connecting…';
@@ -365,15 +425,15 @@
     if (!r.ok) { $('dErr').textContent = r.j.error || 'Could not connect.'; return; }
     dom = r.j; renderDomain();
   };
-  $('dCheck').onclick = async () => { $('dCheck').disabled = true; const r = await post('/api/domain', { action: 'check' }); $('dCheck').disabled = false; if (r.ok) { dom = r.j; user.domain = dom.domain; renderDomain(); fillForms(); flash($('dCheck'), 'Checked ✓'); } };
+  $('dCheck').onclick = async () => { $('dCheck').disabled = true; const r = await post('/api/domain', { action: 'check' }); $('dCheck').disabled = false; if (r.ok) { dom = r.j; user.domain = dom.domain; renderDomain(); fillForms(); flash($('dCheck'), 'Checked'); } };
   $('dRemove').onclick = async () => { if (!confirm('Disconnect this domain from your funnel?')) return; const r = await post('/api/domain', { action: 'remove' }); if (r.ok) { dom = r.j; user.domain = null; renderDomain(); fillForms(); } };
 
   // ── Account ──
   function renderUsage() {
     if (!usage) { $('usage').innerHTML = '<p class="note">Loading…</p>'; return; }
     const L = usage.limits || {};
-    $('usage').innerHTML = [['runs', 'Deal analyses (funnel leads + Run deal)'], ['photos', 'Photo analyses'], ['listCalls', 'List pulls (per 500 records)']].map(([k, l]) => {
-      const u = usage[k] || 0, m = L[k] || 1; return `<div style="display:flex;justify-content:space-between;font-size:14px"><span>${l}</span><b>${u} / ${m}</b></div><div class="meter"><i style="width:${Math.min(100, u / m * 100)}%"></i></div>`;
+    $('usage').innerHTML = [['runs', 'Deal analyses (funnel leads, Run an address, Batch)', 1], ['photos', 'Photo repair estimates', 1], ['listCalls', 'Owner list records', 500]].map(([k, l, x]) => {
+      const u = (usage[k] || 0) * x, m = (L[k] || 1) * x; return `<div style="display:flex;justify-content:space-between;font-size:14px"><span>${l}</span><b>${u.toLocaleString()} / ${m.toLocaleString()}</b></div><div class="meter"><i style="width:${Math.min(100, u / m * 100)}%"></i></div>`;
     }).join('') + '<p class="note">Resets on the 1st of each month.</p>';
   }
   $('pwForm').onsubmit = async e => {
@@ -381,7 +441,7 @@
     const r = await post('/api/auth', { action: 'password', current: $('pCur').value, password: $('pNew').value });
     $('pBtn').disabled = false;
     if (!r.ok) { $('pErr').textContent = r.j.error || 'Could not update.'; return; }
-    $('pwForm').reset(); flash($('pBtn'), 'Updated ✓');
+    $('pwForm').reset(); flash($('pBtn'), 'Updated');
   };
   $('logout').onclick = async () => { await post('/api/auth', { action: 'logout' }).catch(() => {}); location.href = '/login'; };
 

@@ -21,7 +21,7 @@ export default async function handler(req, res) {
   try {
     if (b.action === 'list') {
       const leads = (await listDocs(col)).sort((a, z) => z.createdAt - a.createdAt).map(({ html, ...l }) => l);
-      return res.status(200).json({ leads, usage: await getUsage(actor.scope) });
+      return res.status(200).json({ leads, usage: await getUsage(actor.user) });
     }
     if (!ID.test(String(b.id || ''))) return res.status(400).json({ error: 'Bad lead id.' });
     const lead = await getDoc(key(b.id));

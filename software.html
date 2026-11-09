@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Deal Desk | Lead funnels and deal analysis for wholesalers</title>
+<meta name="description" content="A seller lead funnel under your business name, every lead analyzed with comps and an offer, plus underwriting, contracts and buyer pitches in one login.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#ffffff; --bg2:#f6f7f9; --ink:#111827; --ink2:#374151; --muted:#6b7280; --line:#e5e7eb;
+    --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#eef2fb; --ok:#166534; --warn:#92400e;
+    --display:'Archivo','Helvetica Neue',Arial,sans-serif; --body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg:#0e1116; --bg2:#151a22; --ink:#f3f4f6; --ink2:#d1d5db; --muted:#9ca3af; --line:#273042;
+    --brand:#5b8def; --brand-soft:#17223a; --ok:#86efac; --warn:#fcd34d; color-scheme:dark; } }
+  * { box-sizing:border-box; }
+  html, body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:17px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  .w { max-width:1080px; margin:0 auto; padding-left:max(20px, env(safe-area-inset-left, 0px)); padding-right:max(20px, env(safe-area-inset-right, 0px)); }
+  h1, h2, h3 { font-family:var(--display); letter-spacing:-.02em; line-height:1.1; margin:0; }
+
+  /* Header */
+  .top { border-bottom:1px solid var(--line); position:sticky; top:0; background:color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter:saturate(1.4) blur(8px); z-index:10; }
+  .top .w { display:flex; align-items:center; justify-content:space-between; height:62px; gap:16px; }
+  .brand { font-family:var(--display); font-weight:800; font-size:18px; text-decoration:none; letter-spacing:-.01em; }
+  .top nav { display:flex; align-items:center; gap:22px; font-size:15px; font-weight:600; }
+  .top nav a { text-decoration:none; color:var(--ink2); }
+  .top nav a:hover { color:var(--ink); }
+  .btn { display:inline-block; text-decoration:none; font-weight:700; font-size:15px; border-radius:8px; padding:11px 18px; background:var(--brand); color:var(--brand-ink); border:1px solid var(--brand); cursor:pointer; font-family:var(--body); }
+  .btn:hover { filter:brightness(1.08); }
+  .btn.alt { background:transparent; color:var(--ink); border-color:var(--line); }
+  .top .btn { padding:8px 14px; font-size:14px; color:var(--brand-ink); }
+  @media (max-width:640px) { .top nav .hide-sm { display:none; } .top nav { gap:14px; } }
+
+  /* Hero */
+  .hero { padding:72px 0 56px; display:grid; gap:48px; grid-template-columns:1fr; }
+  @media (min-width:920px) { .hero { grid-template-columns:1.05fr .95fr; align-items:center; padding:96px 0 72px; } }
+  .kicker { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--brand); margin:0 0 16px; }
+  .hero h1 { font-size:clamp(36px, 5vw, 54px); font-weight:800; }
+  .hero p.lead { font-size:19px; color:var(--ink2); margin:20px 0 28px; max-width:34em; }
+  .hero .ctas { display:flex; gap:10px; flex-wrap:wrap; }
+  .hero .fine { font-size:14px; color:var(--muted); margin-top:14px; }
+
+  /* Product preview */
+  .shot { background:var(--bg2); border:1px solid var(--line); border-radius:14px; padding:16px; }
+  .shot .bar { display:flex; gap:6px; margin-bottom:12px; } .shot .bar i { width:9px; height:9px; border-radius:50%; background:var(--line); }
+  .panel { background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:16px; }
+  .panel + .panel { margin-top:10px; }
+  .row { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+  .tag { font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:3px 8px; border-radius:4px; background:#fef3c7; color:#92400e; white-space:nowrap; }
+  @media (prefers-color-scheme: dark) { .tag { background:#3a2f12; color:#fcd34d; } }
+  .tag.src { background:var(--brand-soft); color:var(--brand); }
+  .meta { font-size:13.5px; color:var(--muted); }
+  .nums { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
+  .nums div { border-top:1px solid var(--line); padding-top:8px; }
+  .nums b { display:block; font-family:var(--display); font-size:20px; font-variant-numeric:tabular-nums; }
+  .nums span { font-size:12px; color:var(--muted); }
+  .calc { width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums; }
+  .calc td { padding:6px 0; border-bottom:1px solid var(--line); } .calc td:last-child { text-align:right; font-weight:700; }
+  .calc tr:last-child td { border-bottom:0; color:var(--ok); }
+
+  /* Sections */
+  section.s { padding:72px 0; border-top:1px solid var(--line); }
+  .s h2 { font-size:clamp(28px, 3.6vw, 38px); font-weight:800; max-width:20em; }
+  .s .intro { color:var(--ink2); font-size:18px; max-width:38em; margin:14px 0 0; }
+  .steps { display:grid; gap:28px; margin-top:40px; grid-template-columns:1fr; counter-reset:n; }
+  @media (min-width:820px) { .steps { grid-template-columns:repeat(3,1fr); } }
+  .steps li { list-style:none; counter-increment:n; }
+  .steps li::before { content:counter(n, decimal-leading-zero); font-family:var(--display); font-weight:800; color:var(--brand); font-size:14px; display:block; margin-bottom:10px; }
+  .steps h3 { font-size:19px; margin-bottom:6px; }
+  .steps p { margin:0; color:var(--ink2); font-size:16px; }
+  .steps ol, ol.steps { padding:0; }
+
+  .feat { display:grid; gap:0; margin-top:40px; grid-template-columns:1fr; border-top:1px solid var(--line); }
+  @media (min-width:820px) { .feat { grid-template-columns:1fr 1fr; column-gap:48px; } }
+  .feat article { padding:24px 0; border-bottom:1px solid var(--line); }
+  .feat h3 { font-size:18px; margin-bottom:6px; }
+  .feat p { margin:0; color:var(--ink2); font-size:16px; }
+  .feat .lim { display:block; font-size:13.5px; color:var(--muted); margin-top:8px; }
+
+  /* Pricing */
+  .plans { display:grid; gap:16px; margin-top:40px; grid-template-columns:1fr; }
+  @media (min-width:900px) { .plans { grid-template-columns:repeat(3,1fr); } }
+  .plan { border:1px solid var(--line); border-radius:12px; padding:26px 24px; display:flex; flex-direction:column; background:var(--bg); }
+  .plan.pick { border-color:var(--brand); box-shadow:0 0 0 1px var(--brand); }
+  .plan .nm { font-family:var(--display); font-weight:800; font-size:20px; display:flex; justify-content:space-between; align-items:center; }
+  .plan .nm small { font-family:var(--body); font-size:12px; font-weight:700; color:var(--brand); text-transform:uppercase; letter-spacing:.06em; }
+  .plan .for { color:var(--muted); font-size:15px; margin:4px 0 18px; min-height:2.6em; }
+  .plan .pr { font-family:var(--display); font-weight:800; font-size:42px; letter-spacing:-.03em; }
+  .plan .pr span { font-family:var(--body); font-size:15px; font-weight:500; color:var(--muted); letter-spacing:0; }
+  .plan ul { list-style:none; padding:0; margin:20px 0 24px; font-size:15px; flex:1; }
+  .plan li { padding:7px 0; border-top:1px solid var(--line); display:flex; justify-content:space-between; gap:10px; }
+  .plan li b { font-variant-numeric:tabular-nums; }
+  .plan li.x { color:var(--muted); }
+  .plan .btn { text-align:center; }
+  .addon { margin-top:16px; font-size:15px; color:var(--ink2); }
+  .every { margin-top:28px; font-size:15px; color:var(--ink2); columns:2 260px; column-gap:40px; }
+  .every div { break-inside:avoid; padding:4px 0 4px 16px; position:relative; }
+  .every div::before { content:""; position:absolute; left:0; top:13px; width:6px; height:6px; border-radius:50%; background:var(--brand); }
+
+  /* FAQ */
+  .faq { margin-top:32px; border-top:1px solid var(--line); max-width:820px; }
+  .faq details { border-bottom:1px solid var(--line); padding:18px 0; }
+  .faq summary { cursor:pointer; font-weight:700; font-size:17px; list-style:none; display:flex; justify-content:space-between; gap:16px; }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq summary::after { content:"+"; color:var(--muted); font-weight:500; font-size:22px; line-height:1; }
+  .faq details[open] summary::after { content:"−"; }
+  .faq p { margin:10px 0 0; color:var(--ink2); font-size:16px; }
+
+  .cta2 { padding:72px 0; border-top:1px solid var(--line); text-align:center; }
+  .cta2 h2 { font-size:clamp(28px, 3.6vw, 38px); }
+  .cta2 p { color:var(--ink2); margin:12px 0 24px; }
+  footer { border-top:1px solid var(--line); padding:28px 0 48px; color:var(--muted); font-size:14px; }
+  footer .w { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  footer a { text-decoration:none; } footer a:hover { color:var(--ink); }
+</style>
+</head>
+<body>
+<header class="top"><div class="w">
+  <a class="brand" href="/software">Deal Desk</a>
+  <nav><a class="hide-sm" href="#how">How it works</a><a class="hide-sm" href="#features">Features</a><a href="#pricing">Pricing</a><a href="/login">Log in</a><a class="btn" href="#pricing">Get started</a></nav>
+</div></header>
+
+<main>
+  <div class="w hero">
+    <div>
+      <p class="kicker">For real estate wholesalers</p>
+      <h1>Your seller funnel, your offers and your contracts in one place.</h1>
+      <p class="lead">Get a seller lead page under your business name. Every lead comes in already analyzed with recent sales, an after-repair value, a repair estimate and the most you should offer. Move the good ones through underwriting and contracts without leaving the app.</p>
+      <div class="ctas"><a class="btn" href="#pricing">See plans</a><a class="btn alt" href="#how">How it works</a></div>
+      <p class="fine">Month to month. Cancel anytime from your account.</p>
+    </div>
+
+    <div class="shot" aria-label="Example of a lead in the app">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <div class="panel">
+        <div class="row"><div><b>Robert Lee</b><div class="meta">4318 Wakefield Dr, Houston TX 77018</div></div><div style="display:flex;gap:6px"><span class="tag src">Google Ads</span><span class="tag">Warm</span></div></div>
+        <div class="meta" style="margin-top:6px">Inherited · wants to sell in 30 days · vacant · needs updating</div>
+        <div class="nums">
+          <div><b>$300k</b><span>after-repair value</span></div>
+          <div><b>$52k</b><span>repairs</span></div>
+          <div><b>$148k</b><span>max offer</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <table class="calc">
+          <tr><td>Contract price to seller</td><td>$140,500</td></tr>
+          <tr><td>Your assignment fee</td><td>$10,000</td></tr>
+          <tr><td>Buyer pays</td><td>$150,500</td></tr>
+          <tr><td>Buyer's profit after repairs and costs</td><td>$67,500</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <section class="s" id="how"><div class="w">
+    <h2>From ad click to assignment, in one login.</h2>
+    <ol class="steps">
+      <li><h3>Turn on your funnel</h3><p>Sign up and your seller page is live right away under your business name, phone number and address. It includes the privacy policy, terms and SMS consent language that carriers ask for during A2P registration. Connect your own domain whenever you're ready.</p></li>
+      <li><h3>Leads arrive analyzed</h3><p>When a seller submits, we pull recent sales near the property, estimate the after-repair value and repairs, and calculate your max and opening offer. The lead lands in your inbox scored Hot, Warm or Cold and tagged with the ad it came from. You also get an email.</p></li>
+      <li><h3>Work the deal</h3><p>Move a lead into your pipeline, check the numbers against what a cash buyer will pay, go through the due-diligence checklist, print the purchase agreement and assignment, and send the deal to your buyers.</p></li>
+    </ol>
+  </div></section>
+
+  <section class="s" id="features"><div class="w">
+    <h2>What's included</h2>
+    <p class="intro">Every plan includes every tool. Plans differ only in how many analyses you can run each month.</p>
+    <div class="feat">
+      <article><h3>Seller lead funnel</h3><p>A five-step "sell your house for cash" form: address, property details, condition, situation and contact info. Mobile-first, with your branding, a tap-to-call button and a clear disclosure that you may assign the contract.</p><span class="lim">Live at your own link on day one. Custom domain on Pro and Team.</span></article>
+      <article><h3>Lead inbox</h3><p>Every submission with the seller's answers, a full deal sheet and one-tap call or text. Leads are scored on timeline, motivation, condition and asking price, and labeled Google Ads, Meta or by your UTM source.</p></article>
+      <article><h3>Run any address</h3><p>Type an address you found anywhere: a call, a list, driving for dollars. In about ten seconds you get comparable sales, after-repair value, repair estimate and offer range. Enter your own repair numbers to replace the estimate. Works for houses and vacant lots.</p></article>
+      <article><h3>Batch analysis</h3><p>Paste up to 10 addresses with a condition for each and get every offer in one table. Export to CSV or open any row as a full deal sheet.</p></article>
+      <article><h3>Photo repair estimates</h3><p>Upload up to 12 listing or walkthrough photos. You get a condition grade and line-by-line repair costs with a low and high range, plus red flags and what to check on the walkthrough. Send the numbers straight into a deal.</p></article>
+      <article><h3>Deal pipeline and underwriting</h3><p>Track each deal from lead to offer, contract, assigned and closed. The underwriting calculator shows what your buyer pays, their all-in cost and profit, and whether the deal clears the 70% rule. Lock the numbers once you sign off.</p></article>
+      <article><h3>Due-diligence checklist</h3><p>Eighteen checks from owner of record, liens, taxes, HOA and flood zone through title commitment, earnest money, buyer deposit and the settlement statement.</p></article>
+      <article><h3>Contracts</h3><p>A purchase agreement and an assignment of contract, filled in from the deal, with the wholesaler disclosures required in Texas. Print or save as PDF.</p><span class="lim">Templates. Have your attorney review them before use.</span></article>
+      <article><h3>Buyer pitch</h3><p>Each deal sheet includes a ready-to-send email and text for your buyers list. They list price, ARV, repairs and projected profit, leave out the exact address, and include the assignment disclosure.</p></article>
+      <article><h3>Owner lists</h3><p>Pull property owners in any ZIP code from public records. Filter for absentee and out-of-state owners, years owned and vacant lots, and leave out LLCs. Download a CSV ready for your skip-tracing service.</p></article>
+      <article><h3>Ad tracking</h3><p>Add your Meta Pixel and Conversions API token and your Google Ads conversion tag. Your funnel reports page views and leads back to your ad accounts so their algorithms optimize for real sellers.</p></article>
+      <article><h3>Nationwide data</h3><p>Property records and sales data cover the whole U.S. Repair costs are tuned for Texas, and you can override them on any deal.</p></article>
+    </div>
+  </div></section>
+
+  <section class="s" id="pricing"><div class="w">
+    <h2>Pricing</h2>
+    <p class="intro">Every tool is on every plan. Pick by how many deals you analyze each month. Leads from your funnel count toward deal analyses.</p>
+    <div class="plans">
+      <div class="plan">
+        <div class="nm">Starter</div>
+        <div class="for">For getting your first deals under contract.</div>
+        <div class="pr">$49<span> / month</span></div>
+        <ul>
+          <li><span>Deal analyses</span><b>100 / mo</b></li>
+          <li><span>Photo repair estimates</span><b>10 / mo</b></li>
+          <li><span>Owner list records</span><b>4,000 / mo</b></li>
+          <li class="x"><span>Custom domain</span><b>$19 / mo add-on</b></li>
+        </ul>
+        <a class="btn alt" href="/signup?plan=starter">Start with Starter</a>
+      </div>
+      <div class="plan pick">
+        <div class="nm">Pro <small>Most popular</small></div>
+        <div class="for">For wholesalers running ads every month.</div>
+        <div class="pr">$99<span> / month</span></div>
+        <ul>
+          <li><span>Deal analyses</span><b>300 / mo</b></li>
+          <li><span>Photo repair estimates</span><b>30 / mo</b></li>
+          <li><span>Owner list records</span><b>12,000 / mo</b></li>
+          <li><span>Custom domain</span><b>Included</b></li>
+        </ul>
+        <a class="btn" href="/signup?plan=pro">Start with Pro</a>
+      </div>
+      <div class="plan">
+        <div class="nm">Team</div>
+        <div class="for">For high-volume operators and acquisition teams.</div>
+        <div class="pr">$199<span> / month</span></div>
+        <ul>
+          <li><span>Deal analyses</span><b>800 / mo</b></li>
+          <li><span>Photo repair estimates</span><b>80 / mo</b></li>
+          <li><span>Owner list records</span><b>30,000 / mo</b></li>
+          <li><span>Custom domain</span><b>Included</b></li>
+        </ul>
+        <a class="btn alt" href="/signup?plan=team">Start with Team</a>
+      </div>
+    </div>
+    <p class="addon">Every plan includes your funnel, lead inbox, pipeline, underwriting, checklist, contracts, buyer pitches and ad tracking. Limits reset on the 1st of each month.</p>
+  </div></section>
+
+  <section class="s" id="faq"><div class="w">
+    <h2>Questions</h2>
+    <div class="faq">
+      <details><summary>Where do the numbers come from?</summary><p>Property details and recent sales come from public records and listing data covering the U.S. After-repair value is based on the closest recent sales by distance, size, age and date. Repair estimates use cost per square foot by condition, adjusted for the age of the house and any problems the seller reports. Every number is an estimate, so check comps and walk the property before you sign.</p></details>
+      <details><summary>How do offers get calculated?</summary><p>Max offer = after-repair value × 70%, minus repairs, minus your assignment fee. Your opening offer starts 5% below that so you have room to negotiate. On any deal you can change the ARV, repairs, contract price and fee and see the effect on your buyer's profit.</p></details>
+      <details><summary>Do I need my own website or domain?</summary><p>No. Your funnel is live at your own link as soon as you sign up. On Pro and Team, or with the add-on on Starter, you can connect a domain you own. We give you the two DNS records to add at your registrar.</p></details>
+      <details><summary>Can I use my own ads?</summary><p>Yes. Paste your Meta Pixel ID and Google Ads conversion tag in Ad tracking, and point your ads at your funnel link. Each lead shows which ad platform it came from. Add utm_source to your ad links for finer tracking.</p></details>
+      <details><summary>Are the contracts legally ready to use?</summary><p>They are templates with the disclosures Texas requires for wholesalers, filled in from your deal. Laws vary by state and situation. Have a real estate attorney in your state review them once before you use them, and follow your state's rules on marketing contracts you don't own.</p></details>
+      <details><summary>What happens if I hit my monthly limit?</summary><p>Your funnel keeps taking leads. They still arrive in your inbox with the seller's details, just without the automatic analysis, until you upgrade or the month resets.</p></details>
+      <details><summary>Can I cancel?</summary><p>Yes, anytime, from Account → Manage billing. You keep access until the end of the period you paid for.</p></details>
+    </div>
+  </div></section>
+
+  <section class="cta2"><div class="w">
+    <h2>Get your funnel live today.</h2>
+    <p>Sign up, add your business info and share your link.</p>
+    <a class="btn" href="#pricing">Choose a plan</a>
+  </div></section>
+</main>
+
+<footer><div class="w">
+  <span>&copy; <span id="yr"></span> Deal Desk</span>
+  <span><a href="/login">Log in</a> &nbsp;·&nbsp; <a href="#pricing">Pricing</a> &nbsp;·&nbsp; <a href="#faq">FAQ</a></span>
+</div></footer>
+<script>document.getElementById('yr').textContent = new Date().getFullYear();</script>
+</body>
+</html>
