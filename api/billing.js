@@ -27,7 +27,7 @@ export default async function handler(req, res) {
       const params = {
         mode: 'subscription',
         'line_items[0][price]': process.env.STRIPE_PRICE_DOMAIN, 'line_items[0][quantity]': '1',
-        success_url: `${origin}/app.html?paid=1#domain`, cancel_url: `${origin}/app.html#domain`,
+        success_url: `${origin}/app?paid=1#domain`, cancel_url: `${origin}/app#domain`,
         client_reference_id: u.id, 'metadata[uid]': u.id, 'metadata[feature]': 'customDomain',
         'subscription_data[metadata][uid]': u.id, 'subscription_data[metadata][feature]': 'customDomain',
         allow_promotion_codes: 'true',
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
     }
     if (b.action === 'portal') {
       if (!u.stripeCustomerId) return res.status(400).json({ error: 'No billing account yet.' });
-      const s = await stripe('billing_portal/sessions', { customer: u.stripeCustomerId, return_url: `${origin}/app.html#domain` });
+      const s = await stripe('billing_portal/sessions', { customer: u.stripeCustomerId, return_url: `${origin}/app#domain` });
       return res.status(200).json({ url: s.url });
     }
     return res.status(400).json({ error: 'Unknown action.' });

@@ -45,7 +45,8 @@ http.createServer(async (req, res) => {
     return;
   }
   const pathname = decodeURIComponent(req.url.split('?')[0]);
-  const file = path.join(root, pathname === '/' ? 'index.html' : pathname);
+  let file = path.join(root, pathname === '/' ? 'index.html' : pathname);
+  if (!fs.existsSync(file) && fs.existsSync(file + '.html')) file += '.html'; // like Vercel cleanUrls
   if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.statusCode = 404; return res.end('Not found'); }
   res.setHeader('Content-Type', file.endsWith('.html') ? 'text/html' : file.endsWith('.js') ? 'text/javascript' : 'text/plain');
   fs.createReadStream(file).pipe(res);

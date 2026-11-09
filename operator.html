@@ -70,7 +70,7 @@
 <script src="/acct.js"></script>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app.html">Leads</a><a class="on" href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a href="/photos.html">Photos</a><a href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app">Leads</a><a class="on" href="/operator">Run deal</a><a href="/batch">Batch</a><a href="/photos">Photos</a><a href="/underwriting">Deals</a><a href="/list">Lists</a></nav></div></header>
 
 <main class="wrap">
   <!-- PIN gate -->
@@ -83,7 +83,7 @@
       <div class="err" id="pinErr" role="alert"></div>
       <button class="btn" id="pinBtn" type="submit">Unlock</button>
     </form>
-  <p class="sub" style="margin-top:12px">Have an account? <a href="/login.html">Log in</a></p>
+  <p class="sub" style="margin-top:12px">Have an account? <a href="/login">Log in</a></p>
 </section>
 
   <!-- Property form -->
@@ -292,7 +292,7 @@
     const r = await fetch('/api/deals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, action: 'save', deal }) })
       .then(async x => ({ ok: x.ok, j: await x.json().catch(() => ({})) })).catch(() => ({ ok: false, j: {} }));
     if (!r.ok) { $('saveDealBtn').disabled = false; $('saveDealBtn').textContent = r.j.error || 'Could not save. Tap to retry.'; return; }
-    location.href = '/underwriting.html#' + r.j.deal.id;
+    location.href = '/underwriting#' + r.j.deal.id;
   });
   const copy = async (btn, txt, label) => {
     try { await navigator.clipboard.writeText(txt); }

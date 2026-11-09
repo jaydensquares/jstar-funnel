@@ -94,7 +94,7 @@
 <script src="/acct.js"></script>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app.html">Leads</a><a href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a class="on" href="/photos.html">Photos</a><a href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app">Leads</a><a href="/operator">Run deal</a><a href="/batch">Batch</a><a class="on" href="/photos">Photos</a><a href="/underwriting">Deals</a><a href="/list">Lists</a></nav></div></header>
 
 <main class="wrap">
   <section id="gate" class="card">
@@ -106,7 +106,7 @@
       <div class="err" id="pinErr" role="alert"></div>
       <button class="btn" id="pinBtn" type="submit">Unlock</button>
     </form>
-  <p class="sub" style="margin-top:12px">Have an account? <a href="/login.html">Log in</a></p>
+  <p class="sub" style="margin-top:12px">Have an account? <a href="/login">Log in</a></p>
 </section>
 
   <form id="form" hidden autocomplete="off">
@@ -258,7 +258,7 @@
       condition: last.condition, issues: last.issues, notes: [$('notes').value.trim(), 'AI photo read: ' + last.summary].filter(Boolean).join('\n'),
       customRepairs: last.repairs.map(x => ({ item: x.item, cost: mid(x) })) };
     try { sessionStorage.setItem('opPrefill', JSON.stringify(prefill)); } catch {}
-    location.href = '/operator.html';
+    location.href = '/operator';
   });
   $('copyBtn').addEventListener('click', async () => {
     if (!last) return;

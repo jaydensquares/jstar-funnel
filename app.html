@@ -106,14 +106,14 @@
 </style>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" id="logo" href="/app.html">Deal <span>Desk</span></a><nav class="nav"><a href="#account" id="acctLink">Account</a></nav></div></header>
+<header><div class="wrap"><a class="logo" id="logo" href="/app">Deal <span>Desk</span></a><nav class="nav"><a href="#account" id="acctLink">Account</a></nav></div></header>
 
 <main class="wrap">
   <p class="note" id="loading">Loading…</p>
   <div id="appBody" hidden>
     <div class="banner" id="welcome" hidden></div>
     <nav class="tools" aria-label="Tools">
-      <a href="/operator.html"><i>⚡</i>Run deal</a><a href="/batch.html"><i>☰</i>Batch</a><a href="/photos.html"><i>📷</i>Photos</a><a href="/underwriting.html"><i>📁</i>Deals</a><a href="/list.html"><i>⬇</i>Lists</a>
+      <a href="/operator"><i>⚡</i>Run deal</a><a href="/batch"><i>☰</i>Batch</a><a href="/photos"><i>📷</i>Photos</a><a href="/underwriting"><i>📁</i>Deals</a><a href="/list"><i>⬇</i>Lists</a>
     </nav>
     <div class="tabs" id="tabs">
       <a href="#leads" data-t="leads">Leads</a><a href="#funnel" data-t="funnel">My funnel</a><a href="#ads" data-t="ads">Ad tracking</a><a href="#domain" data-t="domain">Domain</a><a href="#account" data-t="account">Account</a>
@@ -237,7 +237,7 @@
   const $k = n => (n || n === 0) ? '$' + (n >= 1000 ? Math.round(n / 1000) + 'k' : n) : '—';
   const ago = t => { const m = Math.round((Date.now() - t) / 6e4); return m < 1 ? 'just now' : m < 60 ? m + 'm ago' : m < 1440 ? Math.round(m / 60) + 'h ago' : new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
   const post = (url, body) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
-    .then(async r => { if (r.status === 401) { location.href = '/login.html?next=' + encodeURIComponent('/app.html' + location.hash); throw new Error('auth'); } return { ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }; })
+    .then(async r => { if (r.status === 401) { location.href = '/login?next=' + encodeURIComponent('/app' + location.hash); throw new Error('auth'); } return { ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }; })
     .catch(e => { if (e.message === 'auth') throw e; return { ok: false, j: { error: 'Network error. Try again.' } }; });
   const flash = (btn, txt) => { const o = btn.textContent; btn.textContent = txt; setTimeout(() => btn.textContent = o, 1400); };
 
@@ -245,7 +245,7 @@
 
   async function boot() {
     const r = await fetch('/api/auth?action=me').catch(() => null);
-    if (!r || !r.ok) { location.replace('/login.html?next=' + encodeURIComponent('/app.html' + location.hash)); return; }
+    if (!r || !r.ok) { location.replace('/login?next=' + encodeURIComponent('/app' + location.hash)); return; }
     user = (await r.json()).user;
     const p = esc(user.company || user.name).split(' ');
     $('logo').innerHTML = p.length > 1 ? `${p[0]} <span>${p.slice(1).join(' ')}</span>` : p[0];
@@ -309,12 +309,12 @@
   $('leadBack').onclick = () => { location.hash = 'leads'; };
   $('lvConvert').onclick = async () => {
     if (!curLead) return;
-    if (curLead.dealId) { location.href = '/underwriting.html#' + curLead.dealId; return; }
+    if (curLead.dealId) { location.href = '/underwriting#' + curLead.dealId; return; }
     $('lvConvert').disabled = true; $('lvConvert').textContent = 'Moving…';
     const r = await post('/api/leads', { action: 'convert', id: curLead.id });
     $('lvConvert').disabled = false;
     if (!r.ok) { $('lvErr').textContent = r.j.error || 'Could not move it.'; $('lvConvert').textContent = 'Move to deals →'; return; }
-    location.href = '/underwriting.html#' + r.j.dealId;
+    location.href = '/underwriting#' + r.j.dealId;
   };
   $('lvStatus').onchange = async () => {
     const st = $('lvStatus').value; const r = await post('/api/leads', { action: 'status', id: curLead.id, status: st });
@@ -383,7 +383,7 @@
     if (!r.ok) { $('pErr').textContent = r.j.error || 'Could not update.'; return; }
     $('pwForm').reset(); flash($('pBtn'), 'Updated ✓');
   };
-  $('logout').onclick = async () => { await post('/api/auth', { action: 'logout' }).catch(() => {}); location.href = '/login.html'; };
+  $('logout').onclick = async () => { await post('/api/auth', { action: 'logout' }).catch(() => {}); location.href = '/login'; };
 
   boot();
 })();

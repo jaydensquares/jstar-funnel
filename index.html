@@ -214,7 +214,7 @@
         <b id="brand"></b>
       </a>
       <div class="hdr-right">
-        <a class="login" href="/operator.html" rel="nofollow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Login</span></a>
+        <a class="login" href="/operator" rel="nofollow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Login</span></a>
         <a class="call" id="callbtn" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span id="callnum"></span></a>
       </div>
     </header>
@@ -235,7 +235,7 @@
           <span class="k" style="font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)">Free cash offer</span>
           <h2 style="margin-top:10px">Find out what we'd pay for your house</h2>
           <p class="sub">Answer a few quick questions about the property. It takes about 60 seconds, and there's no obligation.</p>
-          <a class="next" id="ctaBtn" href="/offer.html"><span>Get my cash offer</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="next" id="ctaBtn" href="/offer"><span>Get my cash offer</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
           <p class="help">Questions first? Use the chat bubble on this page or call <a id="ctaCall" href="tel:+18328330125">(832) 833-0125</a>.</p>
         </div>
       </div>
@@ -275,7 +275,7 @@
   $('callbtn').href = tel; $('callnum').textContent = S.phone;
   $('yr').textContent = new Date().getFullYear();
   // Keep ad tracking (UTMs, click IDs) when visitors click through to the offer form
-  $('ctaBtn').href = '/offer.html' + location.search;
+  $('ctaBtn').href = '/offer' + location.search;
   const qs = new URLSearchParams(location.search), keys = ['utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','gbraid','wbraid','fbclid'];
   try { const t = JSON.parse(sessionStorage.getItem('trk') || '{}'); keys.forEach(k => { if (qs.get(k)) t[k] = qs.get(k); }); t.landing = t.landing || location.href; t.referrer = t.referrer || document.referrer || ''; sessionStorage.setItem('trk', JSON.stringify(t)); } catch {}
   $('ctaBtn').addEventListener('click', () => { if (window.fbq) fbq('trackCustom', 'StartOffer'); if (window.gtag) gtag('event', 'start_offer'); });

@@ -116,7 +116,7 @@
 <script src="/acct.js"></script>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app.html">Leads</a><a href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a href="/photos.html">Photos</a><a class="on" href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app">Leads</a><a href="/operator">Run deal</a><a href="/batch">Batch</a><a href="/photos">Photos</a><a class="on" href="/underwriting">Deals</a><a href="/list">Lists</a></nav></div></header>
 
 <main class="wrap">
   <section id="gate" class="card">
@@ -128,7 +128,7 @@
       <div class="err" id="pinErr" role="alert"></div>
       <button class="btn" id="pinBtn" type="submit">Unlock</button>
     </form>
-  <p class="sub" style="margin-top:12px">Have an account? <a href="/login.html">Log in</a></p>
+  <p class="sub" style="margin-top:12px">Have an account? <a href="/login">Log in</a></p>
 </section>
 
   <!-- Pipeline -->
@@ -338,7 +338,7 @@
       const bits = [n.contractPrice && `Contract ${$$(n.contractPrice)}`, n.assignmentFee && `Fee ${$$(n.assignmentFee)}`, d.terms?.closingDate && `Close ${new Date(d.terms.closingDate + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`].filter(Boolean).join(' · ');
       return `<button type="button" class="deal" data-id="${esc(d.id)}"><div class="top"><div><div class="addr">${esc(a.street || 'No address')}</div><div class="meta">${esc([a.city, a.state].filter(Boolean).join(', '))}${d.seller?.name ? ' · ' + esc(d.seller.name) : ''}</div></div><span class="st ${d.status}">${SL[d.status] || d.status}</span></div>
         <div class="meta">${bits || 'No numbers yet'}</div><div class="bar" title="${p}/${ALLCK.length} checklist"><i style="width:${Math.round(p / ALLCK.length * 100)}%"></i></div></button>`;
-    }).join('') : `<div class="card"><p class="note" style="margin:0">${deals.length ? 'No deals in this view.' : 'No deals yet. Run a property on <a href="/operator.html">Run deal</a> and tap <b>Save to deals</b>, or tap <b>+ New deal</b>.'}</p></div>`;
+    }).join('') : `<div class="card"><p class="note" style="margin:0">${deals.length ? 'No deals in this view.' : 'No deals yet. Run a property on <a href="/operator">Run deal</a> and tap <b>Save to deals</b>, or tap <b>+ New deal</b>.'}</p></div>`;
     $('list').querySelectorAll('.deal').forEach(b => b.onclick = () => { location.hash = b.dataset.id; });
   }
 
@@ -364,7 +364,7 @@
     $('delBtn').hidden = !d.id;
     const ready = !!d.id;
     ['psaBtn', 'asgBtn'].forEach(b => { $(b).style.opacity = ready ? 1 : .5; $(b).style.pointerEvents = ready ? '' : 'none'; });
-    if (ready) { $('psaBtn').href = `/contract.html?id=${d.id}&doc=psa`; $('asgBtn').href = `/contract.html?id=${d.id}&doc=assign`; }
+    if (ready) { $('psaBtn').href = `/contract?id=${d.id}&doc=psa`; $('asgBtn').href = `/contract?id=${d.id}&doc=assign`; }
     updCount(); calc();
   }
   function collect() {

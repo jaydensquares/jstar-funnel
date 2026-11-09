@@ -84,7 +84,7 @@
 </style>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="/login.html">Deal <span>Desk</span></a></div></header>
+<header><div class="wrap"><a class="logo" href="/login">Deal <span>Desk</span></a></div></header>
 <main class="wrap authwrap">
   <section class="card">
     <div class="tabs" role="tablist">
@@ -130,7 +130,7 @@
 <script>
 (() => {
   const $ = id => document.getElementById(id);
-  const next = (() => { const n = new URLSearchParams(location.search).get('next') || ''; return /^\/[a-z0-9_./#-]*$/i.test(n) && !n.startsWith('//') ? n : '/app.html'; })();
+  const next = (() => { const n = new URLSearchParams(location.search).get('next') || ''; return /^\/[a-z0-9_./#-]*$/i.test(n) && !n.startsWith('//') ? n : '/app'; })();
   const mode = m => {
     $('login').hidden = m !== 'login'; $('signup').hidden = m !== 'signup';
     $('tLogin').classList.toggle('on', m === 'login'); $('tSignup').classList.toggle('on', m === 'signup');
@@ -166,7 +166,7 @@
     const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value });
     $('sBtn').disabled = false; $('sBtn').textContent = 'Create account';
     if (!r.ok) { $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
-    location.replace('/app.html?welcome=1');
+    location.replace('/app?welcome=1');
   });
 })();
 </script>
