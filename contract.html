@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Contract | JStar Acquisitions</title>
+<style>
+  :root { --ink:#111; --muted:#555; --line:#bbb; --brand:#1a3f8f; --warn:#8a5a00; --warnbg:#fff6e0; }
+  * { box-sizing:border-box; }
+  [hidden] { display:none !important; }
+  body { margin:0; background:#e9ecf2; color:var(--ink); font:15px/1.5 Georgia, 'Times New Roman', serif; }
+  .bar { position:sticky; top:0; z-index:5; background:#0c1a33; color:#fff; font:600 14px/1.2 -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; padding:10px 16px; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .bar a { color:#c3cde0; text-decoration:none; }
+  .bar .sp { flex:1; }
+  .bar button { font:inherit; border:0; border-radius:8px; padding:9px 14px; cursor:pointer; background:#c6a052; color:#0c1a33; }
+  .bar button.alt { background:transparent; color:#fff; border:1px solid #3a4a6a; }
+  .note { max-width:820px; margin:14px auto 0; padding:12px 14px; background:var(--warnbg); color:var(--warn); border-radius:8px; font:14px/1.45 -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; }
+  .page { max-width:820px; margin:14px auto 40px; background:#fff; padding:48px 56px; box-shadow:0 1px 4px rgba(0,0,0,.12); }
+  h1 { font-size:20px; text-align:center; letter-spacing:.04em; margin:0 0 4px; text-transform:uppercase; }
+  .sub { text-align:center; color:var(--muted); font-size:13px; margin:0 0 22px; }
+  h2 { font-size:15px; margin:18px 0 4px; }
+  p { margin:6px 0; }
+  .blank { display:inline-block; min-width:160px; border-bottom:1px solid var(--ink); }
+  .box { border:2px solid var(--ink); padding:12px 14px; margin:18px 0; }
+  .box h2 { margin-top:0; }
+  .init { margin-top:10px; }
+  .sig { display:grid; grid-template-columns:1fr 1fr; gap:28px 40px; margin-top:30px; }
+  .sig div { border-top:1px solid var(--ink); padding-top:4px; font-size:13px; min-height:52px; }
+  .err { max-width:820px; margin:30px auto; font:16px -apple-system, sans-serif; color:#b42318; text-align:center; }
+  @media (max-width:640px) { .page { padding:28px 20px; margin:10px 8px 30px; } .sig { grid-template-columns:1fr; } }
+  @media print {
+    body { background:#fff; font-size:11.5pt; }
+    .bar, .note { display:none !important; }
+    .page { box-shadow:none; margin:0; padding:0; max-width:none; }
+    @page { margin:0.75in; }
+    h2 { break-after:avoid; }
+    .box, .sig { break-inside:avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="bar">
+  <a href="/underwriting.html" id="back">← Deal</a>
+  <span class="sp"></span>
+  <button class="alt" id="swap" type="button"></button>
+  <button id="print" type="button">Print / Save PDF</button>
+</div>
+<div class="note" id="note">Template only. Have a Texas real estate attorney review this contract before you use it with a real seller or buyer. Fill in anything blank (legal description, names) before signing.</div>
+<div class="err" id="err" hidden></div>
+<div class="page" id="doc" hidden></div>
+
+<script>
+(() => {
+  // Your business info on the contracts
+  const BIZ = { company: 'JStar Acquisitions', signer: 'Jayden Squares', title: 'Owner', phone: '(832) 833-0125', email: '' };
+
+  const qs = new URLSearchParams(location.search);
+  const id = qs.get('id'), docType = qs.get('doc') === 'assign' ? 'assign' : 'psa';
+  const $ = s => document.getElementById(s);
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const money = n => (n || n === 0) ? '$' + Number(n).toLocaleString() : '<span class="blank"></span>';
+  const v = (x, w = 160) => x ? `<b>${esc(x)}</b>` : `<span class="blank" style="min-width:${w}px"></span>`;
+  const date = s => { if (!s) return ''; const d = new Date(s + 'T12:00:00'); return isNaN(d) ? s : d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); };
+  const words = n => { // number to words for the price line
+    if (!n && n !== 0) return '';
+    const a = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+    const t = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+    const h = x => (x >= 100 ? a[Math.floor(x / 100)] + ' hundred' + (x % 100 ? ' ' : '') : '') + (x % 100 < 20 ? a[x % 100] : t[Math.floor(x % 100 / 10)] + (x % 10 ? '-' + a[x % 10] : ''));
+    n = Math.round(n); if (n === 0) return 'zero';
+    const parts = []; [[1e6, 'million'], [1e3, 'thousand'], [1, '']].forEach(([d, w]) => { const q = Math.floor(n / d); n %= d; if (q) parts.push(h(q) + (w ? ' ' + w : '')); });
+    const s = parts.join(' ').trim(); return s.charAt(0).toUpperCase() + s.slice(1) + ' dollars';
+  };
+
+  $('back').href = '/underwriting.html#' + (id || '');
+  $('swap').textContent = docType === 'psa' ? 'Assignment →' : '← Purchase agreement';
+  $('swap').onclick = () => { qs.set('doc', docType === 'psa' ? 'assign' : 'psa'); location.search = qs.toString(); };
+  $('print').onclick = () => window.print();
+
+  let pin = ''; try { pin = sessionStorage.getItem('opPin') || ''; } catch {}
+  const fail = m => { $('err').hidden = false; $('err').innerHTML = m; };
+  if (!pin) return fail('Open this from the Underwriting page after entering your PIN. <a href="/underwriting.html">Go there →</a>');
+  if (!id) return fail('No deal selected. <a href="/underwriting.html">Pick a deal →</a>');
+
+  fetch('/api/deals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, action: 'get', id }) })
+    .then(async r => ({ ok: r.ok, j: await r.json().catch(() => ({})) }))
+    .then(({ ok, j }) => { if (!ok) return fail(esc(j.error || 'Could not load the deal.')); render(j.deal); })
+    .catch(() => fail('Network error. Refresh to try again.'));
+
+  function render(d) {
+    const a = d.address || {}, s = d.seller || {}, b = d.buyer || {}, n = d.numbers || {}, t = d.terms || {}, tc = d.title || {};
+    const addr = [a.street, a.city, a.state && (a.state + ' ' + (a.zip || ''))].filter(Boolean).join(', ');
+    const sellers = [s.name, s.name2].filter(Boolean).join(' and ');
+    const titleCo = [tc.company, tc.officer && `Attn: ${tc.officer}`, tc.phone, tc.email].filter(Boolean).join(' · ');
+    const optDays = t.optionDays || 10, emDays = t.emDays || 3;
+    document.title = (docType === 'psa' ? 'Purchase Agreement' : 'Assignment') + ' – ' + (a.street || 'Deal');
+    const preTitle = a.street ? `<p class="sub">${esc(addr)}</p>` : '';
+
+    const psa = `
+      <h1>Real Estate Purchase and Sale Agreement</h1>${preTitle}
+      <p>This Agreement is made on ${v(date(t.contractDate))} (the "Effective Date", which is the date the last party signs) between:</p>
+      <p><b>Seller:</b> ${v(sellers, 260)}${s.mailing ? `, of ${esc(s.mailing)}` : ''}</p>
+      <p><b>Buyer:</b> <b>${esc(BIZ.company)} and/or assigns</b></p>
+
+      <h2>1. Property</h2>
+      <p>The land, improvements and fixtures located at ${v(addr, 300)}, in ${v(a.county ? a.county + ' County' : '', 140)}, Texas, legally described as ${v(a.legal, 300)} (or as described in the title commitment), together with all rights and appurtenances (the "Property").</p>
+
+      <h2>2. Purchase Price</h2>
+      <p>The purchase price is ${money(n.contractPrice)}${n.contractPrice ? ` (${esc(words(n.contractPrice))})` : ''}, payable in cash or certified funds at closing. This Agreement is not contingent on Buyer obtaining financing.</p>
+
+      <h2>3. Earnest Money</h2>
+      <p>Within ${esc(emDays)} business days after the Effective Date, Buyer will deposit ${money(n.earnest)} as earnest money with ${v(tc.company, 220)} ("Title Company"). The earnest money will be applied to the purchase price at closing.</p>
+
+      <h2>4. Inspection Period</h2>
+      <p>Buyer has ${esc(optDays)} days after the Effective Date (the "Inspection Period") to inspect the Property and to evaluate it for Buyer's purposes. Buyer may terminate this Agreement for any reason by written notice to Seller before the Inspection Period ends, and the earnest money will be refunded to Buyer. Seller will give Buyer, its contractors, lenders and prospective assignees reasonable access to the Property on reasonable notice.</p>
+
+      <h2>5. Condition of Property</h2>
+      <p>Buyer accepts the Property in its present "AS IS, WHERE IS" condition, with all faults. Seller is not required to make any repairs. Seller will disclose any known material defects and will deliver any disclosures required by law, including a Seller's Disclosure Notice under Texas Property Code §5.008 if required, and the federal lead-based paint disclosure for homes built before 1978.</p>
+
+      <h2>6. Title</h2>
+      <p>Seller will convey good and marketable title by General Warranty Deed, free of all liens, judgments and encumbrances except those Buyer accepts in writing. Within the Inspection Period Buyer may obtain a title commitment. If title is not acceptable to Buyer, Buyer may terminate and receive a refund of the earnest money. Seller will cooperate with the Title Company to cure title issues, including payoff of all mortgages and liens from Seller's proceeds at closing.</p>
+
+      <h2>7. Closing</h2>
+      <p>Closing will take place at the Title Company on or before ${v(date(t.closingDate), 180)}, or sooner by mutual agreement. ${esc(t.possession || 'Seller will deliver possession of the Property to Buyer at closing, free of personal property and debris unless otherwise agreed.')}</p>
+
+      <h2>8. Closing Costs and Prorations</h2>
+      <p>Buyer will pay the customary closing costs, including the owner's title policy premium and escrow fees. Seller will pay the payoff of Seller's loans and liens, any of Seller's own attorney fees, and Seller's share of prorations. Property taxes, rents, security deposits and HOA dues (if any) will be prorated as of the closing date.</p>
+
+      <h2>9. Assignment</h2>
+      <p>Buyer may assign this Agreement, in whole or in part, without Seller's consent. On assignment, the assignee will assume Buyer's obligations under this Agreement. Seller agrees to close with Buyer or Buyer's assignee on the terms of this Agreement.</p>
+
+      <h2>10. Default</h2>
+      <p>If Buyer fails to close for a reason other than Seller's default or a failed condition in this Agreement, Seller's sole remedy is to keep the earnest money as liquidated damages. If Seller fails to close, Buyer may enforce specific performance or terminate and receive a refund of the earnest money, in addition to any other remedy available at law.</p>
+
+      <h2>11. General</h2>
+      <p>This Agreement is governed by Texas law and is the entire agreement between the parties. It may be signed in counterparts and with electronic signatures, which are binding. Time is of the essence. Any change must be in writing and signed by both parties.</p>
+      ${t.extra ? `<h2>12. Additional Terms</h2><p>${esc(t.extra).replace(/\n/g, '<br>')}</p>` : ''}
+
+      <div class="box">
+        <h2>Notice to Seller (Texas Property Code §5.0205 and Occupations Code §1101.0045)</h2>
+        <p>Buyer intends to assign its interest in this Agreement to another buyer, and may receive a fee or profit from doing so. Buyer may also choose to close on the purchase itself. Buyer is acquiring an equitable interest in the Property through this Agreement. Buyer is <b>not</b> a licensed real estate broker or sales agent and does not represent Seller. Seller is encouraged to consult an attorney before signing.</p>
+        <p class="init">Seller's initials: ________ &nbsp; ________</p>
+      </div>
+
+      <div class="sig">
+        <div>Seller signature<br><br>${esc(s.name || '')}</div><div>Date</div>
+        ${s.name2 ? `<div>Seller signature<br><br>${esc(s.name2)}</div><div>Date</div>` : ''}
+        <div>Buyer: ${esc(BIZ.company)} and/or assigns<br><br>By: ${esc(BIZ.signer)}, ${esc(BIZ.title)}</div><div>Date</div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:22px">Title Company: ${titleCo ? esc(titleCo) : '________________________'} · Buyer contact: ${esc(BIZ.phone)}${BIZ.email ? ' · ' + esc(BIZ.email) : ''}${s.phone ? ` · Seller phone: ${esc(s.phone)}` : ''}</p>`;
+
+    const buyerName = b.entity || b.name;
+    const assign = `
+      <h1>Assignment of Real Estate Purchase Agreement</h1>${preTitle}
+      <p>This Assignment is made on ${v(date(t.assignDate))} between <b>${esc(BIZ.company)}</b> ("Assignor") and ${v(buyerName, 260)}${b.entity && b.name ? `, by ${esc(b.name)}` : ''} ("Assignee").</p>
+
+      <h2>1. The Contract</h2>
+      <p>Assignor is the buyer under a Real Estate Purchase and Sale Agreement dated ${v(date(t.contractDate))} (the "Contract") with ${v(sellers, 220)} ("Seller") for the property at ${v(addr, 300)} (the "Property"), at a purchase price of ${money(n.contractPrice)}, with closing on or before ${v(date(t.closingDate), 180)} at ${v(tc.company, 200)} ("Title Company").</p>
+
+      <h2>2. Assignment</h2>
+      <p>Assignor assigns to Assignee all of Assignor's rights, title and interest in and to the Contract. Assignee accepts this assignment.</p>
+
+      <h2>3. Assignment Fee</h2>
+      <p>Assignee will pay Assignor an assignment fee of ${money(n.assignmentFee)}${n.assignmentFee ? ` (${esc(words(n.assignmentFee))})` : ''}. The fee will be paid at closing through the Title Company and shown on the settlement statement. If closing does not occur because of Assignee's default, the fee is still earned.</p>
+
+      <h2>4. Non-Refundable Deposit</h2>
+      <p>Within ${esc(t.buyerDepositDays || 2)} business days after signing, Assignee will deposit ${money(n.buyerDeposit)} with the Title Company. The deposit is non-refundable to Assignee, except if closing fails because of Seller's default, a title defect that cannot be cured, or Assignor's default. At closing the deposit will be credited to Assignee.</p>
+
+      <h2>5. Assumption of Obligations</h2>
+      <p>Assignee assumes and agrees to perform all of the buyer's obligations under the Contract, including paying the purchase price and closing costs and closing on or before the closing date. Assignee has received a copy of the Contract.</p>
+
+      <h2>6. As-Is; Assignee's Own Due Diligence</h2>
+      <p>Assignee is buying the Property "AS IS". Any after-repair value, comparable sales, repair estimates, rent figures or other numbers provided by Assignor are estimates only, not guarantees. Assignee has relied on its own inspection, research and judgment. Assignor makes no warranty about the Property's condition, value, title, zoning or fitness for any purpose.</p>
+
+      <h2>7. General</h2>
+      <p>This Assignment is governed by Texas law and binds the parties and their successors. It may be signed in counterparts and with electronic signatures.</p>
+
+      <div class="box">
+        <h2>Disclosure to Assignee (Texas Occupations Code §1101.0045 and Property Code §5.0205)</h2>
+        <p>Assignor holds only an <b>equitable interest</b> in the Property under the Contract. Assignor does <b>not</b> own the Property or hold legal title, and is not selling the Property itself. Assignor is only assigning its interest in the Contract. Assignor is not a licensed real estate broker or sales agent and does not represent Assignee.</p>
+        <p class="init">Assignee's initials: ________</p>
+      </div>
+
+      <div class="sig">
+        <div>Assignor: ${esc(BIZ.company)}<br><br>By: ${esc(BIZ.signer)}, ${esc(BIZ.title)}</div><div>Date</div>
+        <div>Assignee: ${esc(buyerName || '')}<br><br>${b.entity && b.name ? 'By: ' + esc(b.name) : ''}</div><div>Date</div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:22px">Title Company: ${titleCo ? esc(titleCo) : '________________________'} · Assignor: ${esc(BIZ.phone)}${b.phone ? ` · Assignee: ${esc(b.phone)}` : ''}${b.email ? ' · ' + esc(b.email) : ''}</p>`;
+
+    $('doc').innerHTML = docType === 'psa' ? psa : assign;
+    $('doc').hidden = false;
+  }
+})();
+</script>
+</body>
+</html>

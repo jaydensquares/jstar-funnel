@@ -9,5 +9,8 @@
   "scripts": {
     "test": "node test/offer.test.js",
     "dev": "node scripts/dev.js"
+  },
+  "dependencies": {
+    "@vercel/blob": "latest"
   }
 }

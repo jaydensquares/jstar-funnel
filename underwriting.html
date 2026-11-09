@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Underwriting | JStar Acquisitions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0c1a33; --bg:#f4f6fa; --card:#fff; --ink:#0f1729; --muted:#5b6578; --line:#e0e5ee; --input:#fff;
+    --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#ebf0fa; --gold:#c6a052; --err:#b42318;
+    --display:'Archivo','Helvetica Neue',Arial,sans-serif; --body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg:#0d121c; --card:#151c2a; --ink:#eef2f8; --muted:#98a3b5; --line:#273148; --input:#111827;
+    --brand:#4f7fe0; --brand-soft:#1a2640; --err:#ff8a7a; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; -webkit-font-smoothing:antialiased; }
+  header { background:var(--navy); color:#f2f5fb; padding-block:16px; }
+  .wrap { max-width:760px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+  header .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .logo { font-family:var(--display); font-weight:700; text-decoration:none; color:inherit; }
+  .logo span { color:var(--gold); }
+  .tag { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); }
+  main { padding-block:20px 60px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:14px; }
+  h1 { font-family:var(--display); font-size:24px; margin:0 0 4px; letter-spacing:-.02em; }
+  h2 { font-family:var(--display); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 10px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 14px; }
+  label.f { display:block; font-size:13px; font-weight:600; margin:10px 0 6px; }
+  label.f .opt { font-weight:400; color:var(--muted); }
+  input[type=text], input[type=number], input[type=password], input[type=tel], select, textarea {
+    width:100%; font:inherit; font-size:16px; padding:11px 12px; border:1px solid var(--line); border-radius:10px; background:var(--input); color:var(--ink); }
+  textarea { min-height:70px; resize:vertical; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
+  .row { display:grid; gap:10px; grid-template-columns:1fr 1fr; }
+  .row3 { display:grid; gap:10px; grid-template-columns:1fr 1fr 1fr; }
+  .row > *, .row3 > * { min-width:0; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { position:relative; }
+  .chip input { position:absolute; opacity:0; pointer-events:none; }
+  .chip span { display:inline-block; padding:9px 12px; border:1px solid var(--line); border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; background:var(--input); }
+  .chip input:checked + span { border-color:var(--brand); background:var(--brand-soft); color:var(--brand); }
+  .chip input:focus-visible + span { box-shadow:0 0 0 3px var(--brand-soft); }
+  .rep { display:grid; grid-template-columns:1fr 120px 36px; gap:8px; margin-bottom:8px; }
+  .rep button { border:1px solid var(--line); background:var(--input); color:var(--muted); border-radius:10px; font-size:18px; cursor:pointer; }
+  .link { background:none; border:0; color:var(--brand); font:inherit; font-weight:600; padding:4px 0; cursor:pointer; }
+  .btn { width:100%; border:0; border-radius:10px; padding:15px; background:var(--brand); color:var(--brand-ink); font-family:var(--display); font-weight:700; font-size:16px; cursor:pointer; }
+  .btn:disabled { opacity:.6; cursor:wait; }
+  .btn.ghost { background:transparent; color:var(--brand); border:1px solid var(--line); }
+  .err { color:var(--err); font-size:14px; min-height:18px; margin-top:10px; }
+  .check { display:flex; gap:10px; align-items:center; font-size:14px; margin-top:12px; }
+  .check input { width:18px; height:18px; accent-color:var(--brand); }
+  .summary { white-space:pre-wrap; font-size:14px; line-height:1.5; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:14px; font-variant-numeric:tabular-nums; }
+  .sheet { overflow-x:auto; border-radius:12px; }
+  .sheet > div { padding:0 !important; background:transparent !important; }
+  .tenant { border:1px dashed var(--line); border-radius:10px; padding:4px 12px 12px; margin-top:10px; }
+  @media (max-width:380px) { .row3 { grid-template-columns:1fr 1fr; } }
+  .nav a { color:#c3cde0; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
+  .nav a.on { color:var(--gold); }
+  .stat { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+  .stat div { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  .stat b { display:block; font-family:var(--display); font-size:22px; }
+  .stat span { font-size:12px; color:var(--muted); }
+  .note { font-size:13px; color:var(--muted); line-height:1.5; }
+  .nav { display:flex; flex-wrap:nowrap; } .nav a { white-space:nowrap; }
+  @media (max-width:430px) { .nav a { margin-left:9px; font-size:12.5px; } .logo { font-size:13px; line-height:1.15; } }
+  @media (max-width:360px) { .logo span { display:none; } }
+
+  .grid2 { display:grid; gap:10px; grid-template-columns:1fr 1fr; }
+  .grid2 > *, .grid3 > * { min-width:0; }
+  .grid3 { display:grid; gap:10px; grid-template-columns:1fr 1fr 1fr; }
+  @media (max-width:520px) { .grid3 { grid-template-columns:1fr 1fr; } }
+  .stat4 { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:14px; }
+  @media (min-width:620px) { .stat4 { grid-template-columns:repeat(4,1fr); } }
+  .stat4 div { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  .stat4 b { display:block; font-family:var(--display); font-size:20px; font-variant-numeric:tabular-nums; }
+  .stat4 span { font-size:12px; color:var(--muted); }
+  .filters { display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:10px; }
+  .filters button { flex:none; border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:7px 12px; font:600 13px var(--body); cursor:pointer; }
+  .filters button.on { border-color:var(--brand); background:var(--brand-soft); color:var(--brand); }
+  .deal { display:block; width:100%; text-align:left; font:inherit; color:inherit; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:10px; cursor:pointer; }
+  .deal:hover { border-color:var(--brand); }
+  .deal .top { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+  .deal .addr { font-weight:700; }
+  .deal .meta { font-size:13px; color:var(--muted); margin-top:4px; font-variant-numeric:tabular-nums; }
+  .bar { height:5px; background:var(--line); border-radius:3px; margin-top:10px; overflow:hidden; }
+  .bar i { display:block; height:100%; background:var(--brand); }
+  .st { flex:none; font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:999px; background:var(--brand-soft); color:var(--brand); }
+  .st.contract { background:#fff4dc; color:#8a5a00; } .st.assigned { background:#e6f4ea; color:#1e7a3c; } .st.closed { background:#1e7a3c; color:#fff; } .st.dead { background:var(--line); color:var(--muted); }
+  @media (prefers-color-scheme: dark) { .st.contract { background:#3a2f12; color:#f0c674; } .st.assigned { background:#163323; color:#7fd49a; } }
+  .sticky { position:sticky; top:0; z-index:4; background:var(--bg); padding:10px 0; display:flex; gap:10px; align-items:center; }
+  .sticky .btn { width:auto; padding:11px 18px; }
+  .sticky select { width:auto; flex:1; }
+  .calc { width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums; margin-top:12px; }
+  .calc td { padding:8px 2px; border-bottom:1px solid var(--line); }
+  .calc td:last-child { text-align:right; font-weight:700; white-space:nowrap; }
+  .calc tr.hl td { font-size:16px; }
+  .ok { color:#1e7a3c; } .bad { color:var(--err); } .warn { color:#8a5a00; }
+  @media (prefers-color-scheme: dark) { .ok { color:#7fd49a; } .warn { color:#f0c674; } }
+  .checks h3 { font-size:13px; margin:14px 0 6px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+  .checks label { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--line); font-size:14.5px; line-height:1.35; cursor:pointer; }
+  .checks input { width:20px; height:20px; flex:none; margin-top:0; accent-color:var(--brand); }
+  .checks small { display:block; color:var(--muted); font-size:12.5px; }
+  .hist { font-size:13px; color:var(--muted); line-height:1.6; }
+  .linkbtn { display:block; text-align:center; text-decoration:none; }
+  .signed { margin-top:10px; padding:10px 12px; border-radius:10px; font-size:14px; }
+  .signed.ok { background:#e6f4ea; } .signed.warn { background:#fff4dc; }
+  @media (prefers-color-scheme: dark) { .signed.ok { background:#163323; } .signed.warn { background:#3a2f12; } }
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a href="/photos.html">Photos</a><a class="on" href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
+
+<main class="wrap">
+  <section id="gate" class="card">
+    <h1>Operator access</h1>
+    <p class="sub">Enter your PIN to open your deals.</p>
+    <form id="pinForm" autocomplete="off">
+      <label class="f" for="pin">PIN</label>
+      <input type="password" id="pin" inputmode="numeric" autocomplete="current-password" required>
+      <div class="err" id="pinErr" role="alert"></div>
+      <button class="btn" id="pinBtn" type="submit">Unlock</button>
+    </form>
+  </section>
+
+  <!-- Pipeline -->
+  <section id="pipe" hidden>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">
+      <h1 style="margin:0">Deals</h1>
+      <button class="btn" id="newBtn" type="button" style="width:auto;padding:11px 16px">+ New deal</button>
+    </div>
+    <div class="stat4">
+      <div><b id="sActive">0</b><span>active deals</span></div>
+      <div><b id="sContract">0</b><span>under contract</span></div>
+      <div><b id="sPending">$0</b><span>fees pending</span></div>
+      <div><b id="sClosed">$0</b><span>fees closed</span></div>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div id="list"><p class="note">Loading…</p></div>
+  </section>
+
+  <!-- Deal editor -->
+  <form id="ed" hidden autocomplete="off">
+    <div class="sticky">
+      <button type="button" class="btn ghost" id="backBtn" style="width:auto;padding:11px 14px">←</button>
+      <select id="status" aria-label="Status"></select>
+      <button class="btn" id="saveBtn" type="submit">Save</button>
+    </div>
+    <div class="err" id="edErr" role="alert"></div>
+
+    <section class="card">
+      <h2>Property</h2>
+      <label class="f" for="street">Street</label><input type="text" id="street" data-f="address.street" required>
+      <div class="grid3">
+        <div><label class="f" for="city">City</label><input type="text" id="city" data-f="address.city"></div>
+        <div><label class="f" for="state">State</label><input type="text" id="state" data-f="address.state" maxlength="2" placeholder="TX"></div>
+        <div><label class="f" for="zip">ZIP</label><input type="text" id="zip" data-f="address.zip" inputmode="numeric" maxlength="5"></div>
+      </div>
+      <label class="f" for="county">County</label><input type="text" id="county" data-f="address.county" placeholder="Harris">
+      <label class="f" for="legal">Legal description <span class="opt">(from county CAD or title)</span></label><input type="text" id="legal" data-f="address.legal" placeholder="Lot 12, Block 3, Oak Forest Sec 4">
+    </section>
+
+    <section class="card">
+      <h2>Seller</h2>
+      <div class="grid2">
+        <div><label class="f">Name (on title)</label><input type="text" data-f="seller.name"></div>
+        <div><label class="f">2nd owner <span class="opt">(if any)</span></label><input type="text" data-f="seller.name2"></div>
+      </div>
+      <div class="grid2">
+        <div><label class="f">Phone</label><input type="tel" data-f="seller.phone"></div>
+        <div><label class="f">Email</label><input type="text" data-f="seller.email" inputmode="email"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Underwriting: numbers</h2>
+      <div class="grid2">
+        <div><label class="f">ARV</label><input type="text" data-n="arv" inputmode="numeric" placeholder="$"></div>
+        <div><label class="f">Repairs</label><input type="text" data-n="repairs" inputmode="numeric" placeholder="$"></div>
+      </div>
+      <div class="grid2">
+        <div><label class="f">Contract price <span class="opt">(to seller)</span></label><input type="text" data-n="contractPrice" inputmode="numeric" placeholder="$"></div>
+        <div><label class="f">Assignment fee</label><input type="text" data-n="assignmentFee" inputmode="numeric" placeholder="$"></div>
+      </div>
+      <div class="grid2">
+        <div><label class="f">Your earnest money</label><input type="text" data-n="earnest" inputmode="numeric" placeholder="$"></div>
+        <div><label class="f">Buyer costs <span class="opt">(% of ARV)</span></label><input type="text" data-n="buyerCostPct" inputmode="decimal" placeholder="10"></div>
+      </div>
+      <table class="calc" id="calc"></table>
+      <div id="signedBox"></div>
+      <button type="button" class="btn ghost" id="signBtn" style="margin-top:10px">Sign off on these numbers</button>
+    </section>
+
+    <section class="card">
+      <h2>Terms &amp; title</h2>
+      <div class="grid2">
+        <div><label class="f">Contract date</label><input type="date" data-f="terms.contractDate"></div>
+        <div><label class="f">Closing by</label><input type="date" data-f="terms.closingDate"></div>
+      </div>
+      <div class="grid2">
+        <div><label class="f">Inspection days</label><input type="number" data-f="terms.optionDays" inputmode="numeric" placeholder="10"></div>
+        <div><label class="f">Earnest due <span class="opt">(business days)</span></label><input type="number" data-f="terms.emDays" inputmode="numeric" placeholder="3"></div>
+      </div>
+      <div class="grid2">
+        <div><label class="f">Title company</label><input type="text" data-f="title.company"></div>
+        <div><label class="f">Escrow officer</label><input type="text" data-f="title.officer"></div>
+      </div>
+      <div class="grid2">
+        <div><label class="f">Title phone</label><input type="tel" data-f="title.phone"></div>
+        <div><label class="f">Title email</label><input type="text" data-f="title.email" inputmode="email"></div>
+      </div>
+      <label class="f">Possession <span class="opt">(blank = at closing)</span></label><input type="text" data-f="terms.possession" placeholder="e.g. Seller may stay 3 days after closing rent-free">
+      <label class="f">Additional terms</label><textarea data-f="terms.extra" placeholder="Anything extra you agreed to"></textarea>
+    </section>
+
+    <section class="card">
+      <h2>Buyer (assignee)</h2>
+      <div class="grid2">
+        <div><label class="f">Buyer name</label><input type="text" data-f="buyer.name"></div>
+        <div><label class="f">Buying entity <span class="opt">(LLC)</span></label><input type="text" data-f="buyer.entity"></div>
+      </div>
+      <div class="grid2">
+        <div><label class="f">Phone</label><input type="tel" data-f="buyer.phone"></div>
+        <div><label class="f">Email</label><input type="text" data-f="buyer.email" inputmode="email"></div>
+      </div>
+      <div class="grid3">
+        <div><label class="f">Buyer deposit</label><input type="text" data-n="buyerDeposit" inputmode="numeric" placeholder="$"></div>
+        <div><label class="f">Due (days)</label><input type="number" data-f="terms.buyerDepositDays" inputmode="numeric" placeholder="2"></div>
+        <div><label class="f">Assign date</label><input type="date" data-f="terms.assignDate"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Contracts</h2>
+      <p class="note" style="margin-top:0">Pre-filled from this deal with the Texas wholesaling disclosures. Save first, then open, print or save as PDF. Templates only: have a Texas real estate attorney review them before you use them.</p>
+      <div class="grid2">
+        <a class="btn linkbtn" id="psaBtn" href="#" >Purchase agreement</a>
+        <a class="btn ghost linkbtn" id="asgBtn" href="#" >Assignment</a>
+      </div>
+    </section>
+
+    <section class="card checks" id="checks"><h2>Underwriting checklist <span id="ckCount" style="text-transform:none;letter-spacing:0;font-weight:400"></span></h2></section>
+
+    <section class="card">
+      <h2>Notes</h2>
+      <textarea data-f="notes" style="min-height:110px" placeholder="Call notes, seller situation, buyer feedback…"></textarea>
+      <div id="analysisBox" class="note" style="margin-top:10px"></div>
+      <h2 style="margin-top:16px">History</h2>
+      <div class="hist" id="hist"></div>
+    </section>
+
+    <button type="button" class="btn ghost" id="delBtn" style="color:var(--err)">Delete deal</button>
+  </form>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const STATUS = [['lead', 'Lead'], ['offer', 'Offer sent'], ['contract', 'Under contract'], ['assigned', 'Assigned'], ['closed', 'Closed'], ['dead', 'Dead']];
+  const SL = Object.fromEntries(STATUS);
+  const CHECK = [
+    ['Before you sign the seller', [
+      ['owner', 'Seller is the owner on record', 'Check the county appraisal district (CAD). All owners must sign.'],
+      ['comps', 'ARV verified with sold comps', 'Zillow/Redfin sold in the last 6 months, same size and condition.'],
+      ['repairs', 'Repairs confirmed', 'Walkthrough, photo analysis, or a contractor bid.'],
+      ['liens', 'Mortgage payoff / liens estimated', 'Make sure the contract price covers what the seller owes.'],
+      ['taxes', 'Property taxes current', 'Check the county tax office for delinquent taxes.'],
+      ['hoa', 'HOA checked', 'Dues, rental limits, transfer fees.'],
+      ['flood', 'Flood zone checked', 'FEMA flood map. Flood zones scare buyers and lenders.'],
+      ['occupancy', 'Occupancy / leases reviewed', 'Tenant, lease end, deposits, who is living there.'],
+      ['seller_notice', 'Seller signed the wholesale notice', 'Texas Property Code §5.0205 notice is in the purchase agreement. Seller initials it.'],
+    ]],
+    ['Under contract', [
+      ['title_open', 'Contract sent to title company', ''],
+      ['em_sent', 'Earnest money delivered', ''],
+      ['title_commit', 'Title commitment reviewed', 'Liens, judgments, heirs/probate, missing owners.'],
+      ['option_cal', 'Inspection deadline on your calendar', 'Last day you can cancel and get earnest money back.'],
+      ['buyer_blast', 'Deal sent to buyers', 'Buyer pitch from the deal sheet.'],
+    ]],
+    ['Assignment & closing', [
+      ['buyer_found', 'Buyer picked and assignment signed', 'Buyer initials the equitable-interest disclosure.'],
+      ['buyer_dep', 'Buyer\'s non-refundable deposit received', ''],
+      ['closing_set', 'Closing date set with title', ''],
+      ['hud', 'Assignment fee on the settlement statement', 'Review the closing statement before closing day.'],
+    ]],
+  ];
+  const ALLCK = CHECK.flatMap(g => g[1].map(x => x[0]));
+  const $$ = n => (n || n === 0) && Number.isFinite(n) ? (n < 0 ? '−$' : '$') + Math.abs(Math.round(n)).toLocaleString() : '—';
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const num = v => { const n = Number(String(v ?? '').replace(/[$,\s%]/g, '')); return String(v ?? '').trim() === '' || !Number.isFinite(n) ? null : n; };
+
+  let pin = ''; try { pin = sessionStorage.getItem('opPin') || ''; } catch {}
+  const api = body => fetch('/api/deals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, pin }) })
+    .then(async r => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }))
+    .catch(() => ({ ok: false, status: 0, j: { error: 'Network error. Try again.' } }));
+  const lock = msg => { try { sessionStorage.removeItem('opPin'); } catch {} $('pipe').hidden = true; $('ed').hidden = true; $('gate').hidden = false; $('pinErr').textContent = msg; };
+
+  $('pinForm').addEventListener('submit', async e => {
+    e.preventDefault(); pin = $('pin').value.trim(); $('pinErr').textContent = ''; $('pinBtn').disabled = true;
+    const r = await fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, checkOnly: true }) }).catch(() => null);
+    $('pinBtn').disabled = false;
+    if (!r || !r.ok) { $('pinErr').textContent = 'Wrong PIN.'; return; }
+    try { sessionStorage.setItem('opPin', pin); } catch {}
+    $('gate').hidden = true; route();
+  });
+
+  // ── Pipeline ──
+  let deals = [], filter = 'active';
+  const progress = d => ALLCK.filter(k => d.checklist?.[k]).length;
+  async function loadList() {
+    $('list').innerHTML = '<p class="note">Loading…</p>';
+    const r = await api({ action: 'list' });
+    if (r.status === 401) return lock('PIN expired or changed. Enter it again.');
+    if (!r.ok) { $('list').innerHTML = `<p class="err">${esc(r.j.error || 'Could not load deals.')}</p>`; return; }
+    deals = r.j.deals || []; renderList();
+  }
+  function renderList() {
+    const fee = d => d.numbers?.assignmentFee || 0;
+    const active = deals.filter(d => !['closed', 'dead'].includes(d.status));
+    $('sActive').textContent = active.length;
+    $('sContract').textContent = deals.filter(d => d.status === 'contract').length;
+    $('sPending').textContent = $$(deals.filter(d => ['contract', 'assigned'].includes(d.status)).reduce((s, d) => s + fee(d), 0));
+    $('sClosed').textContent = $$(deals.filter(d => d.status === 'closed').reduce((s, d) => s + fee(d), 0));
+    const F = [['active', 'Active'], ...STATUS, ['all', 'All']];
+    $('filters').innerHTML = F.map(([k, l]) => `<button type="button" data-k="${k}" class="${k === filter ? 'on' : ''}">${l}${k === 'all' ? '' : ' ' + (k === 'active' ? active.length : deals.filter(d => d.status === k).length)}</button>`).join('');
+    $('filters').querySelectorAll('button').forEach(b => b.onclick = () => { filter = b.dataset.k; renderList(); });
+    const show = filter === 'all' ? deals : filter === 'active' ? active : deals.filter(d => d.status === filter);
+    $('list').innerHTML = show.length ? show.map(d => {
+      const a = d.address || {}, n = d.numbers || {}, p = progress(d);
+      const bits = [n.contractPrice && `Contract ${$$(n.contractPrice)}`, n.assignmentFee && `Fee ${$$(n.assignmentFee)}`, d.terms?.closingDate && `Close ${new Date(d.terms.closingDate + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`].filter(Boolean).join(' · ');
+      return `<button type="button" class="deal" data-id="${esc(d.id)}"><div class="top"><div><div class="addr">${esc(a.street || 'No address')}</div><div class="meta">${esc([a.city, a.state].filter(Boolean).join(', '))}${d.seller?.name ? ' · ' + esc(d.seller.name) : ''}</div></div><span class="st ${d.status}">${SL[d.status] || d.status}</span></div>
+        <div class="meta">${bits || 'No numbers yet'}</div><div class="bar" title="${p}/${ALLCK.length} checklist"><i style="width:${Math.round(p / ALLCK.length * 100)}%"></i></div></button>`;
+    }).join('') : `<div class="card"><p class="note" style="margin:0">${deals.length ? 'No deals in this view.' : 'No deals yet. Run a property on <a href="/operator.html">Run deal</a> and tap <b>Save to deals</b>, or tap <b>+ New deal</b>.'}</p></div>`;
+    $('list').querySelectorAll('.deal').forEach(b => b.onclick = () => { location.hash = b.dataset.id; });
+  }
+
+  // ── Editor ──
+  let cur = null, dirty = false;
+  $('status').innerHTML = STATUS.map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
+  $('checks').insertAdjacentHTML('beforeend', CHECK.map(([g, items]) => `<h3>${g}</h3>` + items.map(([k, l, h]) => `<label><input type="checkbox" data-c="${k}"><span>${esc(l)}${h ? `<small>${esc(h)}</small>` : ''}</span></label>`).join('')).join(''));
+  const getPath = (o, p) => p.split('.').reduce((x, k) => x?.[k], o);
+  const setPath = (o, p, v) => { const ks = p.split('.'); let x = o; ks.slice(0, -1).forEach(k => x = x[k] ||= {}); x[ks.at(-1)] = v; };
+  const fmtMoney = el => { if (el.dataset.n === 'buyerCostPct') return; const d = el.value.replace(/[^\d]/g, ''); el.value = d ? '$' + Number(d).toLocaleString() : ''; };
+  document.querySelectorAll('[data-n]').forEach(el => el.addEventListener('input', () => { fmtMoney(el); calc(); }));
+  $('ed').addEventListener('input', () => { dirty = true; });
+  $('ed').addEventListener('change', e => { if (e.target.dataset.c) updCount(); dirty = true; });
+
+  function fill(d) {
+    cur = d; dirty = false;
+    document.querySelectorAll('[data-f]').forEach(el => { el.value = getPath(d, el.dataset.f) ?? ''; });
+    document.querySelectorAll('[data-n]').forEach(el => { const v = d.numbers?.[el.dataset.n]; el.value = v == null ? '' : el.dataset.n === 'buyerCostPct' ? v : '$' + Number(v).toLocaleString(); });
+    document.querySelectorAll('[data-c]').forEach(el => { el.checked = !!d.checklist?.[el.dataset.c]; });
+    $('status').value = d.status || 'lead';
+    $('analysisBox').innerHTML = d.analysis?.summary ? `<b>From Run deal:</b><br>${esc(d.analysis.summary).replace(/\n/g, '<br>')}` : '';
+    $('hist').innerHTML = (d.history || []).slice().reverse().map(h => `${h.at ? new Date(h.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''} · ${esc(h.text)}`).join('<br>') || '—';
+    $('delBtn').hidden = !d.id;
+    const ready = !!d.id;
+    ['psaBtn', 'asgBtn'].forEach(b => { $(b).style.opacity = ready ? 1 : .5; $(b).style.pointerEvents = ready ? '' : 'none'; });
+    if (ready) { $('psaBtn').href = `/contract.html?id=${d.id}&doc=psa`; $('asgBtn').href = `/contract.html?id=${d.id}&doc=assign`; }
+    updCount(); calc();
+  }
+  function collect() {
+    const d = JSON.parse(JSON.stringify(cur || {}));
+    document.querySelectorAll('[data-f]').forEach(el => setPath(d, el.dataset.f, el.value.trim()));
+    d.numbers = { ...(d.numbers || {}) };
+    document.querySelectorAll('[data-n]').forEach(el => { const v = num(el.value); if (v == null) delete d.numbers[el.dataset.n]; else d.numbers[el.dataset.n] = v; });
+    d.checklist = {}; document.querySelectorAll('[data-c]').forEach(el => { if (el.checked) d.checklist[el.dataset.c] = true; });
+    d.status = $('status').value;
+    if (d.address?.state) d.address.state = d.address.state.toUpperCase();
+    return d;
+  }
+  const updCount = () => { const n = document.querySelectorAll('[data-c]:checked').length; $('ckCount').textContent = `· ${n}/${ALLCK.length}`; };
+
+  function numbersNow() { const o = {}; document.querySelectorAll('[data-n]').forEach(el => { const v = num(el.value); if (v != null) o[el.dataset.n] = v; }); return o; }
+  function calc() {
+    const n = numbersNow(); const arv = n.arv, rep = n.repairs ?? 0, cp = n.contractPrice, fee = n.assignmentFee ?? 0, pct = (n.buyerCostPct ?? 10) / 100;
+    if (!arv || !cp) { $('calc').innerHTML = '<tr><td class="note" colspan="2">Enter ARV and contract price to underwrite.</td></tr>'; renderSigned(n); return; }
+    const buyerPrice = cp + fee, costs = arv * pct, allIn = buyerPrice + rep + costs, profit = arv - allIn;
+    const rule70 = arv * 0.7 - rep, room = rule70 - buyerPrice;
+    const pctArv = profit / arv;
+    const verdict = room >= 0 && pctArv >= 0.12 ? ['ok', '✓ Works for a cash buyer'] : room >= -0.03 * arv && pctArv >= 0.08 ? ['warn', '~ Tight: some buyers will pass'] : ['bad', '✗ Buyer price too high for most cash buyers'];
+    $('calc').innerHTML = [
+      ['Your contract price', $$(cp)], ['+ Your assignment fee', $$(fee)], ['= Buyer pays', $$(buyerPrice)],
+      ['+ Repairs', $$(rep)], [`+ Buyer's closing / holding / selling (${Math.round(pct * 100)}%)`, $$(costs)], ['= Buyer all-in', $$(allIn)],
+      [`Buyer profit at ${$$(arv)} ARV`, `<span class="${profit > 0 ? 'ok' : 'bad'}">${$$(profit)} (${Math.round(pctArv * 100)}%)</span>`],
+      ['70% rule max for buyer', `${$$(rule70)} <span class="${room >= 0 ? 'ok' : 'bad'}" style="font-weight:600">(${room >= 0 ? $$(room) + ' under' : $$(-room) + ' over'})</span>`],
+    ].map(([k, v], i) => `<tr class="${i === 2 || i === 6 ? 'hl' : ''}"><td>${k}</td><td>${v}</td></tr>`).join('')
+      + `<tr><td colspan="2" class="${verdict[0]}" style="text-align:left;font-weight:700">${verdict[1]}</td></tr>`;
+    renderSigned(n);
+  }
+  function renderSigned(n) {
+    const s = cur?.signoff;
+    if (!s?.at) { $('signedBox').innerHTML = ''; $('signBtn').textContent = 'Sign off on these numbers'; return; }
+    const keys = ['arv', 'repairs', 'contractPrice', 'assignmentFee'];
+    const changed = keys.filter(k => (s.numbers?.[k] ?? null) !== (n[k] ?? null));
+    $('signedBox').innerHTML = `<div class="signed ${changed.length ? 'warn' : 'ok'}">${changed.length ? '⚠ Numbers changed since you signed off (' + changed.join(', ') + ').' : '✓ Signed off'} ${new Date(s.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</div>`;
+    $('signBtn').textContent = changed.length ? 'Sign off again' : 'Signed off ✓';
+  }
+  $('signBtn').onclick = async () => {
+    const n = numbersNow();
+    if (!n.arv || !n.contractPrice) { $('edErr').textContent = 'Enter ARV and contract price first.'; return; }
+    cur = collect(); cur.signoff = { at: Date.now(), numbers: n };
+    cur.history = [...(cur.history || []), { at: Date.now(), text: `Numbers signed off: ARV ${$$(n.arv)}, repairs ${$$(n.repairs || 0)}, contract ${$$(n.contractPrice)}, fee ${$$(n.assignmentFee || 0)}` }];
+    await save();
+  };
+
+  async function save() {
+    const d = collect(); if (cur?.signoff) d.signoff = cur.signoff;
+    if (!d.address?.street) { $('edErr').textContent = 'Add a street address.'; $('street').focus(); return false; }
+    $('edErr').textContent = ''; $('saveBtn').disabled = true; $('saveBtn').textContent = 'Saving…';
+    const r = await api({ action: 'save', deal: d });
+    $('saveBtn').disabled = false; $('saveBtn').textContent = 'Save';
+    if (r.status === 401) { lock('PIN expired or changed. Enter it again.'); return false; }
+    if (!r.ok) { $('edErr').textContent = r.j.error || 'Could not save.'; return false; }
+    const isNew = !cur?.id; fill(r.j.deal);
+    const i = deals.findIndex(x => x.id === r.j.deal.id); if (i >= 0) deals[i] = r.j.deal; else deals.unshift(r.j.deal);
+    if (isNew) history.replaceState(null, '', '#' + r.j.deal.id);
+    $('saveBtn').textContent = 'Saved ✓'; setTimeout(() => { $('saveBtn').textContent = 'Save'; }, 1400);
+    return true;
+  }
+  $('ed').addEventListener('submit', e => { e.preventDefault(); save(); });
+  $('backBtn').onclick = () => { if (dirty && !confirm('Leave without saving?')) return; dirty = false; location.hash = ''; };
+  $('newBtn').onclick = () => { location.hash = 'new'; };
+  $('delBtn').onclick = async () => {
+    if (!cur?.id || !confirm('Delete this deal for good?')) return;
+    const r = await api({ action: 'delete', id: cur.id });
+    if (!r.ok) { $('edErr').textContent = r.j.error || 'Could not delete.'; return; }
+    deals = deals.filter(d => d.id !== cur.id); dirty = false; location.hash = '';
+  };
+
+  // ── Routing: #id opens a deal, #new starts one, empty = pipeline ──
+  async function route() {
+    if (!pin) { $('gate').hidden = false; return; }
+    const h = location.hash.slice(1);
+    window.scrollTo({ top: 0 });
+    if (!h) { $('ed').hidden = true; $('pipe').hidden = false; return loadList(); }
+    $('pipe').hidden = true; $('ed').hidden = false; $('edErr').textContent = '';
+    if (h === 'new') return fill({ status: 'lead', address: { state: 'TX' }, numbers: { buyerCostPct: 10 }, terms: { optionDays: 10, emDays: 3 } });
+    let d = deals.find(x => x.id === h);
+    if (!d) { const r = await api({ action: 'get', id: h }); if (r.status === 401) return lock('PIN expired or changed. Enter it again.'); d = r.j.deal; }
+    if (!d) { $('edErr').textContent = 'Deal not found.'; return fill({ status: 'lead', address: {}, numbers: {} }); }
+    fill(d);
+  }
+  window.addEventListener('hashchange', () => { if (pin) route(); });
+  window.addEventListener('beforeunload', e => { if (dirty && !$('ed').hidden) { e.preventDefault(); e.returnValue = ''; } });
+  if (pin) { $('gate').hidden = true; route(); }
+})();
+</script>
+</body>
+</html>

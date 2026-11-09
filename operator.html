@@ -62,11 +62,12 @@
   .nav a { color:#c3cde0; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
   .nav a.on { color:var(--gold); }
   .nav { display:flex; flex-wrap:nowrap; } .nav a { white-space:nowrap; }
-  @media (max-width:430px) { .nav a { margin-left:10px; font-size:13px; } .logo { font-size:14px; line-height:1.15; } }
+  @media (max-width:430px) { .nav a { margin-left:9px; font-size:12.5px; } .logo { font-size:13px; line-height:1.15; } }
+  @media (max-width:360px) { .logo span { display:none; } }
 </style>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="on" href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a href="/photos.html">Photos</a><a href="/list.html">Pull list</a></nav></div></header>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="on" href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a href="/photos.html">Photos</a><a href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
 
 <main class="wrap">
   <!-- PIN gate -->
@@ -186,6 +187,7 @@
       <button class="btn ghost" id="cpEmail" type="button">Copy buyer email</button>
       <button class="btn ghost" id="cpText" type="button">Copy buyer text</button>
     </div>
+    <button class="btn" id="saveDealBtn" type="button" style="margin-bottom:14px">Save to deals →</button>
     <div class="sheet" id="sheet"></div>
     <div class="row" style="margin-top:14px">
       <button class="btn ghost" id="editBtn" type="button">Edit this property</button>
@@ -264,11 +266,30 @@
     $('summary').textContent = r.j.summary;
     $('sheet').innerHTML = r.j.html;
     pitch = r.j.pitch || null; $('pitchBtns').hidden = !pitch;
+    lastRun = { body, j: r.j }; $('saveDealBtn').disabled = false; $('saveDealBtn').textContent = 'Save to deals →';
     $('prop').hidden = true; $('results').hidden = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
-  let pitch = null;
+  let pitch = null, lastRun = null;
+  // Save this run as a deal in the pipeline (Underwriting)
+  $('saveDealBtn').addEventListener('click', async () => {
+    if (!lastRun) return;
+    const { body: b, j } = lastRun, br = j.brief || {};
+    const deal = {
+      status: 'lead', propertyType: b.propertyType,
+      address: { street: b.street, city: b.city, state: b.state, zip: b.zip },
+      numbers: { arv: br.value, repairs: br.land ? 0 : br.repairs, contractPrice: br.opening, assignmentFee: 10000, buyerCostPct: 10, asking: br.asking },
+      analysis: { summary: j.summary, mao: br.mao, opening: br.opening, call: br.call, confidence: br.confidence, label: br.label },
+      notes: b.notes || '', terms: { optionDays: 10, emDays: 3 },
+    };
+    Object.keys(deal.numbers).forEach(k => deal.numbers[k] == null && delete deal.numbers[k]);
+    $('saveDealBtn').disabled = true; $('saveDealBtn').textContent = 'Saving…';
+    const r = await fetch('/api/deals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, action: 'save', deal }) })
+      .then(async x => ({ ok: x.ok, j: await x.json().catch(() => ({})) })).catch(() => ({ ok: false, j: {} }));
+    if (!r.ok) { $('saveDealBtn').disabled = false; $('saveDealBtn').textContent = r.j.error || 'Could not save. Tap to retry.'; return; }
+    location.href = '/underwriting.html#' + r.j.deal.id;
+  });
   const copy = async (btn, txt, label) => {
     try { await navigator.clipboard.writeText(txt); }
     catch { const t = document.createElement('textarea'); t.value = txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
