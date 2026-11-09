@@ -61,6 +61,7 @@ export default async function handler(req, res) {
   let payload;
   try {
     payload = await analyzeLead(lead);
+    payload.operator = true; // operator-only extras (buyer pitch) on the deal sheet
   } catch (e) {
     console.error('operator analysis failed', e);
     return res.status(500).json({ error: `Analysis failed: ${e.message}` });
