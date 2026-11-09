@@ -79,12 +79,11 @@
 
   let pin = ''; try { pin = sessionStorage.getItem('opPin') || ''; } catch {}
   const fail = m => { $('err').hidden = false; $('err').innerHTML = m; };
-  if (!pin) return fail('Open this from the Underwriting page after entering your PIN. <a href="/underwriting.html">Go there →</a>');
   if (!id) return fail('No deal selected. <a href="/underwriting.html">Pick a deal →</a>');
 
   fetch('/api/deals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, action: 'get', id }) })
     .then(async r => ({ ok: r.ok, j: await r.json().catch(() => ({})) }))
-    .then(({ ok, j }) => { if (!ok) return fail(esc(j.error || 'Could not load the deal.')); render(j.deal); })
+    .then(({ ok, j }) => { if (!ok) return fail(esc(j.error || 'Could not load the deal.') + ' <a href="/underwriting.html">Back to deals →</a>'); if (j.biz) Object.assign(BIZ, j.biz); render(j.deal); })
     .catch(() => fail('Network error. Refresh to try again.'));
 
   function render(d) {

@@ -110,10 +110,13 @@
   .signed { margin-top:10px; padding:10px 12px; border-radius:10px; font-size:14px; }
   .signed.ok { background:#e6f4ea; } .signed.warn { background:#fff4dc; }
   @media (prefers-color-scheme: dark) { .signed.ok { background:#163323; } .signed.warn { background:#3a2f12; } }
+  .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
+  .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 </style>
+<script src="/acct.js"></script>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a href="/photos.html">Photos</a><a class="on" href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app.html">Leads</a><a href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a href="/photos.html">Photos</a><a class="on" href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
 
 <main class="wrap">
   <section id="gate" class="card">
@@ -125,7 +128,8 @@
       <div class="err" id="pinErr" role="alert"></div>
       <button class="btn" id="pinBtn" type="submit">Unlock</button>
     </form>
-  </section>
+  <p class="sub" style="margin-top:12px">Have an account? <a href="/login.html">Log in</a></p>
+</section>
 
   <!-- Pipeline -->
   <section id="pipe" hidden>
@@ -297,7 +301,7 @@
   const api = body => fetch('/api/deals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, pin }) })
     .then(async r => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }))
     .catch(() => ({ ok: false, status: 0, j: { error: 'Network error. Try again.' } }));
-  const lock = msg => { try { sessionStorage.removeItem('opPin'); } catch {} $('pipe').hidden = true; $('ed').hidden = true; $('gate').hidden = false; $('pinErr').textContent = msg; };
+  const lock = msg => { if (acctExpired()) return; try { sessionStorage.removeItem('opPin'); } catch {} $('pipe').hidden = true; $('ed').hidden = true; $('gate').hidden = false; $('pinErr').textContent = msg; };
 
   $('pinForm').addEventListener('submit', async e => {
     e.preventDefault(); pin = $('pin').value.trim(); $('pinErr').textContent = ''; $('pinBtn').disabled = true;
@@ -434,7 +438,7 @@
 
   // ── Routing: #id opens a deal, #new starts one, empty = pipeline ──
   async function route() {
-    if (!pin) { $('gate').hidden = false; return; }
+    if (!pin && !window.ACCT) { $('gate').hidden = false; return; }
     const h = location.hash.slice(1);
     window.scrollTo({ top: 0 });
     if (!h) { $('ed').hidden = true; $('pipe').hidden = false; return loadList(); }
@@ -445,9 +449,9 @@
     if (!d) { $('edErr').textContent = 'Deal not found.'; return fill({ status: 'lead', address: {}, numbers: {} }); }
     fill(d);
   }
-  window.addEventListener('hashchange', () => { if (pin) route(); });
+  window.addEventListener('hashchange', () => { if (pin || window.ACCT) route(); });
   window.addEventListener('beforeunload', e => { if (dirty && !$('ed').hidden) { e.preventDefault(); e.returnValue = ''; } });
-  if (pin) { $('gate').hidden = true; route(); }
+  if (pin) { $('gate').hidden = true; route(); } else acctUnlock(() => { $('gate').hidden = true; route(); });
 })();
 </script>
 </body>

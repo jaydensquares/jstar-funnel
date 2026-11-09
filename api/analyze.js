@@ -1,6 +1,8 @@
 // Operator endpoint: PIN-protected. Runs the same deal analysis as the seller form,
 // but takes property details only (no seller contact info) and returns the deal sheet.
-import { pinMatches } from '../lib/pin.js';
+import { getActor } from '../lib/auth.js';
+import { useQuota } from '../lib/usage.js';
+import { brief } from '../lib/brief.js';
 import { analyzeLead } from '../lib/pipeline.js';
 import { dealSheetHtml, smsText, sendEmail, sendPush, investorPitch } from '../lib/notify.js';
 
@@ -22,11 +24,14 @@ export default async function handler(req, res) {
   if (!process.env.OPERATOR_PIN) return res.status(503).json({ error: 'Operator PIN isn\'t set up yet. Add OPERATOR_PIN in Vercel → Settings → Environment Variables, then redeploy.' });
 
   const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-  if (!pinMatches(b.pin)) {
-    await new Promise(r => setTimeout(r, 900)); // slow down guessing
-    return res.status(401).json({ error: 'Wrong PIN.' });
+  const actor = await getActor(req, b).catch(() => null);
+  if (!actor) {
+    await new Promise(r => setTimeout(r, 900));
+    return res.status(401).json({ error: b.pin ? 'Wrong PIN.' : 'Log in again.' });
   }
   if (b.checkOnly) return res.status(200).json({ ok: true });
+  const over = await useQuota(actor, 'runs');
+  if (over) return res.status(429).json({ error: over });
 
   const missing = ['street', 'city', 'state', 'zip'].filter(k => !String(b[k] || '').trim());
   if (missing.length) return res.status(400).json({ error: `Missing: ${missing.join(', ')}` });
@@ -62,13 +67,14 @@ export default async function handler(req, res) {
   try {
     payload = await analyzeLead(lead);
     payload.operator = true; // operator-only extras (buyer pitch) on the deal sheet
+    payload.biz = actor.biz;
   } catch (e) {
     console.error('operator analysis failed', e);
     return res.status(500).json({ error: `Analysis failed: ${e.message}` });
   }
 
   if (b.notify) {
-    const r = await Promise.allSettled([sendEmail(payload), sendPush(payload)]);
+    const r = await Promise.allSettled(actor.owner ? [sendEmail(payload), sendPush(payload)] : [sendEmail(payload, { to: actor.user.settings?.notifyEmail || actor.user.email })]);
     r.forEach(x => x.status === 'rejected' && console.error('operator notify', x.reason));
   }
 
@@ -76,18 +82,3 @@ export default async function handler(req, res) {
 }
 
 // Compact numbers for the batch table
-function brief(p) {
-  const asking = num(p.lead.asking);
-  const base = { label: p.score?.label || null, score: p.score?.score ?? null, asking, land: !!p.land };
-  if (p.land) {
-    const d = p.deal;
-    return { ...base, value: d?.value ?? p.valuation?.value ?? null, mao: d?.mao ?? null, opening: d?.opening ?? null,
-      call: d?.call?.text || 'No numbers (thin land comps or no lot size).', confidence: p.valuation?.confidence || null };
-  }
-  const a = p.analysis;
-  const ws = a?.strategies?.find(s => s.key === 'wholesale');
-  return { ...base, value: p.valuation?.arv ?? null, repairs: p.repairs?.total ?? null,
-    mao: ws?.headline?.value ?? null, opening: ws?.headline?.opening ?? null,
-    call: !a ? 'No numbers (check comps/sqft).' : a.outOfBox ? 'Outside buy box.' : !a.recommended ? (a.why || 'Pass.') : a.why,
-    confidence: p.valuation?.confidence || null };
-}

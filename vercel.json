@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/f/:slug", "destination": "/api/funnel?slug=:slug" },
+    { "source": "/f/:slug/:page(privacy|terms)", "destination": "/api/funnel?slug=:slug&page=:page" }
+  ],
+  "functions": {
+    "api/funnel.js": { "includeFiles": "{offer,privacy,terms}.html" }
+  }
+}

@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Dashboard | Deal Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0c1a33; --bg:#f4f6fa; --card:#fff; --ink:#0f1729; --muted:#5b6578; --line:#e0e5ee; --input:#fff;
+    --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#ebf0fa; --gold:#c6a052; --err:#b42318;
+    --display:'Archivo','Helvetica Neue',Arial,sans-serif; --body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg:#0d121c; --card:#151c2a; --ink:#eef2f8; --muted:#98a3b5; --line:#273148; --input:#111827;
+    --brand:#4f7fe0; --brand-soft:#1a2640; --err:#ff8a7a; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; -webkit-font-smoothing:antialiased; }
+  header { background:var(--navy); color:#f2f5fb; padding-block:16px; }
+  .wrap { max-width:760px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+  header .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .logo { font-family:var(--display); font-weight:700; text-decoration:none; color:inherit; }
+  .logo span { color:var(--gold); }
+  .tag { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); }
+  main { padding-block:20px 60px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:14px; }
+  h1 { font-family:var(--display); font-size:24px; margin:0 0 4px; letter-spacing:-.02em; }
+  h2 { font-family:var(--display); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 10px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 14px; }
+  label.f { display:block; font-size:13px; font-weight:600; margin:10px 0 6px; }
+  label.f .opt { font-weight:400; color:var(--muted); }
+  input[type=text], input[type=number], input[type=password], input[type=tel], select, textarea {
+    width:100%; font:inherit; font-size:16px; padding:11px 12px; border:1px solid var(--line); border-radius:10px; background:var(--input); color:var(--ink); }
+  textarea { min-height:70px; resize:vertical; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
+  .row { display:grid; gap:10px; grid-template-columns:1fr 1fr; }
+  .row3 { display:grid; gap:10px; grid-template-columns:1fr 1fr 1fr; }
+  .row > *, .row3 > * { min-width:0; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { position:relative; }
+  .chip input { position:absolute; opacity:0; pointer-events:none; }
+  .chip span { display:inline-block; padding:9px 12px; border:1px solid var(--line); border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; background:var(--input); }
+  .chip input:checked + span { border-color:var(--brand); background:var(--brand-soft); color:var(--brand); }
+  .chip input:focus-visible + span { box-shadow:0 0 0 3px var(--brand-soft); }
+  .rep { display:grid; grid-template-columns:1fr 120px 36px; gap:8px; margin-bottom:8px; }
+  .rep button { border:1px solid var(--line); background:var(--input); color:var(--muted); border-radius:10px; font-size:18px; cursor:pointer; }
+  .link { background:none; border:0; color:var(--brand); font:inherit; font-weight:600; padding:4px 0; cursor:pointer; }
+  .btn { width:100%; border:0; border-radius:10px; padding:15px; background:var(--brand); color:var(--brand-ink); font-family:var(--display); font-weight:700; font-size:16px; cursor:pointer; }
+  .btn:disabled { opacity:.6; cursor:wait; }
+  .btn.ghost { background:transparent; color:var(--brand); border:1px solid var(--line); }
+  .err { color:var(--err); font-size:14px; min-height:18px; margin-top:10px; }
+  .check { display:flex; gap:10px; align-items:center; font-size:14px; margin-top:12px; }
+  .check input { width:18px; height:18px; accent-color:var(--brand); }
+  .summary { white-space:pre-wrap; font-size:14px; line-height:1.5; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:14px; font-variant-numeric:tabular-nums; }
+  .sheet { overflow-x:auto; border-radius:12px; }
+  .sheet > div { padding:0 !important; background:transparent !important; }
+  .tenant { border:1px dashed var(--line); border-radius:10px; padding:4px 12px 12px; margin-top:10px; }
+  @media (max-width:380px) { .row3 { grid-template-columns:1fr 1fr; } }
+  .nav a { color:#c3cde0; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
+  .nav a.on { color:var(--gold); }
+  .stat { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+  .stat div { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  .stat b { display:block; font-family:var(--display); font-size:22px; }
+  .stat span { font-size:12px; color:var(--muted); }
+  .note { font-size:13px; color:var(--muted); line-height:1.5; }
+  .nav { display:flex; flex-wrap:nowrap; } .nav a { white-space:nowrap; }
+  @media (max-width:430px) { .nav a { margin-left:9px; font-size:12.5px; } .logo { font-size:13px; line-height:1.15; } }
+  @media (max-width:360px) { .logo span { display:none; } }
+  .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
+  .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
+
+  .tabs { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; margin:0 0 14px; padding-bottom:2px; }
+  .tabs::-webkit-scrollbar { display:none; }
+  .tabs a { flex:none; text-decoration:none; color:var(--ink); border:1px solid var(--line); background:var(--card); border-radius:999px; padding:8px 14px; font-weight:700; font-size:14px; }
+  .tabs a.on { border-color:var(--brand); background:var(--brand-soft); color:var(--brand); }
+  .tools { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:14px; }
+  .tools a { text-align:center; text-decoration:none; color:var(--ink); background:var(--card); border:1px solid var(--line); border-radius:12px; padding:10px 4px; font-size:12.5px; font-weight:700; }
+  .tools a i { display:block; font-style:normal; font-size:18px; margin-bottom:2px; }
+  .lead { display:block; width:100%; text-align:left; font:inherit; color:inherit; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:13px 14px; margin-bottom:10px; cursor:pointer; }
+  .lead:hover { border-color:var(--brand); }
+  .lead .top { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
+  .lead .meta { font-size:13px; color:var(--muted); margin-top:3px; font-variant-numeric:tabular-nums; }
+  .pill { flex:none; font-size:11px; font-weight:800; letter-spacing:.06em; padding:3px 9px; border-radius:999px; text-transform:uppercase; background:var(--brand-soft); color:var(--brand); }
+  .pill.HOT { background:#fde7e4; color:#b42318; } .pill.WARM { background:#fff4dc; color:#8a5a00; } .pill.COLD { background:var(--line); color:var(--muted); }
+  .pill.new { background:#e6f4ea; color:#1e7a3c; }
+  @media (prefers-color-scheme: dark) { .pill.HOT { background:#3b1714; color:#ff8a7a; } .pill.WARM { background:#3a2f12; color:#f0c674; } .pill.new { background:#163323; color:#7fd49a; } }
+  .copyrow { display:flex; gap:8px; } .copyrow input { flex:1; min-width:0; } .copyrow .btn { width:auto; padding:11px 14px; }
+  .sheet { overflow-x:auto; border-radius:12px; margin-top:12px; }
+  .sheet > div { padding:0 !important; background:transparent !important; }
+  .rec { width:100%; border-collapse:collapse; font-size:14px; margin-top:10px; }
+  .rec th, .rec td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--line); word-break:break-all; }
+  .rec th { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+  .ok { color:#1e7a3c; } .warn { color:#8a5a00; }
+  @media (prefers-color-scheme: dark) { .ok { color:#7fd49a; } .warn { color:#f0c674; } }
+  .price { font-family:var(--display); font-size:30px; margin:4px 0; }
+  .meter { height:6px; background:var(--line); border-radius:3px; overflow:hidden; margin:4px 0 10px; } .meter i { display:block; height:100%; background:var(--brand); }
+  .banner { background:var(--brand-soft); color:var(--ink); border-radius:12px; padding:14px; margin-bottom:14px; font-size:14.5px; line-height:1.5; }
+  .actions { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px; }
+  .actions .btn { padding:12px; font-size:15px; }
+  details summary { cursor:pointer; font-weight:700; font-size:14px; color:var(--brand); margin-top:10px; }
+  .help { font-size:13.5px; color:var(--muted); line-height:1.55; }
+  .help ol { padding-left:18px; margin:6px 0; }
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" id="logo" href="/app.html">Deal <span>Desk</span></a><nav class="nav"><a href="#account" id="acctLink">Account</a></nav></div></header>
+
+<main class="wrap">
+  <p class="note" id="loading">Loading…</p>
+  <div id="appBody" hidden>
+    <div class="banner" id="welcome" hidden></div>
+    <nav class="tools" aria-label="Tools">
+      <a href="/operator.html"><i>⚡</i>Run deal</a><a href="/batch.html"><i>☰</i>Batch</a><a href="/photos.html"><i>📷</i>Photos</a><a href="/underwriting.html"><i>📁</i>Deals</a><a href="/list.html"><i>⬇</i>Lists</a>
+    </nav>
+    <div class="tabs" id="tabs">
+      <a href="#leads" data-t="leads">Leads</a><a href="#funnel" data-t="funnel">My funnel</a><a href="#ads" data-t="ads">Ad tracking</a><a href="#domain" data-t="domain">Domain</a><a href="#account" data-t="account">Account</a>
+    </div>
+
+    <!-- LEADS -->
+    <section data-p="leads">
+      <div class="stat">
+        <div><b id="sNew">0</b><span>new leads</span></div>
+        <div><b id="sHot">0</b><span>hot</span></div>
+        <div><b id="sTotal">0</b><span>this month</span></div>
+      </div>
+      <div id="leadList"><p class="note">Loading leads…</p></div>
+      <section class="card" id="leadView" hidden>
+        <button type="button" class="link" id="leadBack">← All leads</button>
+        <div class="top" style="display:flex;justify-content:space-between;gap:10px;margin-top:6px"><h1 id="lvName" style="font-size:20px"></h1><span class="pill" id="lvLabel"></span></div>
+        <p class="sub" id="lvMeta" style="margin-bottom:0"></p>
+        <div class="actions">
+          <a class="btn" id="lvCall" href="#">Call</a><a class="btn ghost" id="lvText" href="#">Text</a>
+        </div>
+        <div class="actions">
+          <button class="btn" id="lvConvert" type="button">Move to deals →</button>
+          <select id="lvStatus" aria-label="Lead status"><option value="new">New</option><option value="contacted">Contacted</option><option value="converted">In deals</option><option value="dead">Dead</option></select>
+        </div>
+        <div class="err" id="lvErr" role="alert"></div>
+        <div class="sheet" id="lvSheet"></div>
+      </section>
+    </section>
+
+    <!-- FUNNEL -->
+    <section data-p="funnel" hidden>
+      <section class="card">
+        <h2>Your funnel link</h2>
+        <div class="copyrow"><input type="text" id="fLink" readonly><button class="btn" type="button" id="fCopy">Copy</button></div>
+        <p class="note" id="fDomainNote"></p>
+        <div class="row" style="margin-top:6px"><a class="btn ghost" id="fOpen" href="#" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Open funnel</a><a class="btn ghost" id="fPriv" href="#" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Privacy page</a></div>
+      </section>
+      <form class="card" id="bizForm">
+        <h2>Business info <span style="text-transform:none;letter-spacing:0;font-weight:400">(shows on your funnel)</span></h2>
+        <label class="f" for="bCompany">Business name</label><input type="text" id="bCompany" required>
+        <div class="row">
+          <div><label class="f" for="bName">Your name</label><input type="text" id="bName" required></div>
+          <div><label class="f" for="bPhone">Business phone</label><input type="tel" id="bPhone" required></div>
+        </div>
+        <label class="f" for="bAddr">Business address <span class="opt">(needed for SMS / A2P approval)</span></label><input type="text" id="bAddr" placeholder="123 Main St, Dallas, TX 75201">
+        <label class="f" for="bNotify">Send new leads to</label><input type="text" id="bNotify" inputmode="email">
+        <div class="err" id="bErr" role="alert"></div>
+        <button class="btn" type="submit" id="bBtn">Save</button>
+      </form>
+    </section>
+
+    <!-- ADS -->
+    <section data-p="ads" hidden>
+      <form class="card" id="adsForm">
+        <h2>Meta (Facebook / Instagram)</h2>
+        <label class="f" for="aPixel">Pixel ID</label><input type="text" id="aPixel" inputmode="numeric" placeholder="1234567890123456">
+        <label class="f" for="aCapi">Conversions API token <span class="opt">(optional, better tracking)</span></label><input type="password" id="aCapi" autocomplete="off" placeholder="EAAB…">
+        <details><summary>Where do I find these?</summary><div class="help"><ol><li>Open Meta Events Manager → Data sources → your Pixel.</li><li>The Pixel ID is the number under its name.</li><li>For the token: Settings → Conversions API → Generate access token.</li></ol></div></details>
+        <h2 style="margin-top:18px">Google Ads</h2>
+        <label class="f" for="aGid">Google tag ID</label><input type="text" id="aGid" placeholder="AW-123456789">
+        <label class="f" for="aLabel">Lead conversion label</label><input type="text" id="aLabel" placeholder="AbC-D_efG-h12_34-567">
+        <details><summary>Where do I find these?</summary><div class="help"><ol><li>Google Ads → Goals → Conversions → New conversion action → Website → "Submit lead form".</li><li>Choose "Use Google tag" → install manually.</li><li>In the event snippet, <b>send_to</b> looks like <b>AW-123456789/AbC-D_efG</b>. The part before the slash is the tag ID; after it is the label.</li></ol></div></details>
+        <p class="help" style="margin-top:14px">Your funnel fires your Pixel and Google tag on every visit and sends a <b>Lead</b> conversion when a seller submits. Each lead in your inbox is tagged with where it came from (Google Ads, Meta, or the <b>utm_source</b> on your ad link).</p>
+        <div class="err" id="aErr" role="alert"></div>
+        <button class="btn" type="submit" id="aBtn">Save tracking</button>
+      </form>
+    </section>
+
+    <!-- DOMAIN -->
+    <section data-p="domain" hidden>
+      <section class="card" id="dUpsell" hidden>
+        <h2>Your own domain</h2>
+        <p style="margin:0 0 6px;line-height:1.55">Put your funnel on your own website address, like <b>sellmyhousefastdallas.com</b>. Your brand only, nothing else.</p>
+        <div class="price" id="dPrice">Add-on</div>
+        <button class="btn" type="button" id="dBuy">Upgrade to connect a domain</button>
+        <p class="note" id="dBuyNote"></p>
+      </section>
+      <form class="card" id="dConnect" hidden>
+        <h2>Connect your domain</h2>
+        <p class="note" style="margin-top:0">Buy a domain anywhere (GoDaddy, Namecheap, Squarespace…), then enter it here.</p>
+        <label class="f" for="dName">Domain</label><input type="text" id="dName" placeholder="sellmyhousefastdallas.com" autocapitalize="none" spellcheck="false">
+        <div class="err" id="dErr" role="alert"></div>
+        <button class="btn" type="submit" id="dBtn">Connect</button>
+      </form>
+      <section class="card" id="dStatus" hidden>
+        <h2>Your domain</h2>
+        <div style="font-size:18px;font-weight:700" id="dShow"></div>
+        <p id="dState" style="margin:6px 0 0"></p>
+        <div id="dRecords"></div>
+        <div class="row" style="margin-top:12px"><button class="btn" type="button" id="dCheck">Check status</button><button class="btn ghost" type="button" id="dRemove">Remove</button></div>
+      </section>
+      <button class="btn ghost" type="button" id="dManage" hidden>Manage billing</button>
+    </section>
+
+    <!-- ACCOUNT -->
+    <section data-p="account" hidden>
+      <section class="card">
+        <h2>This month's usage</h2>
+        <div id="usage"></div>
+      </section>
+      <form class="card" id="pwForm">
+        <h2>Change password</h2>
+        <label class="f" for="pCur">Current password</label><input type="password" id="pCur" autocomplete="current-password" required>
+        <label class="f" for="pNew">New password</label><input type="password" id="pNew" autocomplete="new-password" minlength="8" required>
+        <div class="err" id="pErr" role="alert"></div>
+        <button class="btn" type="submit" id="pBtn">Update password</button>
+      </form>
+      <section class="card">
+        <p class="note" style="margin-top:0" id="who"></p>
+        <button class="btn ghost" type="button" id="logout">Log out</button>
+      </section>
+    </section>
+  </div>
+</main>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const $$ = n => (n || n === 0) ? '$' + Math.round(n).toLocaleString() : '—';
+  const $k = n => (n || n === 0) ? '$' + (n >= 1000 ? Math.round(n / 1000) + 'k' : n) : '—';
+  const ago = t => { const m = Math.round((Date.now() - t) / 6e4); return m < 1 ? 'just now' : m < 60 ? m + 'm ago' : m < 1440 ? Math.round(m / 60) + 'h ago' : new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
+  const post = (url, body) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .then(async r => { if (r.status === 401) { location.href = '/login.html?next=' + encodeURIComponent('/app.html' + location.hash); throw new Error('auth'); } return { ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }; })
+    .catch(e => { if (e.message === 'auth') throw e; return { ok: false, j: { error: 'Network error. Try again.' } }; });
+  const flash = (btn, txt) => { const o = btn.textContent; btn.textContent = txt; setTimeout(() => btn.textContent = o, 1400); };
+
+  let user = null, leads = [], usage = null;
+
+  async function boot() {
+    const r = await fetch('/api/auth?action=me').catch(() => null);
+    if (!r || !r.ok) { location.replace('/login.html?next=' + encodeURIComponent('/app.html' + location.hash)); return; }
+    user = (await r.json()).user;
+    const p = esc(user.company || user.name).split(' ');
+    $('logo').innerHTML = p.length > 1 ? `${p[0]} <span>${p.slice(1).join(' ')}</span>` : p[0];
+    $('loading').hidden = true; $('appBody').hidden = false;
+    const qs = new URLSearchParams(location.search);
+    if (qs.get('welcome')) { $('welcome').hidden = false; $('welcome').innerHTML = `<b>You're set up, ${esc(user.name.split(' ')[0])}.</b> Your seller funnel is live at <a href="${funnelUrl()}" target="_blank" rel="noopener">${esc(funnelUrl().replace(/^https?:\/\//, ''))}</a>. Point your ads at it, and leads land here already analyzed.`; }
+    if (qs.get('paid')) { $('welcome').hidden = false; $('welcome').innerHTML = '<b>Payment received.</b> Connect your domain below. If it says you still need to upgrade, refresh in a few seconds.'; }
+    fillForms(); tab(); loadLeads();
+  }
+  const funnelUrl = () => user.domain?.status === 'live' ? `https://${user.domain.name}` : `${location.origin}/f/${user.slug}`;
+
+  // ── Tabs ──
+  function tab() {
+    const t = (location.hash.slice(1) || 'leads').split('/')[0];
+    const ok = ['leads', 'funnel', 'ads', 'domain', 'account'].includes(t) ? t : 'leads';
+    document.querySelectorAll('[data-p]').forEach(s => s.hidden = s.dataset.p !== ok);
+    document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.dataset.t === ok));
+    if (ok === 'domain') loadDomain();
+    if (ok === 'account') renderUsage();
+    if (ok === 'leads') { const id = location.hash.split('/')[1]; id ? openLead(id) : closeLead(); }
+  }
+  window.addEventListener('hashchange', tab);
+
+  // ── Leads ──
+  async function loadLeads() {
+    const r = await post('/api/leads', { action: 'list' });
+    if (!r.ok) { $('leadList').innerHTML = `<p class="err">${esc(r.j.error || 'Could not load leads.')}</p>`; return; }
+    leads = r.j.leads || []; usage = r.j.usage || null; renderLeads(); renderUsage();
+  }
+  function renderLeads() {
+    const mStart = new Date(); mStart.setDate(1); mStart.setHours(0, 0, 0, 0);
+    $('sNew').textContent = leads.filter(l => l.status === 'new').length;
+    $('sHot').textContent = leads.filter(l => l.brief?.label === 'HOT' && !['dead', 'converted'].includes(l.status)).length;
+    $('sTotal').textContent = leads.filter(l => l.createdAt >= mStart.getTime()).length;
+    $('leadList').innerHTML = leads.length ? leads.map(l => {
+      const L = l.lead || {}, b = l.brief || {};
+      const nums = b.mao ? `Offer ${$k(b.opening)}–${$k(b.mao)}` : 'No offer computed';
+      return `<button type="button" class="lead" data-id="${esc(l.id)}"><div class="top"><div><b>${esc([L.firstName, L.lastName].filter(Boolean).join(' ') || 'Seller')}</b><div class="meta">${esc(L.street || '')}${L.city ? ', ' + esc(L.city) : ''}</div></div><div style="display:flex;gap:6px">${l.status === 'new' ? '<span class="pill new">New</span>' : ''}<span class="pill ${esc(b.label || '')}">${esc(b.label || l.status)}</span></div></div>
+        <div class="meta">${nums} · ${esc(l.source || 'Direct')} · ${ago(l.createdAt)}${l.status === 'converted' ? ' · in Deals' : l.status === 'dead' ? ' · dead' : ''}</div></button>`;
+    }).join('') : `<section class="card"><h2>No leads yet</h2><p style="margin:0;line-height:1.55">Share your funnel link or point your ads at it:<br><a href="${funnelUrl()}" target="_blank" rel="noopener">${esc(funnelUrl())}</a></p><p class="note">Tip: add <b>?utm_source=facebook</b> or <b>?utm_source=google</b> to the link in each ad so you can see which one each lead came from.</p></section>`;
+    $('leadList').querySelectorAll('.lead').forEach(b => b.onclick = () => { location.hash = 'leads/' + b.dataset.id; });
+  }
+  let curLead = null;
+  async function openLead(id) {
+    $('leadList').hidden = true; $('leadView').hidden = false; $('lvSheet').innerHTML = '<p class="note">Loading…</p>'; $('lvErr').textContent = '';
+    window.scrollTo({ top: 0 });
+    const r = await post('/api/leads', { action: 'get', id });
+    if (!r.ok) { $('lvSheet').innerHTML = `<p class="err">${esc(r.j.error || 'Could not load.')}</p>`; return; }
+    curLead = r.j.lead; const L = curLead.lead || {}, b = curLead.brief || {};
+    $('lvName').textContent = [L.firstName, L.lastName].filter(Boolean).join(' ') || 'Seller';
+    $('lvLabel').textContent = b.label || ''; $('lvLabel').className = 'pill ' + (b.label || '');
+    $('lvMeta').textContent = `${L.street || ''}, ${L.city || ''} ${L.state || ''} · ${curLead.source || 'Direct'} · ${ago(curLead.createdAt)}`;
+    const digits = String(L.phone || '').replace(/\D/g, '');
+    $('lvCall').href = 'tel:' + digits; $('lvText').href = 'sms:' + digits;
+    $('lvStatus').value = curLead.status;
+    $('lvConvert').textContent = curLead.dealId ? 'Open in deals →' : 'Move to deals →';
+    $('lvSheet').innerHTML = curLead.html || `<pre>${esc(curLead.summary)}</pre>`;
+    if (curLead.status === 'new') { post('/api/leads', { action: 'status', id, status: 'contacted' }).then(x => { if (x.ok) { curLead = { ...curLead, status: 'contacted' }; $('lvStatus').value = 'contacted'; const i = leads.findIndex(l => l.id === id); if (i >= 0) leads[i].status = 'contacted'; } }); }
+  }
+  function closeLead() { $('leadView').hidden = true; $('leadList').hidden = false; curLead = null; renderLeads(); }
+  $('leadBack').onclick = () => { location.hash = 'leads'; };
+  $('lvConvert').onclick = async () => {
+    if (!curLead) return;
+    if (curLead.dealId) { location.href = '/underwriting.html#' + curLead.dealId; return; }
+    $('lvConvert').disabled = true; $('lvConvert').textContent = 'Moving…';
+    const r = await post('/api/leads', { action: 'convert', id: curLead.id });
+    $('lvConvert').disabled = false;
+    if (!r.ok) { $('lvErr').textContent = r.j.error || 'Could not move it.'; $('lvConvert').textContent = 'Move to deals →'; return; }
+    location.href = '/underwriting.html#' + r.j.dealId;
+  };
+  $('lvStatus').onchange = async () => {
+    const st = $('lvStatus').value; const r = await post('/api/leads', { action: 'status', id: curLead.id, status: st });
+    if (!r.ok) { $('lvErr').textContent = r.j.error || 'Could not update.'; return; }
+    const i = leads.findIndex(l => l.id === curLead.id); if (i >= 0) leads[i].status = st;
+  };
+
+  // ── Funnel + business + ads ──
+  function fillForms() {
+    const s = user.settings || {};
+    $('fLink').value = funnelUrl(); $('fOpen').href = funnelUrl(); $('fPriv').href = funnelUrl() + (user.domain?.status === 'live' ? '/privacy' : '/privacy');
+    $('fDomainNote').innerHTML = user.domain?.status === 'live' ? 'Running on your own domain.' : 'Want your own domain instead? <a href="#domain">Connect one →</a>';
+    $('bCompany').value = user.company || ''; $('bName').value = user.name || ''; $('bPhone').value = user.phone || ''; $('bAddr').value = s.address || ''; $('bNotify').value = s.notifyEmail || user.email;
+    $('aPixel').value = s.metaPixelId || ''; $('aCapi').value = s.metaCapiToken || ''; $('aGid').value = s.googleAdsId || ''; $('aLabel').value = s.googleAdsLeadLabel || '';
+    $('who').textContent = `Logged in as ${user.email} · username ${user.slug}`;
+  }
+  $('fCopy').onclick = async () => { try { await navigator.clipboard.writeText($('fLink').value); } catch { $('fLink').select(); document.execCommand('copy'); } flash($('fCopy'), 'Copied ✓'); };
+  async function saveSettings(btn, err, patch) {
+    $(err).textContent = ''; $(btn).disabled = true;
+    const r = await post('/api/auth', { action: 'update', ...patch });
+    $(btn).disabled = false;
+    if (!r.ok) { $(err).textContent = r.j.error || 'Could not save.'; return; }
+    user = r.j.user; fillForms(); flash($(btn), 'Saved ✓');
+  }
+  $('bizForm').onsubmit = e => { e.preventDefault(); saveSettings('bBtn', 'bErr', { company: $('bCompany').value, name: $('bName').value, phone: $('bPhone').value, settings: { address: $('bAddr').value, notifyEmail: $('bNotify').value, metaPixelId: user.settings.metaPixelId, googleAdsId: user.settings.googleAdsId, googleAdsLeadLabel: user.settings.googleAdsLeadLabel } }); };
+  $('adsForm').onsubmit = e => { e.preventDefault(); saveSettings('aBtn', 'aErr', { settings: { metaPixelId: $('aPixel').value.trim(), metaCapiToken: $('aCapi').value.trim(), googleAdsId: $('aGid').value.trim().toUpperCase(), googleAdsLeadLabel: $('aLabel').value.trim() } }); };
+
+  // ── Domain ──
+  let dom = null;
+  async function loadDomain() { const r = await post('/api/domain', { action: 'status' }); if (r.ok) { dom = r.j; renderDomain(); } }
+  function renderDomain() {
+    const d = dom.domain;
+    $('dUpsell').hidden = dom.entitled; $('dConnect').hidden = !dom.entitled || !!d; $('dStatus').hidden = !d; $('dManage').hidden = !dom.hasBilling;
+    $('dBuy').disabled = !dom.billingReady; $('dBuyNote').textContent = dom.billingReady ? 'Billed monthly. Cancel anytime.' : 'Coming soon.';
+    if (!d) return;
+    $('dShow').textContent = d.name;
+    const st = { live: ['ok', '✓ Live. Your funnel is on your domain.'], pending: ['warn', 'Waiting on DNS. Add the records below at your domain provider. It can take a few minutes to a few hours.'], verify: ['warn', 'Add the verification record below, then check again.'], requested: ['warn', "We're connecting it. Add the records below at your domain provider in the meantime."] }[d.status] || ['warn', d.status];
+    $('dState').className = st[0]; $('dState').textContent = st[1];
+    const rows = [...(d.records || []), ...((d.verification || []).map(v => ({ type: v.type, name: v.domain, value: v.value, note: 'verification' })))];
+    $('dRecords').innerHTML = d.status === 'live' ? '' : `<table class="rec"><tr><th>Type</th><th>Name / Host</th><th>Value</th></tr>${rows.map(r => `<tr><td>${esc(r.type)}</td><td>${esc(r.name)}</td><td>${esc(r.value)}</td></tr>`).join('')}</table><p class="note">Remove any other A records on "@" and CNAMEs on "www" first.</p>`;
+  }
+  $('dBuy').onclick = async () => { $('dBuy').disabled = true; const r = await post('/api/billing', { action: 'checkout' }); $('dBuy').disabled = false; if (r.ok && r.j.url) location.href = r.j.url; else $('dBuyNote').textContent = r.j.error || 'Could not open checkout.'; };
+  $('dManage').onclick = async () => { const r = await post('/api/billing', { action: 'portal' }); if (r.ok && r.j.url) location.href = r.j.url; };
+  $('dConnect').onsubmit = async e => {
+    e.preventDefault(); $('dErr').textContent = ''; $('dBtn').disabled = true; $('dBtn').textContent = 'Connecting…';
+    const r = await post('/api/domain', { action: 'connect', domain: $('dName').value });
+    $('dBtn').disabled = false; $('dBtn').textContent = 'Connect';
+    if (!r.ok) { $('dErr').textContent = r.j.error || 'Could not connect.'; return; }
+    dom = r.j; renderDomain();
+  };
+  $('dCheck').onclick = async () => { $('dCheck').disabled = true; const r = await post('/api/domain', { action: 'check' }); $('dCheck').disabled = false; if (r.ok) { dom = r.j; user.domain = dom.domain; renderDomain(); fillForms(); flash($('dCheck'), 'Checked ✓'); } };
+  $('dRemove').onclick = async () => { if (!confirm('Disconnect this domain from your funnel?')) return; const r = await post('/api/domain', { action: 'remove' }); if (r.ok) { dom = r.j; user.domain = null; renderDomain(); fillForms(); } };
+
+  // ── Account ──
+  function renderUsage() {
+    if (!usage) { $('usage').innerHTML = '<p class="note">Loading…</p>'; return; }
+    const L = usage.limits || {};
+    $('usage').innerHTML = [['runs', 'Deal analyses (funnel leads + Run deal)'], ['photos', 'Photo analyses'], ['listCalls', 'List pulls (per 500 records)']].map(([k, l]) => {
+      const u = usage[k] || 0, m = L[k] || 1; return `<div style="display:flex;justify-content:space-between;font-size:14px"><span>${l}</span><b>${u} / ${m}</b></div><div class="meter"><i style="width:${Math.min(100, u / m * 100)}%"></i></div>`;
+    }).join('') + '<p class="note">Resets on the 1st of each month.</p>';
+  }
+  $('pwForm').onsubmit = async e => {
+    e.preventDefault(); $('pErr').textContent = ''; $('pBtn').disabled = true;
+    const r = await post('/api/auth', { action: 'password', current: $('pCur').value, password: $('pNew').value });
+    $('pBtn').disabled = false;
+    if (!r.ok) { $('pErr').textContent = r.j.error || 'Could not update.'; return; }
+    $('pwForm').reset(); flash($('pBtn'), 'Updated ✓');
+  };
+  $('logout').onclick = async () => { await post('/api/auth', { action: 'logout' }).catch(() => {}); location.href = '/login.html'; };
+
+  boot();
+})();
+</script>
+</body>
+</html>

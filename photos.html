@@ -88,10 +88,13 @@
   .nav { display:flex; flex-wrap:nowrap; } .nav a { white-space:nowrap; }
   @media (max-width:430px) { .nav a { margin-left:9px; font-size:12.5px; } .logo { font-size:13px; line-height:1.15; } }
   @media (max-width:360px) { .logo span { display:none; } }
+  .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
+  .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 </style>
+<script src="/acct.js"></script>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a class="on" href="/photos.html">Photos</a><a href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app.html">Leads</a><a href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a class="on" href="/photos.html">Photos</a><a href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
 
 <main class="wrap">
   <section id="gate" class="card">
@@ -103,7 +106,8 @@
       <div class="err" id="pinErr" role="alert"></div>
       <button class="btn" id="pinBtn" type="submit">Unlock</button>
     </form>
-  </section>
+  <p class="sub" style="margin-top:12px">Have an account? <a href="/login.html">Log in</a></p>
+</section>
 
   <form id="form" hidden autocomplete="off">
     <section class="card">
@@ -160,7 +164,7 @@
   'AL AK AZ AR CA CO CT DE DC FL GA HI ID IL IN IA KS KY LA ME MD MA MI MN MS MO MT NE NV NH NJ NM NY NC ND OH OK OR PA RI SC SD TN TX UT VT VA WA WV WI WY'
     .split(' ').forEach(s => $('state').add(new Option(s, s, s === 'TX', s === 'TX')));
   const unlock = () => { $('gate').hidden = true; $('form').hidden = false; };
-  const lock = msg => { try { sessionStorage.removeItem('opPin'); } catch {} $('form').hidden = true; $('results').hidden = true; $('gate').hidden = false; $('pinErr').textContent = msg; };
+  const lock = msg => { if (acctExpired()) return; try { sessionStorage.removeItem('opPin'); } catch {} $('form').hidden = true; $('results').hidden = true; $('gate').hidden = false; $('pinErr').textContent = msg; };
 
   $('pinForm').addEventListener('submit', async e => {
     e.preventDefault();
@@ -171,7 +175,7 @@
     try { sessionStorage.setItem('opPin', pin); } catch {}
     unlock();
   });
-  if (pin) unlock();
+  if (pin) unlock(); else acctUnlock(unlock);
 
   // ── Photos: shrink on the phone before upload ──
   let photos = []; // { url (preview), file }

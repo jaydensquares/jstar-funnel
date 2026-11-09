@@ -1,5 +1,5 @@
 // Operator deal pipeline: list / get / save / delete (PIN-gated, private Blob storage)
-import { pinMatches } from '../lib/pin.js';
+import { getActor } from '../lib/auth.js';
 import { listDeals, getDeal, saveDeal, deleteDeal } from '../lib/store.js';
 
 export const maxDuration = 30;
@@ -33,21 +33,23 @@ export default async function handler(req, res) {
   res.setHeader('X-Robots-Tag', 'noindex');
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-  if (!pinMatches(b.pin)) { await new Promise(r => setTimeout(r, 900)); return res.status(401).json({ error: 'Wrong PIN.' }); }
+  const actor = await getActor(req, b).catch(() => null);
+  if (!actor) { await new Promise(r => setTimeout(r, 900)); return res.status(401).json({ error: b.pin ? 'Wrong PIN.' : 'Log in again.' }); }
+  const sc = actor.scope;
   if (!process.env.BLOB_READ_WRITE_TOKEN && !process.env.BLOB_STORE_ID) return res.status(503).json({ error: 'Deal storage isn\'t connected.' });
   try {
-    if (b.action === 'list') return res.status(200).json({ deals: await listDeals() });
-    if (b.action === 'get') { const d = await getDeal(String(b.id || '')); return d ? res.status(200).json({ deal: d }) : res.status(404).json({ error: 'Deal not found.' }); }
+    if (b.action === 'list') return res.status(200).json({ deals: await listDeals(sc) });
+    if (b.action === 'get') { const d = await getDeal(String(b.id || ''), sc); return d ? res.status(200).json({ deal: d, biz: actor.biz }) : res.status(404).json({ error: 'Deal not found.' }); }
     if (b.action === 'save') {
       if (!b.deal || typeof b.deal !== 'object') return res.status(400).json({ error: 'No deal.' });
-      const prev = b.deal.id ? await getDeal(String(b.deal.id)) : null;
+      const prev = b.deal.id ? await getDeal(String(b.deal.id), sc) : null;
       const d = clean({ ...b.deal, createdAt: prev?.createdAt });
       if (!d.address?.street) return res.status(400).json({ error: 'Deal needs an address.' });
       if (prev && prev.status !== d.status) d.history.push({ at: Date.now(), text: `Status: ${prev.status} → ${d.status}` });
       if (!prev) d.history.push({ at: Date.now(), text: 'Deal created' });
-      return res.status(200).json({ deal: await saveDeal(d) });
+      return res.status(200).json({ deal: await saveDeal(d, sc) });
     }
-    if (b.action === 'delete') return res.status(200).json({ ok: await deleteDeal(String(b.id || '')) });
+    if (b.action === 'delete') return res.status(200).json({ ok: await deleteDeal(String(b.id || ''), sc) });
     return res.status(400).json({ error: 'Unknown action.' });
   } catch (e) {
     console.error('deals', e);

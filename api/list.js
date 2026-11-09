@@ -1,6 +1,7 @@
 // Operator list puller: owners in a ZIP from RentCast property records → CSV for skip tracing.
 // Each page of up to 500 records = 1 RentCast API call.
-import { pinMatches } from '../lib/pin.js';
+import { getActor } from '../lib/auth.js';
+import { useQuota } from '../lib/usage.js';
 
 export const maxDuration = 60;
 
@@ -21,7 +22,8 @@ export default async function handler(req, res) {
   res.setHeader('X-Robots-Tag', 'noindex');
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
-  if (!pinMatches(b.pin)) { await new Promise(r => setTimeout(r, 900)); return res.status(401).json({ error: 'Wrong PIN.' }); }
+  const actor = await getActor(req, b).catch(() => null);
+  if (!actor) { await new Promise(r => setTimeout(r, 900)); return res.status(401).json({ error: b.pin ? 'Wrong PIN.' : 'Log in again.' }); }
   const key = process.env.RENTCAST_API_KEY;
   if (!key) return res.status(503).json({ error: 'RENTCAST_API_KEY not set' });
 
@@ -32,6 +34,8 @@ export default async function handler(req, res) {
   const maxCalls = Math.min(Math.max(Number(b.maxCalls) || 4, 1), 10);
   const minYears = Number(b.minYears) || 0;
   const absentee = !!b.absentee, skipCompanies = b.skipCompanies !== false;
+  const over = await useQuota(actor, 'listCalls', maxCalls);
+  if (over) return res.status(429).json({ error: over });
 
   // Pull pages
   const all = []; let calls = 0;

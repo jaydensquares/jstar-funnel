@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Log in | Deal Desk</title>
+<meta name="description" content="Seller lead funnels, instant cash-offer analysis, underwriting and contracts for real estate wholesalers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0c1a33; --bg:#f4f6fa; --card:#fff; --ink:#0f1729; --muted:#5b6578; --line:#e0e5ee; --input:#fff;
+    --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#ebf0fa; --gold:#c6a052; --err:#b42318;
+    --display:'Archivo','Helvetica Neue',Arial,sans-serif; --body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg:#0d121c; --card:#151c2a; --ink:#eef2f8; --muted:#98a3b5; --line:#273148; --input:#111827;
+    --brand:#4f7fe0; --brand-soft:#1a2640; --err:#ff8a7a; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; -webkit-font-smoothing:antialiased; }
+  header { background:var(--navy); color:#f2f5fb; padding-block:16px; }
+  .wrap { max-width:760px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+  header .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .logo { font-family:var(--display); font-weight:700; text-decoration:none; color:inherit; }
+  .logo span { color:var(--gold); }
+  .tag { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--gold); }
+  main { padding-block:20px 60px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:14px; }
+  h1 { font-family:var(--display); font-size:24px; margin:0 0 4px; letter-spacing:-.02em; }
+  h2 { font-family:var(--display); font-size:13px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin:0 0 10px; }
+  .sub { color:var(--muted); font-size:14px; margin:0 0 14px; }
+  label.f { display:block; font-size:13px; font-weight:600; margin:10px 0 6px; }
+  label.f .opt { font-weight:400; color:var(--muted); }
+  input[type=text], input[type=number], input[type=password], input[type=tel], select, textarea {
+    width:100%; font:inherit; font-size:16px; padding:11px 12px; border:1px solid var(--line); border-radius:10px; background:var(--input); color:var(--ink); }
+  textarea { min-height:70px; resize:vertical; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); }
+  .row { display:grid; gap:10px; grid-template-columns:1fr 1fr; }
+  .row3 { display:grid; gap:10px; grid-template-columns:1fr 1fr 1fr; }
+  .row > *, .row3 > * { min-width:0; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { position:relative; }
+  .chip input { position:absolute; opacity:0; pointer-events:none; }
+  .chip span { display:inline-block; padding:9px 12px; border:1px solid var(--line); border-radius:999px; font-size:14px; font-weight:600; cursor:pointer; background:var(--input); }
+  .chip input:checked + span { border-color:var(--brand); background:var(--brand-soft); color:var(--brand); }
+  .chip input:focus-visible + span { box-shadow:0 0 0 3px var(--brand-soft); }
+  .rep { display:grid; grid-template-columns:1fr 120px 36px; gap:8px; margin-bottom:8px; }
+  .rep button { border:1px solid var(--line); background:var(--input); color:var(--muted); border-radius:10px; font-size:18px; cursor:pointer; }
+  .link { background:none; border:0; color:var(--brand); font:inherit; font-weight:600; padding:4px 0; cursor:pointer; }
+  .btn { width:100%; border:0; border-radius:10px; padding:15px; background:var(--brand); color:var(--brand-ink); font-family:var(--display); font-weight:700; font-size:16px; cursor:pointer; }
+  .btn:disabled { opacity:.6; cursor:wait; }
+  .btn.ghost { background:transparent; color:var(--brand); border:1px solid var(--line); }
+  .err { color:var(--err); font-size:14px; min-height:18px; margin-top:10px; }
+  .check { display:flex; gap:10px; align-items:center; font-size:14px; margin-top:12px; }
+  .check input { width:18px; height:18px; accent-color:var(--brand); }
+  .summary { white-space:pre-wrap; font-size:14px; line-height:1.5; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:14px; font-variant-numeric:tabular-nums; }
+  .sheet { overflow-x:auto; border-radius:12px; }
+  .sheet > div { padding:0 !important; background:transparent !important; }
+  .tenant { border:1px dashed var(--line); border-radius:10px; padding:4px 12px 12px; margin-top:10px; }
+  @media (max-width:380px) { .row3 { grid-template-columns:1fr 1fr; } }
+  .nav a { color:#c3cde0; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
+  .nav a.on { color:var(--gold); }
+  .stat { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+  .stat div { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  .stat b { display:block; font-family:var(--display); font-size:22px; }
+  .stat span { font-size:12px; color:var(--muted); }
+  .note { font-size:13px; color:var(--muted); line-height:1.5; }
+  .nav { display:flex; flex-wrap:nowrap; } .nav a { white-space:nowrap; }
+  @media (max-width:430px) { .nav a { margin-left:9px; font-size:12.5px; } .logo { font-size:13px; line-height:1.15; } }
+  @media (max-width:360px) { .logo span { display:none; } }
+  .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
+  .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
+
+  .authwrap { max-width:440px; margin:0 auto; }
+  .tabs { display:grid; grid-template-columns:1fr 1fr; gap:6px; background:var(--bg); border:1px solid var(--line); border-radius:12px; padding:4px; margin-bottom:14px; }
+  .tabs button { border:0; background:transparent; color:var(--muted); font:700 15px var(--body); padding:10px; border-radius:9px; cursor:pointer; }
+  .tabs button.on { background:var(--card); color:var(--ink); box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  .hint { font-size:12.5px; color:var(--muted); margin-top:5px; }
+  .pfx { display:flex; align-items:center; border:1px solid var(--line); border-radius:10px; background:var(--input); overflow:hidden; }
+  .pfx span { padding:0 0 0 12px; color:var(--muted); font-size:14px; white-space:nowrap; }
+  .pfx input { border:0 !important; box-shadow:none !important; padding-left:2px; }
+  .perks { margin:18px 0 0; padding-left:18px; color:var(--muted); font-size:14px; line-height:1.7; }
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="/login.html">Deal <span>Desk</span></a></div></header>
+<main class="wrap authwrap">
+  <section class="card">
+    <div class="tabs" role="tablist">
+      <button type="button" id="tLogin" role="tab">Log in</button>
+      <button type="button" id="tSignup" role="tab">Sign up</button>
+    </div>
+
+    <form id="login" autocomplete="on">
+      <label class="f" for="lEmail">Email</label>
+      <input type="text" id="lEmail" inputmode="email" autocomplete="email" required>
+      <label class="f" for="lPass">Password</label>
+      <input type="password" id="lPass" autocomplete="current-password" required>
+      <div class="err" id="lErr" role="alert"></div>
+      <button class="btn" id="lBtn" type="submit">Log in</button>
+    </form>
+
+    <form id="signup" hidden autocomplete="on">
+      <div class="row">
+        <div><label class="f" for="sName">Your name</label><input type="text" id="sName" autocomplete="name" required></div>
+        <div><label class="f" for="sPhone">Business phone</label><input type="tel" id="sPhone" autocomplete="tel" inputmode="tel" required></div>
+      </div>
+      <label class="f" for="sCompany">Business name</label>
+      <input type="text" id="sCompany" placeholder="e.g. Lone Star Home Buyers" autocomplete="organization" required>
+      <div class="hint">Shows on your seller funnel and contracts.</div>
+      <label class="f" for="sUser">Username</label>
+      <div class="pfx"><span id="pfx"></span><input type="text" id="sUser" autocapitalize="none" autocomplete="username" spellcheck="false" maxlength="30" required></div>
+      <div class="hint">Your funnel link until you connect your own domain.</div>
+      <label class="f" for="sEmail">Email</label>
+      <input type="text" id="sEmail" inputmode="email" autocomplete="email" required>
+      <label class="f" for="sPass">Password</label>
+      <input type="password" id="sPass" autocomplete="new-password" minlength="8" required>
+      <div class="hint">At least 8 characters.</div>
+      <div class="err" id="sErr" role="alert"></div>
+      <button class="btn" id="sBtn" type="submit">Create account</button>
+      <ul class="perks">
+        <li>Your own seller lead funnel, live in a minute</li>
+        <li>Every lead auto-analyzed with comps and an offer</li>
+        <li>Deals, underwriting and contracts in one place</li>
+      </ul>
+    </form>
+  </section>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const next = (() => { const n = new URLSearchParams(location.search).get('next') || ''; return /^\/[a-z0-9_./#-]*$/i.test(n) && !n.startsWith('//') ? n : '/app.html'; })();
+  const mode = m => {
+    $('login').hidden = m !== 'login'; $('signup').hidden = m !== 'signup';
+    $('tLogin').classList.toggle('on', m === 'login'); $('tSignup').classList.toggle('on', m === 'signup');
+    document.title = (m === 'login' ? 'Log in' : 'Sign up') + ' | Deal Desk';
+    (m === 'login' ? $('lEmail') : $('sName')).focus();
+  };
+  $('tLogin').onclick = () => { history.replaceState(null, '', '#login'); mode('login'); };
+  $('tSignup').onclick = () => { history.replaceState(null, '', '#signup'); mode('signup'); };
+  $('pfx').textContent = location.host + '/f/';
+  mode(location.hash === '#signup' || location.pathname.includes('signup') ? 'signup' : 'login');
+
+  // Already logged in → straight to the app
+  fetch('/api/auth?action=me').then(r => r.ok && location.replace(next)).catch(() => {});
+
+  $('sCompany').addEventListener('input', () => {
+    if ($('sUser').dataset.touched) return;
+    $('sUser').value = $('sCompany').value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 30);
+  });
+  $('sUser').addEventListener('input', () => { $('sUser').dataset.touched = 1; $('sUser').value = $('sUser').value.toLowerCase().replace(/[^a-z0-9-]/g, ''); });
+
+  const post = body => fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    .then(async r => ({ ok: r.ok, j: await r.json().catch(() => ({})) })).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
+
+  $('login').addEventListener('submit', async e => {
+    e.preventDefault(); $('lErr').textContent = ''; $('lBtn').disabled = true; $('lBtn').textContent = 'Logging in…';
+    const r = await post({ action: 'login', email: $('lEmail').value.trim(), password: $('lPass').value });
+    $('lBtn').disabled = false; $('lBtn').textContent = 'Log in';
+    if (!r.ok) { $('lErr').textContent = r.j.error || 'Could not log in.'; return; }
+    location.replace(next);
+  });
+  $('signup').addEventListener('submit', async e => {
+    e.preventDefault(); $('sErr').textContent = ''; $('sBtn').disabled = true; $('sBtn').textContent = 'Creating your account…';
+    const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value });
+    $('sBtn').disabled = false; $('sBtn').textContent = 'Create account';
+    if (!r.ok) { $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
+    location.replace('/app.html?welcome=1');
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,6 +1,10 @@
 import { analyzeLead } from '../lib/pipeline.js';
 import { lookupLinks } from '../lib/rentcast.js';
-import { sendWebhook, sendEmail, sendSms, sendPush, sendMetaCAPI } from '../lib/notify.js';
+import { sendWebhook, sendEmail, sendSms, sendPush, sendMetaCAPI, dealSheetHtml, smsText } from '../lib/notify.js';
+import { getUserBySlug, bizOf } from '../lib/auth.js';
+import { putDoc, newId } from '../lib/db.js';
+import { useQuota } from '../lib/usage.js';
+import { brief, leadSource } from '../lib/brief.js';
 
 // Two RentCast calls + email can take a few seconds
 export const maxDuration = 30;
@@ -22,6 +26,13 @@ export default async function handler(req, res) {
 
   // Bot honeypot — pretend success
   if (b.website) return res.status(200).json({ ok: true });
+
+  // A user's funnel (b.tenant = their username) → their account, not the owner's
+  let tenant = null;
+  if (b.tenant) {
+    tenant = await getUserBySlug(String(b.tenant).toLowerCase()).catch(() => null);
+    if (!tenant || tenant.disabled) return res.status(404).json({ error: 'This form isn\'t active' });
+  }
 
   const required = ['street', 'city', 'state', 'zip', 'firstName', 'phone'];
   const missing = required.filter(k => !String(b[k] || '').trim());
@@ -57,10 +68,32 @@ export default async function handler(req, res) {
   // Comps → ARV → repairs → 3 strategies → score
   let payload;
   try {
+    const over = tenant ? await useQuota({ scope: tenant.id }, 'runs') : null;
+    if (over) throw new Error('Monthly analysis limit reached. Run it manually next month or upgrade.');
     payload = await analyzeLead(lead);
   } catch (e) {
     console.error('analysis failed', e);
     payload = { lead, error: e.message, valuation: { notes: [`Analysis failed: ${e.message}`] }, offers: [], comps: [], score: { score: 0, label: 'REVIEW', reasons: [] }, links: lookupLinks(lead.address) };
+  }
+
+  if (tenant) {
+    payload.biz = bizOf(tenant);
+    const id = newId(), source = leadSource(lead.tracking);
+    let html = '';
+    try { html = dealSheetHtml(payload); } catch (e) { console.error('sheet', e); }
+    try {
+      await putDoc(`t/${tenant.id}/leads/${id}`, {
+        id, createdAt: Date.now(), status: 'new', source, lead, brief: payload.error ? null : brief(payload),
+        summary: payload.error ? `Analysis failed: ${payload.error}` : smsText(payload), html,
+      });
+    } catch (e) { console.error('save tenant lead', e); return res.status(500).json({ error: 'Could not save. Please call us.' }); }
+    const s = tenant.settings || {};
+    const r = await Promise.allSettled([
+      sendEmail(payload, { to: s.notifyEmail || tenant.email }),
+      s.metaPixelId && s.metaCapiToken ? sendMetaCAPI({ lead, eventId, ip, userAgent, sourceUrl: b.pageUrl, pixelId: s.metaPixelId, capiToken: s.metaCapiToken }) : null,
+    ]);
+    r.forEach((x, i) => x.status === 'rejected' && console.error(['tenant email', 'tenant capi'][i], x.reason));
+    return res.status(200).json({ ok: true });
   }
 
   // Fan out notifications; never fail the seller's submit because of them

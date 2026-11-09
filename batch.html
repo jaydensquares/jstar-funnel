@@ -89,10 +89,13 @@
   .nav { display:flex; flex-wrap:nowrap; } .nav a { white-space:nowrap; }
   @media (max-width:430px) { .nav a { margin-left:9px; font-size:12.5px; } .logo { font-size:13px; line-height:1.15; } }
   @media (max-width:360px) { .logo span { display:none; } }
+  .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
+  .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 </style>
+<script src="/acct.js"></script>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a href="/operator.html">Run deal</a><a class="on" href="/batch.html">Batch</a><a href="/photos.html">Photos</a><a href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app.html">Leads</a><a href="/operator.html">Run deal</a><a class="on" href="/batch.html">Batch</a><a href="/photos.html">Photos</a><a href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
 
 <main class="wrap">
   <section id="gate" class="card">
@@ -104,7 +107,8 @@
       <div class="err" id="pinErr" role="alert"></div>
       <button class="btn" id="pinBtn" type="submit">Unlock</button>
     </form>
-  </section>
+  <p class="sub" style="margin-top:12px">Have an account? <a href="/login.html">Log in</a></p>
+</section>
 
   <form id="batch" hidden autocomplete="off">
     <section class="card">
@@ -171,7 +175,7 @@
   const post = body => fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, pin }) })
     .then(async r => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }));
 
-  const lock = msg => { try { sessionStorage.removeItem('opPin'); } catch {} pin = ''; $('batch').hidden = true; $('results').hidden = true; $('gate').hidden = false; $('pinErr').textContent = msg; };
+  const lock = msg => { if (acctExpired()) return; try { sessionStorage.removeItem('opPin'); } catch {} pin = ''; $('batch').hidden = true; $('results').hidden = true; $('gate').hidden = false; $('pinErr').textContent = msg; };
   const unlock = () => { $('gate').hidden = true; $('batch').hidden = false; if (!$('rows').children.length) addRow(); };
 
   $('pinForm').addEventListener('submit', async e => {
@@ -332,7 +336,7 @@
     $('results').hidden = true; $('batch').hidden = false; window.scrollTo({ top: 0 });
   });
 
-  if (pin) unlock();
+  if (pin) unlock(); else acctUnlock(unlock);
 })();
 </script>
 </body>

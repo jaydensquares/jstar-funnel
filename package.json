@@ -11,6 +11,7 @@
     "dev": "node scripts/dev.js"
   },
   "dependencies": {
-    "@vercel/blob": "latest"
+    "@vercel/blob": "latest",
+    "@vercel/functions": "latest"
   }
 }

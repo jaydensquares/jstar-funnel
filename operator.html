@@ -64,10 +64,13 @@
   .nav { display:flex; flex-wrap:nowrap; } .nav a { white-space:nowrap; }
   @media (max-width:430px) { .nav a { margin-left:9px; font-size:12.5px; } .logo { font-size:13px; line-height:1.15; } }
   @media (max-width:360px) { .logo span { display:none; } }
+  .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
+  .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 </style>
+<script src="/acct.js"></script>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="on" href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a href="/photos.html">Photos</a><a href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
+<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app.html">Leads</a><a class="on" href="/operator.html">Run deal</a><a href="/batch.html">Batch</a><a href="/photos.html">Photos</a><a href="/underwriting.html">Deals</a><a href="/list.html">Lists</a></nav></div></header>
 
 <main class="wrap">
   <!-- PIN gate -->
@@ -80,7 +83,8 @@
       <div class="err" id="pinErr" role="alert"></div>
       <button class="btn" id="pinBtn" type="submit">Unlock</button>
     </form>
-  </section>
+  <p class="sub" style="margin-top:12px">Have an account? <a href="/login.html">Log in</a></p>
+</section>
 
   <!-- Property form -->
   <form id="prop" hidden autocomplete="off">
@@ -219,7 +223,7 @@
     try { sessionStorage.setItem('opPin', pin); } catch {}
     unlock();
   });
-  if (pin) unlock();
+  if (pin) unlock(); else acctUnlock(unlock);
 
   // Money inputs
   ['asking', 'currentRent'].forEach(id => $(id).addEventListener('input', e => {
@@ -260,7 +264,7 @@
     $('err').textContent = ''; $('runBtn').disabled = true; $('runBtn').textContent = 'Pulling comps…';
     const r = await post(body).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
     $('runBtn').disabled = false; $('runBtn').textContent = 'Run numbers';
-    if (r.status === 401) { try { sessionStorage.removeItem('opPin'); } catch {} $('prop').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'PIN expired or changed. Enter it again.'; return; }
+    if (r.status === 401) { if (acctExpired()) return; try { sessionStorage.removeItem('opPin'); } catch {} $('prop').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'PIN expired or changed. Enter it again.'; return; }
     if (!r.ok) { $('err').textContent = r.j.error || 'Something went wrong.'; return; }
 
     $('summary').textContent = r.j.summary;
