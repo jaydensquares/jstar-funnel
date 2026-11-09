@@ -64,6 +64,13 @@ check(p.comps.length > 0 && p.comps.every(c => c.squareFootage < 2100 && c.squar
 check(p.comps[0].match >= p.comps.at(-1).match, 'comps ranked by match');
 check(p.comps.every(c => c.sold), 'ARV uses off-market comps when enough exist');
 check(ws.pitch.price - ws.headline.value === 10000, 'wholesale spread = assignment fee');
+{
+  const { investorPitch } = await import('../lib/notify.js');
+  const pk = investorPitch(p);
+  console.log('\nSubject: ' + pk.subject + '\n\n' + pk.email + '\n\nTEXT (' + pk.text.length + ' chars): ' + pk.text + '\n');
+  check(pk.email.includes(String(ws.pitch.price.toLocaleString())) && !pk.email.includes('1207 Shady'), 'buyer pitch has price, hides exact address');
+  check(/not own the property/.test(pk.email), 'buyer pitch has assignment disclosure');
+}
 check(Math.abs(fl.numbers[6][1] - fl.yourProfit) < 1, 'flip profit consistent');
 const { flipAt } = await import('../lib/strategies.js');
 const atMax = flipAt(fl.headline.value, { arv: p.valuation.arv, repairs: p.repairs.total, tier: 'moderate' });

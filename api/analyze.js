@@ -2,7 +2,7 @@
 // but takes property details only (no seller contact info) and returns the deal sheet.
 import { pinMatches } from '../lib/pin.js';
 import { analyzeLead } from '../lib/pipeline.js';
-import { dealSheetHtml, smsText, sendEmail, sendPush } from '../lib/notify.js';
+import { dealSheetHtml, smsText, sendEmail, sendPush, investorPitch } from '../lib/notify.js';
 
 export const maxDuration = 30;
 
@@ -71,7 +71,7 @@ export default async function handler(req, res) {
     r.forEach(x => x.status === 'rejected' && console.error('operator notify', x.reason));
   }
 
-  return res.status(200).json({ ok: true, html: dealSheetHtml(payload), summary: smsText(payload), brief: brief(payload) });
+  return res.status(200).json({ ok: true, html: dealSheetHtml(payload), summary: smsText(payload), brief: brief(payload), pitch: investorPitch(payload) });
 }
 
 // Compact numbers for the batch table

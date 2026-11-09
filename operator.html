@@ -180,6 +180,10 @@
   <!-- Results -->
   <section id="results" hidden>
     <div class="summary" id="summary"></div>
+    <div class="row" id="pitchBtns" hidden style="margin-bottom:14px">
+      <button class="btn ghost" id="cpEmail" type="button">Copy buyer email</button>
+      <button class="btn ghost" id="cpText" type="button">Copy buyer text</button>
+    </div>
     <div class="sheet" id="sheet"></div>
     <div class="row" style="margin-top:14px">
       <button class="btn ghost" id="editBtn" type="button">Edit this property</button>
@@ -256,9 +260,19 @@
 
     $('summary').textContent = r.j.summary;
     $('sheet').innerHTML = r.j.html;
+    pitch = r.j.pitch || null; $('pitchBtns').hidden = !pitch;
     $('prop').hidden = true; $('results').hidden = false;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+
+  let pitch = null;
+  const copy = async (btn, txt, label) => {
+    try { await navigator.clipboard.writeText(txt); }
+    catch { const t = document.createElement('textarea'); t.value = txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+    btn.textContent = 'Copied ✓'; setTimeout(() => btn.textContent = label, 1500);
+  };
+  $('cpEmail').addEventListener('click', () => pitch && copy($('cpEmail'), `Subject: ${pitch.subject}\n\n${pitch.email}`, 'Copy buyer email'));
+  $('cpText').addEventListener('click', () => pitch && copy($('cpText'), pitch.text, 'Copy buyer text'));
 
   $('editBtn').addEventListener('click', () => { $('results').hidden = true; $('prop').hidden = false; window.scrollTo({ top: 0 }); });
   $('newBtn').addEventListener('click', () => {
