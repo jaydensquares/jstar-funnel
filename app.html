@@ -434,7 +434,7 @@
     const L = usage.limits || {};
     $('usage').innerHTML = [['runs', 'Deal analyses (funnel leads, Run an address, Batch)', 1], ['photos', 'Photo repair estimates', 1], ['listCalls', 'Owner list records', 500]].map(([k, l, x]) => {
       const u = (usage[k] || 0) * x, m = (L[k] || 1) * x; return `<div style="display:flex;justify-content:space-between;font-size:14px"><span>${l}</span><b>${u.toLocaleString()} / ${m.toLocaleString()}</b></div><div class="meter"><i style="width:${Math.min(100, u / m * 100)}%"></i></div>`;
-    }).join('') + '<p class="note">Resets on the 1st of each month.</p>';
+    }).join('') + '<p class="note">Plan limits reset on the 1st of each month, and unused plan usage doesn\'t roll over. Usage you buy separately as an add-on doesn\'t expire at the end of the month.</p>';
   }
   $('pwForm').onsubmit = async e => {
     e.preventDefault(); $('pErr').textContent = ''; $('pBtn').disabled = true;
