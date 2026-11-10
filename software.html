@@ -204,7 +204,7 @@
   <section class="s" id="compare"><div class="w">
     <p class="kicker">Do the math</p>
     <h2>What are you paying for right now?</h2>
-    <p class="intro">Tick what you use and change the prices to what you actually pay. The first two are the current list prices for PropStream Essentials and ClickFunnels.</p>
+    <p class="intro">Tick what you use and change any price to what you actually pay. Defaults are current published monthly prices for each example tool. The last two do more than JStar Pro, so they start unticked.</p>
     <div class="calc">
       <div>
         <div class="tools" id="tools"></div>
@@ -359,12 +359,12 @@
 
   // ── Cost calculator ──
   const TOOLS = [
-    ['Lead lists and comps', 'e.g. PropStream Essentials', 99, true],
-    ['Seller funnel / page builder', 'e.g. ClickFunnels', 97, true],
-    ['Deal analysis app', 'A comps or offer calculator', '', false],
-    ['Rehab estimating', 'An app or paid contractor visits', '', false],
-    ['Deal tracking', 'A pipeline tool or CRM add-on', '', false],
-    ['Contract templates / forms', 'Template packs or a paid form service', '', false],
+    ['Lead lists and comps', 'PropStream Essentials', 99, true],
+    ['Seller funnel / page builder', 'ClickFunnels', 97, true],
+    ['Deal analysis app', 'DealCheck Pro, billed monthly', 29, true],
+    ['Rehab estimating', 'FlipperForce Solo', 79, true],
+    ['Deal tracking / CRM', 'REsimpli Basic. Untick if you use its dialer and texting.', 149, false],
+    ['Contracts / e-signature', 'DocuSign Personal. JStar Pro fills the contract; you still sign it.', 11, false],
   ];
   $('tools').innerHTML = TOOLS.map(([n, d, a, on], i) => `<div class="tool ${on ? '' : 'off'}" data-i="${i}"><input type="checkbox" id="t${i}" ${on ? 'checked' : ''}><label for="t${i}"><b>${n}</b><span>${d}</span></label><div class="amt"><span>$</span><input type="text" inputmode="numeric" value="${a}" placeholder="0" aria-label="${n} monthly cost"><span>/mo</span></div></div>`).join('');
   const money = n => '$' + Math.round(n).toLocaleString();
