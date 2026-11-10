@@ -48,6 +48,6 @@ http.createServer(async (req, res) => {
   let file = path.join(root, pathname === '/' ? 'index.html' : pathname);
   if (!fs.existsSync(file) && fs.existsSync(file + '.html')) file += '.html'; // like Vercel cleanUrls
   if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.statusCode = 404; return res.end('Not found'); }
-  res.setHeader('Content-Type', file.endsWith('.html') ? 'text/html' : file.endsWith('.js') ? 'text/javascript' : 'text/plain');
+  res.setHeader('Content-Type', ({ html: 'text/html', js: 'text/javascript', mp4: 'video/mp4', jpg: 'image/jpeg', png: 'image/png', css: 'text/css' })[file.split('.').pop()] || 'text/plain');
   fs.createReadStream(file).pipe(res);
 }).listen(PORT, () => console.log(`Funnel running → http://localhost:${PORT}\nDeal sheets save to ${process.env.DEV_SAVE_DIR}`));

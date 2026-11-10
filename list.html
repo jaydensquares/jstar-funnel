@@ -113,9 +113,9 @@
         <div><label class="f" for="minYears">Owned at least</label>
           <select id="minYears"><option value="0">Any</option><option value="5">5 yrs</option><option value="10" selected>10 yrs</option><option value="15">15 yrs</option><option value="20">20 yrs</option></select></div>
         <div><label class="f" for="maxCalls">Records to scan</label>
-          <select id="maxCalls"><option value="1">500 (1 call)</option><option value="2">1,000 (2 calls)</option><option value="4" selected>2,000 (4 calls)</option><option value="10">5,000 (10 calls)</option></select></div>
+          <select id="maxCalls"><option value="1">500 records</option><option value="2">1,000 records</option><option value="4" selected>2,000 records</option><option value="10">5,000 records</option></select></div>
       </div>
-      <p class="note">Each 500 records scanned uses 1 RentCast API call from your monthly limit.</p>
+      <p class="note">Records scanned count toward your monthly list records, in blocks of 500.</p>
       <div class="err" id="err" role="alert"></div>
       <button class="btn" id="runBtn" type="submit">Pull list</button>
     </section>
@@ -125,7 +125,7 @@
     <div class="stat">
       <div><b id="kept">0</b><span>owners kept</span></div>
       <div><b id="scanned">0</b><span>records scanned</span></div>
-      <div><b id="calls">0</b><span>API calls used</span></div>
+      <div><b id="calls">0</b><span>records counted</span></div>
     </div>
     <p class="note" id="more"></p>
     <a class="btn" id="dl" style="display:block;text-align:center;text-decoration:none">Download CSV</a>
@@ -172,7 +172,7 @@
     $('dl').href = url; $('dl').download = `jstar-${zip}-list.csv`;
     $('kept').textContent = Number(r.headers.get('X-Kept') || 0).toLocaleString();
     $('scanned').textContent = Number(r.headers.get('X-Scanned') || 0).toLocaleString();
-    $('calls').textContent = r.headers.get('X-Calls') || '0';
+    $('calls').textContent = (Number(r.headers.get('X-Calls') || 0) * 500).toLocaleString();
     $('more').textContent = r.headers.get('X-More') === '1' ? 'There are more records in this ZIP. Raise "Records to scan" to get the rest.' : '';
     $('listForm').hidden = true; $('results').hidden = false; window.scrollTo({ top: 0 });
   });
