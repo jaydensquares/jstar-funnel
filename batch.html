@@ -93,6 +93,8 @@
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 </style>
 <link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/kit.css">
+<script src="/kit.js"></script>
 <script src="/acct.js"></script>
 </head>
 <body class="shell">
@@ -150,6 +152,8 @@
         <h1 style="margin:0">Results</h1>
         <span class="prog" id="prog" aria-live="polite"></span>
       </div>
+      <div class="bprog"><i id="bprog"></i></div>
+      <div id="bsum"></div>
       <div class="tblwrap">
         <table class="tbl">
           <thead><tr><th class="c-lead">Lead</th><th>Property</th><th class="num">Value</th><th class="num">Open</th><th class="num">Max</th><th class="num hide-sm">Asking</th></tr></thead>
@@ -302,16 +306,23 @@
 
   function render() {
     const done = jobs.filter(j => j.status === 'done' || j.status === 'err').length;
+    $('bprog').style.width = (jobs.length ? done / jobs.length * 100 : 0) + '%'; $('bprog').parentElement.classList.toggle('fin', done === jobs.length);
+    const J = window.JK, ok = jobs.filter(j => j.status === 'done');
+    if (J && done === jobs.length && ok.length && !render.anim) {
+      const hot = ok.filter(j => j.brief?.label === 'HOT').length, best = ok.slice().sort((a, b) => (b.brief?.score || 0) - (a.brief?.score || 0))[0];
+      $('bsum').innerHTML = `<div class="stat4 rise" style="margin:14px 0 6px"><div class="c1g"><span class="ki c1">${J.svg('fire')}</span><b data-count="${hot}">0</b><span>Hot</span></div><div class="c0g"><span class="ki c0">${J.svg('check')}</span><b data-count="${ok.length}">0</b><span>Analyzed</span></div><div class="c2g"><span class="ki c2">${J.svg('money')}</span><b data-count="${ok.reduce((s, j) => s + (j.brief?.mao || 0), 0)}" data-fmt="k">$0</b><span>Total max offers</span></div><div class="c3g"><span class="ki c3">${J.svg('star')}</span><b style="font-size:17px">${esc(best.street)}</b><span>Best score</span></div></div>`;
+      render.anim = true; J.animate($('bsum'));
+    } else if (done < jobs.length) { $('bsum').innerHTML = ''; render.anim = false; }
     $('prog').textContent = done < jobs.length ? `Running ${done} / ${jobs.length}…` : `${jobs.filter(j => j.status === 'done').length} done${jobs.some(j => j.status === 'err') ? `, ${jobs.filter(j => j.status === 'err').length} failed` : ''}`;
     $('tbody').innerHTML = jobs.map((j, i) => {
       const b = j.brief || {};
-      const pill = j.status === 'done' ? `<span class="pill ${esc(b.label)}">${esc(b.label || '—')}</span>`
+      const pill = j.status === 'done' ? `<span class="pill ${esc(b.label)}">${esc(b.label ? b.label[0] + b.label.slice(1).toLowerCase() : '—')}</span>`
         : j.status === 'err' ? '<span class="pill ERR">ERROR</span>'
-        : `<span class="pill wait">${j.status === 'run' ? 'RUNNING' : 'QUEUED'}</span>`;
+        : `<span class="pill wait ${j.status === 'run' ? 'spin' : ''}">${j.status === 'run' ? 'Running' : 'Queued'}</span>`;
       const kind = j.propertyType === 'land' ? `Lot${j.lotAcres ? ' · ' + j.lotAcres + ' ac' : ''}` : `House · ${({ turnkey: 'Move-in ready', cosmetic: 'Cosmetic', moderate: 'Needs updating', heavy: 'Major repairs', gut: 'Full gut' })[j.condition] || 'Needs updating'}`;
       const sub = j.status === 'err' ? esc(j.error) : j.status === 'done' ? esc((b.call || '').split('. ')[0]) + (b.confidence === 'low' ? ' · <b>low confidence</b>' : '') : '';
       const row = `<tr class="res" data-i="${i}" ${j.status === 'done' ? 'tabindex="0" aria-expanded="' + open.has(j) + '"' : ''}>
-        <td class="c-lead">${pill}</td>
+        <td class="c-lead">${j.status === 'done' && window.JK ? `<span style="display:inline-flex;align-items:center;gap:8px">${window.JK.scoreRing(b.score, b.label, 32)}${pill}</span>` : pill}</td>
         <td>${pill.replace('class="pill', 'class="inl pill')}<div class="addr">${esc(j.street)}</div><div class="call">${kind} · ${esc(j.city)}, ${esc(j.state)} ${esc(j.zip)}${sub ? '<br>' + sub : ''}</div></td>
         <td class="num">${j.status === 'done' ? $k(b.value) : ''}</td>
         <td class="num">${j.status === 'done' ? $k(b.opening) : ''}</td>
@@ -319,6 +330,7 @@
         <td class="num hide-sm">${j.asking ? esc(j.asking) : '—'}</td></tr>`;
       return row + (open.has(j) && j.html ? `<tr class="sheetrow"><td colspan="6"><div class="sheet">${j.html}</div></td></tr>` : '');
     }).join('');
+    window.JK?.animate($('tbody'));
   }
   const toggle = tr => { const j = jobs[+tr.dataset.i]; if (!j || j.status !== 'done') return; open.has(j) ? open.delete(j) : open.add(j); render(); };
   $('tbody').addEventListener('click', e => { if (e.target.closest('.sheet')) return; const tr = e.target.closest('tr.res'); if (tr) toggle(tr); });

@@ -1,6 +1,7 @@
 // Accounts: signup, login, logout, me, update settings, change password
 import crypto from 'node:crypto';
 import { planStatus } from '../lib/plan.js';
+import { getUsage } from '../lib/usage.js';
 import { getDoc, putDoc } from '../lib/db.js';
 import { createUser, getUserByEmail, getUserBySlug, checkPassword, hashPassword, sessionCookie, clearCookie, currentUser, publicUser, saveUser, RESERVED, resetToken, userFromResetToken, sendPlainEmail } from '../lib/auth.js';
 
@@ -17,7 +18,9 @@ export default async function handler(req, res) {
   if (req.method === 'GET') {
     if (req.query?.action !== 'me') return res.status(400).json({ error: 'Unknown action.' });
     const u = await currentUser(req).catch(() => null);
-    return u ? res.status(200).json({ user: publicUser(u), plan: planStatus(u) }) : res.status(401).json({ error: 'Not logged in.' });
+    if (!u) return res.status(401).json({ error: 'Not logged in.' });
+    const usage = req.query?.usage ? await getUsage(u).catch(() => null) : undefined;
+    return res.status(200).json({ user: publicUser(u), plan: planStatus(u), usage });
   }
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   if (!String(req.headers['content-type'] || '').includes('application/json')) return res.status(415).json({ error: 'JSON only' });

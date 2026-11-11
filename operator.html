@@ -68,6 +68,8 @@
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 </style>
 <link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/kit.css">
+<script src="/kit.js"></script>
 <script src="/acct.js"></script>
 </head>
 <body class="shell">
@@ -188,9 +190,11 @@
     <button class="btn" id="runBtn" type="submit">Run numbers</button>
   </form>
 
+  <div id="steps" hidden></div>
   <!-- Results -->
   <section id="results" hidden>
-    <div class="summary" id="summary"></div>
+    <div id="snap"></div>
+    <details class="full" style="margin-bottom:14px"><summary>Text summary</summary><div class="summary" id="summary"></div></details>
     <div class="row" id="pitchBtns" hidden style="margin-bottom:14px">
       <button class="btn ghost" id="cpEmail" type="button">Copy buyer email</button>
       <button class="btn ghost" id="cpText" type="button">Copy buyer text</button>
@@ -228,6 +232,11 @@
     unlock();
   });
   if (pin) unlock(); else acctUnlock(unlock);
+  // ?a=1207 Shady Oaks Ln, Houston, TX 77018 (from the search bar) fills the address
+  const qa = new URLSearchParams(location.search).get('a');
+  if (qa) { const p = qa.split(',').map(x => x.trim()); $('street').value = p[0] || ''; if (p[1]) $('city').value = p[1];
+    const sz = (p.slice(2).join(' ') || '').match(/([A-Za-z]{2})?\s*(\d{5})?/) || []; if (sz[1]) $('state').value = sz[1].toUpperCase(); if (sz[2]) $('zip').value = sz[2];
+    setTimeout(() => (p[1] ? $('zip') : $('city')).focus(), 300); }
 
   // Money inputs
   ['asking', 'currentRent'].forEach(id => $(id).addEventListener('input', e => {
@@ -265,17 +274,23 @@
     for (const k of ['street', 'city', 'state', 'zip']) if (!String(body[k] || '').trim()) { $('err').textContent = 'Enter the full address.'; return; }
     if (!/^\d{5}$/.test(body.zip.trim())) { $('err').textContent = 'ZIP needs 5 digits.'; return; }
 
-    $('err').textContent = ''; $('runBtn').disabled = true; $('runBtn').textContent = 'Pulling comps…';
+    $('err').textContent = ''; $('runBtn').disabled = true; $('runBtn').textContent = 'Running…';
+    const J = window.JK, prog = J?.steps($('steps'), 'Running ' + body.street.trim(), 'Usually about 10 seconds.', body.propertyType === 'land' ? ['Pulling public records', 'Finding land sales nearby', 'Checking the mortgage and liens', 'Working out your offer'] : ['Pulling public records', 'Finding comparable sales', 'Estimating repairs', 'Checking the mortgage and liens', 'Working out your offer'], 1400);
+    $('steps').scrollIntoView?.({ behavior: 'smooth', block: 'center' });
     const r = await post(body).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
+    if (prog) { if (r.ok) { prog.done(); await new Promise(x => setTimeout(x, 450)); } prog.stop(); }
     $('runBtn').disabled = false; $('runBtn').textContent = 'Run numbers';
     if (r.status === 401) { if (acctExpired()) return; try { sessionStorage.removeItem('opPin'); } catch {} $('prop').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'PIN expired or changed. Enter it again.'; return; }
     if (!r.ok) { $('err').textContent = r.j.error || 'Something went wrong.'; return; }
 
     $('summary').textContent = r.j.summary;
+    const snap = J ? J.snapshot(r.j.brief, { title: r.j.brief?.mao ? 'Offer range' : 'Deal', sub: r.j.brief?.call || '' }) : '';
+    $('snap').innerHTML = snap;
     $('sheet').innerHTML = r.j.html;
     pitch = r.j.pitch || null; $('pitchBtns').hidden = !pitch;
     lastRun = { body, j: r.j }; $('saveDealBtn').disabled = false; $('saveDealBtn').textContent = 'Save to deals';
     $('prop').hidden = true; $('results').hidden = false;
+    if (snap) J.mountSnapshot($('snap'));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 

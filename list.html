@@ -11,6 +11,8 @@
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 </style>
 <link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/kit.css">
+<script src="/kit.js"></script>
 <script src="/acct.js"></script>
 </head>
 <body class="shell">
@@ -62,11 +64,12 @@
     </section>
   </form>
 
+  <div id="steps" hidden></div>
   <section id="results" hidden>
-    <div class="stat">
-      <div><b id="kept">0</b><span>owners kept</span></div>
-      <div><b id="scanned">0</b><span>records scanned</span></div>
-      <div><b id="calls">0</b><span>records counted</span></div>
+    <div class="stat rise" id="lstats">
+      <div class="c2g"><span class="ki c2" data-ic="user"></span><b id="kept">0</b><span>owners kept</span></div>
+      <div class="c0g"><span class="ki c0" data-ic="search"></span><b id="scanned">0</b><span>records scanned</span></div>
+      <div class="c3g"><span class="ki c3" data-ic="list"></span><b id="calls">0</b><span>records counted</span></div>
     </div>
     <p class="note" id="more"></p>
     <a class="btn" id="dl" style="display:block;text-align:center;text-decoration:none">Download CSV</a>
@@ -101,8 +104,10 @@
     const types = [...document.querySelectorAll('input[name=types]:checked')].map(i => i.value);
     if (!types.length) { $('err').textContent = 'Pick at least one property type.'; return; }
     $('err').textContent = ''; $('runBtn').disabled = true; $('runBtn').textContent = 'Pulling records…';
+    const prog = window.JK?.steps($('steps'), 'Pulling owners in ' + zip, 'Scanning public records. Bigger lists take longer.', ['Scanning property records', 'Finding absentee and out-of-state owners', 'Leaving out companies and LLCs', 'Sorting by motivation'], 1600);
     const body = { pin, zip, types, absentee: $('absentee').checked, skipCompanies: $('skipCompanies').checked, minYears: $('minYears').value, maxCalls: $('maxCalls').value };
     const r = await fetch('/api/list', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(() => null);
+    if (prog) { if (r?.ok) { prog.done(); await new Promise(x => setTimeout(x, 400)); } prog.stop(); }
     $('runBtn').disabled = false; $('runBtn').textContent = 'Pull list';
     if (!r) { $('err').textContent = 'Network error. Try again.'; return; }
     if (r.status === 401) { if (acctExpired()) return; try { sessionStorage.removeItem('opPin'); } catch {} $('listForm').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'PIN expired. Enter it again.'; return; }
@@ -116,6 +121,7 @@
     $('calls').textContent = (Number(r.headers.get('X-Calls') || 0) * 500).toLocaleString();
     $('more').textContent = r.headers.get('X-More') === '1' ? 'There are more records in this ZIP. Raise "Records to scan" to get the rest.' : '';
     $('listForm').hidden = true; $('results').hidden = false; window.scrollTo({ top: 0 });
+    const J = window.JK; if (J) { document.querySelectorAll('#lstats .ki').forEach(k => { k.innerHTML = J.svg(k.dataset.ic); }); ['kept', 'scanned', 'calls'].forEach(id => { $(id).dataset.count = $(id).textContent.replace(/[^\d]/g, ''); }); J.animate($('lstats')); $('dl').classList.add('sun'); }
   });
   $('againBtn').addEventListener('click', () => { $('results').hidden = true; $('listForm').hidden = false; });
 })();

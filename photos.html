@@ -92,6 +92,8 @@
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 </style>
 <link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/kit.css">
+<script src="/kit.js"></script>
 <script src="/acct.js"></script>
 </head>
 <body class="shell">
@@ -137,8 +139,10 @@
     <button class="btn" id="runBtn" type="submit">Analyze photos</button>
   </form>
 
+  <div id="steps" hidden></div>
   <section id="results" hidden>
-    <section class="card">
+    <div id="pHero"></div>
+    <section class="card" id="pBasic">
       <span class="pill" id="rCond"></span>
       <div class="big" id="rTotal"></div>
       <div class="note" id="rConf"></div>
@@ -226,8 +230,11 @@
     } catch { $('runBtn').disabled = false; $('runBtn').textContent = 'Analyze photos'; $('err').textContent = 'Couldn\'t read one of the photos. Try a JPG or PNG.'; return; }
 
     $('runBtn').textContent = 'AI is looking at the photos…';
+    const prog = window.JK?.steps($('steps'), `Reading ${photos.length} photo${photos.length > 1 ? 's' : ''}`, 'The AI looks at every room. Takes 20 to 40 seconds.', ['Looking at each photo', 'Grading the condition', 'Pricing each repair', 'Checking for red flags', 'Writing your walkthrough list'], 5000);
+    $('steps').scrollIntoView?.({ behavior: 'smooth', block: 'center' });
     const body = { pin, photos: enc, address: $('address').value.trim(), state: $('state').value, sqft: $('sqft').value, yearBuilt: $('yearBuilt').value, notes: $('notes').value.trim() };
     const r = await fetch('/api/photos', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(() => null);
+    if (prog) { if (r?.ok) { prog.done(); await new Promise(x => setTimeout(x, 450)); } prog.stop(); }
     $('runBtn').disabled = false; $('runBtn').textContent = 'Analyze photos';
     if (!r) { $('err').textContent = 'Network error. Try again.'; return; }
     if (r.status === 401) return lock('PIN expired or changed. Enter it again.');
@@ -247,11 +254,22 @@
     $('rTotal').textContent = `${$$(j.total.low)} – ${$$(j.total.high)}`;
     $('rConf').textContent = `Estimated repairs · ${j.confidence} confidence · ${j.photoCount} photo${j.photoCount > 1 ? 's' : ''}`;
     $('rSummary').textContent = j.summary; $('rReason').textContent = j.condition_reason;
-    $('rRepairs').innerHTML = j.repairs.map(x => `<tr><td><b>${esc(x.item)}</b><div class="why">${esc(x.why)}${x.photos.length ? ` (photo ${x.photos.join(', ')})` : ''}</div></td><td class="num">${$$(x.low)} – ${$$(x.high)}</td></tr>`).join('')
+    const J = window.JK, top = Math.max(1, ...j.repairs.map(x => x.high));
+    if (J) {
+      const LV = ['turnkey', 'cosmetic', 'moderate', 'heavy', 'gut'], li = Math.max(0, LV.indexOf(j.condition));
+      $('pHero').innerHTML = `<section class="snapcard hero rise" style="margin-bottom:16px"><div class="hgrid" style="grid-template-columns:1fr">
+        <div><div class="lbl">Estimated repairs · ${esc(j.confidence)} confidence</div><div class="big"><span data-count="${j.total.low}" data-fmt="money">$0</span> <small>to</small> <span data-count="${j.total.high}" data-fmt="money">$0</span></div>
+        <div class="condm">${LV.map((k, i) => `<span class="${i === li ? 'on' : i < li ? 'past' : ''}">${COND[k]}</span>`).join('')}</div>
+        <div style="margin-top:12px;font-size:14px;color:#dbe4f7;line-height:1.55">${esc(j.summary)}</div>
+        <div class="hthumbs">${photos.slice(0, 12).map((p, i) => `<span><img src="${p.url}" alt=""><b>${i + 1}</b></span>`).join('')}</div></div></div></section>`;
+      $('pBasic').hidden = true; J.animate($('pHero'));
+    }
+    $('rRepairs').innerHTML = j.repairs.map(x => `<tr><td><b>${esc(x.item)}</b><div class="why">${esc(x.why)}${x.photos.length ? ` (photo ${x.photos.join(', ')})` : ''}</div>${J ? `<div class="rbar"><i style="left:${x.low / top * 100}%;width:${Math.max(1.5, (x.high - x.low) / top * 100)}%"></i><s style="width:${x.low / top * 100}%"></s></div>` : ''}</td><td class="num">${$$(x.low)} – ${$$(x.high)}</td></tr>`).join('')
       + `<tr class="tot"><td>Total</td><td class="num">${$$(j.total.low)} – ${$$(j.total.high)}</td></tr>`;
     list('rFlags', j.red_flags, 'None spotted'); $('flagCard').hidden = !j.red_flags.length;
     list('rHidden', j.not_visible, 'Nothing major'); list('rQs', j.walkthrough_questions, '—');
     $('form').hidden = true; $('results').hidden = false; window.scrollTo({ top: 0, behavior: 'smooth' });
+    $('useBtn').classList.add('sun');
   }
 
   // Send to Run deal: condition, issues and repair lines (midpoint of each range)

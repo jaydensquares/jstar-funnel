@@ -115,6 +115,8 @@
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 </style>
 <link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/kit.css">
+<script src="/kit.js"></script>
 <script src="/acct.js"></script>
 </head>
 <body class="shell">
@@ -138,13 +140,13 @@
   <!-- Pipeline -->
   <section id="pipe" hidden>
     <div class="ph"><div><h1>Deals</h1><p>Your pipeline from offer to closing, with underwriting, the due-diligence checklist and contracts on each deal.</p></div>
-      <button class="btn" id="newBtn" type="button">New deal</button>
+      <div style="display:flex;gap:10px;align-items:center"><div class="viewtog" id="viewTog"><button type="button" data-v="board">Board</button><button type="button" data-v="table">Table</button></div><button class="btn" id="newBtn" type="button">New deal</button></div>
     </div>
-    <div class="stat4">
-      <div><b id="sActive">0</b><span>Active deals</span></div>
-      <div><b id="sContract">0</b><span>Under contract</span></div>
-      <div><b id="sPending">$0</b><span>Fees pending</span></div>
-      <div><b id="sClosed">$0</b><span>Fees closed</span></div>
+    <div class="stat4 rise" id="dealStats">
+      <div class="c0g"><span class="ki c0" data-ic="deal"></span><b id="sActive">0</b><span>Active deals</span></div>
+      <div class="c3g"><span class="ki c3" data-ic="check"></span><b id="sContract">0</b><span>Under contract</span></div>
+      <div class="c2g"><span class="ki c2" data-ic="money"></span><b id="sPending">$0</b><span>Fees pending</span></div>
+      <div class="c1g"><span class="ki c1" data-ic="trend"></span><b id="sClosed">$0</b><span>Fees closed</span></div>
     </div>
     <div class="filters" id="filters"></div>
     <div id="list"><p class="note">Loading…</p></div>
@@ -316,7 +318,44 @@
   });
 
   // ── Pipeline ──
-  let deals = [], filter = 'active';
+  let deals = [], filter = 'active', view = (() => { try { return localStorage.getItem('jsDealView') || 'board'; } catch { return 'board'; } })();
+  const J = window.JK;
+  document.querySelectorAll('#dealStats .ki').forEach(k => { if (J) k.innerHTML = J.svg(k.dataset.ic); });
+  const setView = v => { view = v; try { localStorage.setItem('jsDealView', v); } catch {} $('viewTog').querySelectorAll('button').forEach(b => { b.classList.toggle('on', b.dataset.v === v); }); renderList(); };
+  if (J) $('viewTog').querySelectorAll('button').forEach(b => { b.innerHTML = J.svg(b.dataset.v === 'board' ? 'board' : 'rows') + b.textContent; b.onclick = () => setView(b.dataset.v); });
+  $('viewTog').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === view));
+  const SCOL = { lead: '#98a2b3', offer: '#2f6fed', contract: '#7a5af8', assigned: '#f79009', closed: '#12b76a', dead: '#d0d5dd' };
+  // Kanban: drag a card to another column to change its status
+  function renderBoard() {
+    const fee = d => d.numbers?.assignmentFee || 0;
+    $('filters').hidden = true;
+    $('list').innerHTML = `<div class="board">${STATUS.map(([k, l]) => { const ds = deals.filter(d => (d.status || 'lead') === k);
+      return `<div class="col" data-s="${k}"><header><i style="background:${SCOL[k]}"></i><b>${l}</b><span class="n">${ds.length}</span><span class="sum">${ds.length && k !== 'dead' ? J.k(ds.reduce((s, d) => s + fee(d), 0)) : ''}</span></header>
+        ${ds.map(d => { const a = d.address || {}, n = d.numbers || {}, p = progress(d);
+          return `<div class="kc" draggable="true" data-id="${esc(d.id)}"><b>${esc(a.street || 'No address')}</b><small>${esc([a.city, a.state].filter(Boolean).join(', '))}${d.seller?.name ? ' · ' + esc(d.seller.name) : ''}</small>
+            <div class="km"><span>${n.contractPrice ? $$(n.contractPrice) : '<span class="note">No price yet</span>'}</span><span class="fee">${n.assignmentFee ? '+' + $$(n.assignmentFee) : ''}</span></div>
+            <div class="prog2" title="${p} of ${ALLCK.length} checklist items"><i style="width:${Math.round(p / ALLCK.length * 100)}%"></i></div></div>`; }).join('') || '<div class="drop">Drag a deal here</div>'}</div>`; }).join('')}</div>`;
+    let dragId = null;
+    $('list').querySelectorAll('.kc').forEach(c => {
+      c.onclick = () => { location.hash = c.dataset.id; };
+      c.addEventListener('dragstart', e => { dragId = c.dataset.id; c.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', dragId); });
+      c.addEventListener('dragend', () => c.classList.remove('drag'));
+    });
+    $('list').querySelectorAll('.col').forEach(col => {
+      col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('over'); });
+      col.addEventListener('dragleave', e => { if (!col.contains(e.relatedTarget)) col.classList.remove('over'); });
+      col.addEventListener('drop', async e => {
+        e.preventDefault(); col.classList.remove('over');
+        const id = dragId || e.dataTransfer.getData('text/plain'), to = col.dataset.s, d = deals.find(x => x.id === id);
+        if (!d || d.status === to) return;
+        const prev = d.status; d.status = to; renderList();
+        const r = await api({ action: 'save', deal: d });
+        if (!r.ok) { d.status = prev; renderList(); $('list').insertAdjacentHTML('afterbegin', `<p class="err">${esc(r.j.error || 'Could not move it.')}</p>`); return; }
+        const i = deals.findIndex(x => x.id === id); if (i >= 0) deals[i] = r.j.deal;
+        J.toast(`Moved to ${SL[to]}`); if (to === 'closed') J.confetti();
+      });
+    });
+  }
   const progress = d => ALLCK.filter(k => d.checklist?.[k]).length;
   async function loadList() {
     $('list').innerHTML = '<p class="note">Loading…</p>';
@@ -332,6 +371,9 @@
     $('sContract').textContent = deals.filter(d => d.status === 'contract').length;
     $('sPending').textContent = $$(deals.filter(d => ['contract', 'assigned'].includes(d.status)).reduce((s, d) => s + fee(d), 0));
     $('sClosed').textContent = $$(deals.filter(d => d.status === 'closed').reduce((s, d) => s + fee(d), 0));
+    if (J && renderList.first !== false) { renderList.first = false; ['sActive', 'sContract'].forEach(id => { $(id).dataset.count = $(id).textContent; }); ['sPending', 'sClosed'].forEach(id => { $(id).dataset.count = $(id).textContent.replace(/[^\d]/g, ''); $(id).dataset.fmt = 'money'; }); J.animate($('dealStats')); }
+    if (J && view === 'board') return renderBoard();
+    $('filters').hidden = false;
     const F = [['active', 'Active'], ...STATUS, ['all', 'All']];
     $('filters').innerHTML = F.map(([k, l]) => `<button type="button" data-k="${k}" class="${k === filter ? 'on' : ''}">${l}${k === 'all' ? '' : ' ' + (k === 'active' ? active.length : deals.filter(d => d.status === k).length)}</button>`).join('');
     $('filters').querySelectorAll('button').forEach(b => b.onclick = () => { filter = b.dataset.k; renderList(); });

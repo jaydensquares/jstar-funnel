@@ -69,6 +69,8 @@
   @media (max-width:640px) { .leadbar { flex-direction:column; align-items:stretch; } .leadbar input { max-width:none; } }
 </style>
 <link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/kit.css">
+<script src="/kit.js"></script>
 </head>
 <body class="shell acct">
 <aside class="side"><div class="brandbox"><a class="logo" href="/app">JStar <span>Pro</span></a><div class="ws" id="ws">Owner</div></div>
@@ -83,21 +85,22 @@
     <!-- LEADS -->
     <section data-p="leads">
       <div id="leadIndex">
-        <div class="ph"><div><h1>Leads</h1><p>Sellers from your funnel, each one run against recent sales with an offer range.</p></div><button class="btn ghost" type="button" id="copyLink2">Copy funnel link</button></div>
+        <div class="ph"><div><h1 id="hello">Leads</h1><p id="helloSub">Sellers from your funnel, each one run against recent sales with an offer range.</p></div><button class="btn ghost" type="button" id="copyLink2">Copy funnel link</button></div>
         <div id="gsHost"></div>
-        <div class="stat">
-          <div><b id="sNew">0</b><span>Not contacted yet</span></div>
-          <div><b id="sHot">0</b><span>Hot and still open</span></div>
-          <div><b id="sTotal">0</b><span>Leads this month</span></div>
+        <div class="stat4 rise" id="leadStats">
+          <div class="c0g"><span class="ki c0"></span><b id="sNew">0</b><span>Not contacted yet</span></div>
+          <div class="c1g"><span class="ki c1"></span><b id="sHot">0</b><span>Hot and still open</span></div>
+          <div class="c2g"><span class="ki c2"></span><b id="sTotal">0</b><span>Leads this month</span><span id="sSpark"></span></div>
+          <div class="c3g"><span class="ki c3" id="sSrcIc"></span><b id="sSrc">—</b><span id="sSrcSub">Top source</span></div>
         </div>
         <div class="leadbar"><div class="seg" id="leadFilter" role="tablist"><button type="button" data-f="open" class="on">Open</button><button type="button" data-f="all">All</button><button type="button" data-f="dead">Dead</button></div><input type="search" id="leadQ" placeholder="Search name, street or city" aria-label="Search leads"></div>
         <div id="leadList"><p class="note">Loading leads…</p></div>
       </div>
       <div id="leadView" hidden>
         <button type="button" class="link back" id="leadBack">&larr; Leads</button>
-        <div class="ph"><div><h1 id="lvName"></h1><p id="lvMeta"></p></div><span class="pill" id="lvLabel"></span></div>
+        <div class="ph lvhead"><span id="lvAv"></span><div><h1 id="lvName"></h1><p id="lvMeta"></p></div><div class="acts"><span class="pill" id="lvLabel" style="align-self:center"></span><a class="btn" id="lvCall2" href="#"></a><a class="btn ghost" id="lvText2" href="#"></a></div></div>
         <div class="lvgrid">
-          <div class="lvmain"><div class="sheet" id="lvSheet"></div></div>
+          <div class="lvmain"><div id="lvSnap"></div><details class="full" id="lvFull"><summary>Full deal sheet</summary><div class="sheet" id="lvSheet"></div></details></div>
           <aside class="lvside">
             <section class="card">
               <div class="kv" id="lvNums"></div>
@@ -289,9 +292,22 @@
   const ST = { new: 'New', contacted: 'Contacted', converted: 'In deals', dead: 'Dead' };
   function renderLeads() {
     const mStart = new Date(); mStart.setDate(1); mStart.setHours(0, 0, 0, 0);
-    $('sNew').textContent = leads.filter(l => l.status === 'new').length;
-    $('sHot').textContent = leads.filter(l => l.brief?.label === 'HOT' && !['dead', 'converted'].includes(l.status)).length;
-    $('sTotal').textContent = leads.filter(l => l.createdAt >= mStart.getTime()).length;
+    const nNew = leads.filter(l => l.status === 'new').length, nHot = leads.filter(l => l.brief?.label === 'HOT' && !['dead', 'converted'].includes(l.status)).length;
+    const J = window.JK;
+    if (J && !renderLeads.done) {
+      renderLeads.done = true;
+      [['sNew', 'inbox'], ['sHot', 'fire'], ['sTotal', 'trend']].forEach(([id, ic], i) => { const k = $(id).parentElement.querySelector('.ki'); if (k) k.innerHTML = J.svg(ic); });
+      $('sNew').dataset.count = nNew; $('sHot').dataset.count = nHot; $('sTotal').dataset.count = leads.filter(l => l.createdAt >= mStart.getTime()).length;
+      // Leads per day, last 14 days
+      const days = Array.from({ length: 14 }, (_, i) => { const d0 = new Date(); d0.setHours(0, 0, 0, 0); d0.setDate(d0.getDate() - 13 + i); return d0.getTime(); });
+      $('sSpark').innerHTML = J.spark(days.map(t => leads.filter(l => l.createdAt >= t && l.createdAt < t + 864e5).length), { color: '#12b76a' });
+      const src = {}; leads.forEach(l => { const k = (l.source || 'Direct').replace(/ \(organic\)/, ''); src[k] = (src[k] || 0) + 1; });
+      const top = Object.entries(src).sort((a, b) => b[1] - a[1]);
+      if (top.length) { $('sSrc').textContent = top[0][0]; $('sSrcSub').textContent = `Top source · ${Math.round(top[0][1] / leads.length * 100)}% of leads`; $('sSrcIc').innerHTML = J.svg('pie'); }
+      J.animate($('leadStats')); J.setLeads(leads);
+      $('hello').textContent = `${J.greet()}, ${esc((user.name || '').split(' ')[0] || 'there')}`;
+      $('helloSub').innerHTML = nHot ? `You have <b>${nHot} hot lead${nHot > 1 ? 's' : ''}</b> still open${nNew ? ` and <b>${nNew}</b> you haven't contacted yet` : ''}. Call the hot ones first.` : nNew ? `<b>${nNew} new lead${nNew > 1 ? 's' : ''}</b> waiting on a call.` : 'Every lead is run against recent sales with an offer range.';
+    } else { $('sNew').textContent = nNew; $('sHot').textContent = nHot; }
     if (!leads.length) {
       $('leadList').innerHTML = `<div class="dtw"><div class="empty"><b>No leads yet</b><p>Share your funnel link or point your ads at it. Each lead lands here with comps and an offer range already worked out.</p><p style="margin-top:14px"><a href="${funnelUrl()}" target="_blank" rel="noopener">${esc(funnelUrl().replace(/^https?:\/\//, ''))}</a></p><p class="note" style="margin-top:10px">Add <b>?utm_source=facebook</b> or <b>?utm_source=google</b> to the link in each ad to see which one every lead came from.</p></div></div>`;
       return;
@@ -302,18 +318,21 @@
     const [k, dir] = lsort, f = SORTV[k];
     rows = rows.slice().sort((a, b) => (f(a) > f(b) ? 1 : f(a) < f(b) ? -1 : 0) * dir);
     const th = (key, label, cls = '') => `<th data-sort="${key}" class="${cls}">${label}<span class="ar">${k === key ? (dir > 0 ? '↑' : '↓') : ''}</span></th>`;
-    $('leadList').innerHTML = `<div class="dtw"><table class="dt"><thead><tr>${th('name', 'Seller')}${th('label', 'Score')}${th('offer', 'Offer range', 'r')}${th('arv', 'ARV', 'r hm')}${th('source', 'Source', 'hm')}<th class="hm">Status</th>${th('createdAt', 'Received', 'r')}</tr></thead><tbody>` +
+    $('leadList').innerHTML = `<div class="dtw"><table class="dt"><thead><tr>${th('name', 'Seller')}${th('label', 'Score')}${th('offer', 'Offer range', 'r')}${th('arv', 'ARV', 'r hm')}${th('source', 'Source', 'hm')}<th class="hm">Status</th>${th('createdAt', 'Received', 'r')}<th class="hm"></th></tr></thead><tbody>` +
       (rows.length ? rows.map(l => {
         const L = l.lead || {}, b = l.brief || {};
         return `<tr class="lead ${l.status === 'new' ? 'unread' : ''} ${l.status === 'dead' ? 'dim' : ''}" data-id="${esc(l.id)}" tabindex="0">
-          <td><b>${esc(name(L))}</b><small>${esc(L.street || '')}${L.city ? ', ' + esc(L.city) : ''}</small></td>
-          <td>${b.label ? `<span class="pill ${esc(b.label)}">${esc(b.label[0] + b.label.slice(1).toLowerCase())}</span>` : '<span class="note">n/a</span>'}</td>
-          <td class="r"><b>${b.mao ? `${$k(b.opening)} – ${$k(b.mao)}` : '<span class="note">No offer</span>'}</b></td>
+          <td><div class="who">${J ? J.avatar(name(L)) : ''}<div><b>${esc(name(L))}</b><small>${esc(L.street || '')}${L.city ? ', ' + esc(L.city) : ''}</small></div></div></td>
+          <td><div style="display:flex;align-items:center;gap:8px">${J ? J.scoreRing(b.score, b.label, 34) : ''}${b.label ? `<span class="pill ${esc(b.label)}">${esc(b.label[0] + b.label.slice(1).toLowerCase())}</span>` : ''}</div></td>
+          <td class="r"><b>${b.mao ? `${$k(b.opening)} – ${$k(b.mao)}` : '<span class="note">No offer</span>'}</b>${b.mao && b.value ? `<span class="offerbar" title="Offer range as a share of ARV"><i style="left:${Math.round((b.opening || b.mao) / b.value * 100)}%;width:${Math.max(3, Math.round((b.mao - (b.opening || b.mao)) / b.value * 100))}%"></i></span>` : ''}</td>
           <td class="r hm">${b.value ? $$(b.value) : '—'}</td>
-          <td class="hm">${esc(l.source || 'Direct')}</td>
+          <td class="hm"><span class="src"><i style="background:${/google/i.test(l.source || '') ? '#36bffa' : /meta|facebook|insta/i.test(l.source || '') ? '#7a5af8' : '#98a2b3'}"></i>${esc(l.source || 'Direct')}</span></td>
           <td class="hm">${ST[l.status] || esc(l.status)}</td>
-          <td class="r"><span class="note">${ago(l.createdAt)}</span></td></tr>`;
-      }).join('') : `<tr><td colspan="7"><div class="empty" style="padding:24px"><p>No leads match.</p></div></td></tr>`) + '</tbody></table></div>';
+          <td class="r"><span class="note">${ago(l.createdAt)}</span></td>
+          <td class="r hm"><div class="rowacts">${L.phone ? `<a href="tel:${esc(String(L.phone).replace(/\D/g, ''))}" title="Call" data-stop>${J.svg('phone')}</a><a class="tx" href="sms:${esc(String(L.phone).replace(/\D/g, ''))}" title="Text" data-stop>${J.svg('msg')}</a>` : ''}</div></td></tr>`;
+      }).join('') : `<tr><td colspan="8"><div class="empty" style="padding:24px"><p>No leads match.</p></div></td></tr>`) + '</tbody></table></div>';
+    J?.animate($('leadList'));
+    $('leadList').querySelectorAll('[data-stop]').forEach(a => a.onclick = e => e.stopPropagation());
     $('leadList').querySelectorAll('tr.lead').forEach(tr => { tr.onclick = () => { location.hash = 'leads/' + tr.dataset.id; }; tr.onkeydown = e => { if (e.key === 'Enter') tr.onclick(); }; });
     $('leadList').querySelectorAll('th[data-sort]').forEach(h => h.onclick = () => { const key = h.dataset.sort; lsort = [key, lsort[0] === key ? -lsort[1] : (key === 'name' || key === 'source' ? 1 : -1)]; renderLeads(); });
   }
@@ -322,7 +341,7 @@
   $('copyLink2').onclick = async () => { try { await navigator.clipboard.writeText(funnelUrl()); } catch {} flash($('copyLink2'), 'Copied'); };
   let curLead = null;
   async function openLead(id) {
-    $('leadIndex').hidden = true; $('leadView').hidden = false; $('lvSheet').innerHTML = '<p class="note">Loading…</p>'; $('lvErr').textContent = ''; $('lvNums').innerHTML = ''; $('lvSeller').innerHTML = '';
+    $('leadIndex').hidden = true; $('leadView').hidden = false; $('lvSheet').innerHTML = '<p class="note">Loading…</p>'; $('lvSnap').innerHTML = ''; $('lvAv').innerHTML = ''; $('lvErr').textContent = ''; $('lvNums').innerHTML = ''; $('lvSeller').innerHTML = '';
     window.scrollTo({ top: 0 });
     const r = await post('/api/leads', { action: 'get', id });
     if (!r.ok) { $('lvSheet').innerHTML = `<p class="err">${esc(r.j.error || 'Could not load.')}</p>`; return; }
@@ -338,6 +357,11 @@
     $('lvStatus').value = curLead.status;
     $('lvConvert').textContent = curLead.dealId ? 'Open in deals' : 'Move to deals';
     $('lvSheet').innerHTML = curLead.html || `<pre>${esc(curLead.summary)}</pre>`;
+    const J = window.JK, snap = J ? J.snapshot({ ...b, asking: b.asking }, { title: b.mao ? 'Offer range' : 'Deal', sub: b.call || '' }) : '';
+    $('lvSnap').innerHTML = snap; $('lvFull').open = !snap; if (snap) J.mountSnapshot($('lvSnap'));
+    $('lvAv').innerHTML = J ? J.avatar($('lvName').textContent, 'lg') : '';
+    $('lvCall2').innerHTML = (J ? J.svg('phone') : '') + ' Call'; $('lvText2').innerHTML = (J ? J.svg('msg') : '') + ' Text';
+    $('lvCall2').href = 'tel:' + digits; $('lvText2').href = 'sms:' + digits; $('lvCall2').hidden = $('lvText2').hidden = !digits;
     if (curLead.status === 'new') { post('/api/leads', { action: 'status', id, status: 'contacted' }).then(x => { if (x.ok) { curLead = { ...curLead, status: 'contacted' }; $('lvStatus').value = 'contacted'; const i = leads.findIndex(l => l.id === id); if (i >= 0) leads[i].status = 'contacted'; } }); }
   }
   function closeLead() { $('leadView').hidden = true; $('leadIndex').hidden = false; curLead = null; if (leads.length || $('leadList').querySelector('table, .empty')) renderLeads(); }
@@ -433,11 +457,13 @@
   function renderUsage() {
     if (!usage) { $('usage').innerHTML = '<p class="note">Loading…</p>'; return; }
     const L = usage.limits || {};
-    $('usage').innerHTML = [['runs', 'Deal analyses (funnel leads, Run an address, Batch)', 1], ['photos', 'Photo repair estimates', 1], ['listCalls', 'Owner list records', 500]].map(([k, l, x]) => {
-      const u = (usage[k] || 0) * x, m = (L[k] || 1) * x, c = (usage.credits?.[k] || 0) * x;
-      return `<div style="display:flex;justify-content:space-between;font-size:14px"><span>${l}</span><b>${Math.min(u, m).toLocaleString()} / ${m.toLocaleString()}</b></div><div class="meter"><i style="width:${Math.min(100, u / m * 100)}%"></i></div>${c ? `<p class="note" style="margin:-4px 0 10px">+ ${c.toLocaleString()} add-on left</p>` : ''}`;
-    }).join('') + '<p class="note">Plan limits reset on the 1st of each month, and unused plan usage doesn\'t roll over. Usage you buy separately as an add-on doesn\'t expire at the end of the month.</p>'
+    const J = window.JK, COL = { runs: ['#4a85ff', '#2f6fed'], photos: ['#9b8afb', '#7a5af8'], listCalls: ['#32d583', '#12b76a'] };
+    $('usage').innerHTML = '<div class="urings">' + [['runs', 'Deal analyses', 1], ['photos', 'Photo estimates', 1], ['listCalls', 'List records', 500]].map(([k, l, x]) => {
+      const u = (usage[k] || 0) * x, m = (L[k] || 1) * x, c = (usage.credits?.[k] || 0) * x, left = Math.max(0, m - u);
+      return `<div>${J ? J.ring(left / m, { size: 58, stroke: 6, grad: COL[k], text: Math.round(left / m * 100) + '%' }) : ''}<div><b>${left.toLocaleString()} left</b><span>${l} · ${Math.min(u, m).toLocaleString()} of ${m.toLocaleString()} used${c ? ` · +${c.toLocaleString()} add-on` : ''}</span></div></div>`;
+    }).join('') + '</div>' + '<p class="note">Plan limits reset on the 1st of each month, and unused plan usage doesn\'t roll over. Usage you buy separately as an add-on doesn\'t expire at the end of the month.</p>'
       + (plan && plan.tier !== 'trial' ? `<h2 style="margin-top:20px">Need more this month?</h2><div class="packs">${PACKS.map(([k, n, p]) => `<button class="btn ghost" type="button" data-pack="${k}"><span>${n}</span><b>$${p}</b></button>`).join('')}</div><p class="note">One-time charge, added right after you pay.</p><p class="err" id="packErr" role="alert"></p>` : '');
+    window.JK?.animate($('usage'));
     $('usage').querySelectorAll('[data-pack]').forEach(b => b.onclick = async () => {
       b.disabled = true; const r = await post('/api/billing', { action: 'pack', pack: b.dataset.pack });
       if (r.ok && r.j.url) location.href = r.j.url; else { b.disabled = false; $('packErr').textContent = r.j.error || 'Could not open payment.'; }
