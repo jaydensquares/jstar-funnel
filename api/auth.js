@@ -1,6 +1,6 @@
 // Accounts: signup, login, logout, me, update settings, change password
 import { planStatus } from '../lib/plan.js';
-import { createUser, getUserByEmail, getUserBySlug, checkPassword, hashPassword, sessionCookie, clearCookie, currentUser, publicUser, saveUser, RESERVED } from '../lib/auth.js';
+import { createUser, getUserByEmail, getUserBySlug, checkPassword, hashPassword, sessionCookie, clearCookie, currentUser, publicUser, saveUser, RESERVED, resetToken, userFromResetToken, sendPlainEmail } from '../lib/auth.js';
 
 export const maxDuration = 20;
 const slow = () => new Promise(r => setTimeout(r, 700));
@@ -44,6 +44,29 @@ export default async function handler(req, res) {
       if (!u || u.disabled || !checkPassword(String(b.password || ''), u.passHash)) { await slow(); return res.status(401).json({ error: 'Wrong email or password.' }); }
       res.setHeader('Set-Cookie', sessionCookie(u.id, u.sessVer || 0));
       return res.status(200).json({ user: publicUser(u), plan: planStatus(u) });
+    }
+
+    if (b.action === 'forgot') {
+      // Same answer whether or not the account exists, so emails can't be probed
+      const done = () => res.status(200).json({ ok: true });
+      const u = await getUserByEmail(str(b.email, 120).toLowerCase());
+      if (!u || u.disabled) { await slow(); return done(); }
+      const link = `https://${req.headers['x-forwarded-host'] || req.headers.host}/reset?t=${resetToken(u)}`;
+      const first = (u.name || '').split(' ')[0] || 'there';
+      await sendPlainEmail(u.email, 'Reset your JStar Pro password',
+        `Hi ${first},\n\nSomeone asked to reset the password for your JStar Pro account. Open this link within the next hour to choose a new one:\n\n${link}\n\nIf you didn't ask for this, ignore this email. Your password won't change.`,
+        `<p>Hi ${first},</p><p>Someone asked to reset the password for your JStar Pro account. Use the button below within the next hour to choose a new one.</p><p><a href="${link}" style="display:inline-block;background:#1a3f8f;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Choose a new password</a></p><p style="color:#666;font-size:13px">If you didn't ask for this, ignore this email. Your password won't change.</p>`
+      ).catch(e => console.error('reset email', e.message));
+      return done();
+    }
+
+    if (b.action === 'reset') {
+      const u = await userFromResetToken(b.token);
+      if (!u) { await slow(); return res.status(400).json({ error: 'This reset link has expired or was already used. Request a new one.' }); }
+      if (String(b.password || '').length < 8) return res.status(400).json({ error: 'Password needs at least 8 characters.' });
+      const saved = await saveUser({ ...u, passHash: hashPassword(b.password), sessVer: (u.sessVer || 0) + 1 });
+      res.setHeader('Set-Cookie', sessionCookie(saved.id, saved.sessVer));
+      return res.status(200).json({ ok: true });
     }
 
     if (b.action === 'logout') { res.setHeader('Set-Cookie', clearCookie()); return res.status(200).json({ ok: true }); }

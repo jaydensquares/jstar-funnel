@@ -101,6 +101,16 @@
       <input type="password" id="lPass" autocomplete="current-password" required>
       <div class="err" id="lErr" role="alert"></div>
       <button class="btn" id="lBtn" type="submit">Log in</button>
+      <p style="text-align:center;margin:14px 0 0"><button type="button" class="link" id="forgotLink">Forgot password?</button></p>
+    </form>
+
+    <form id="forgot" hidden autocomplete="on">
+      <p class="sub" style="margin:0 0 6px">Enter your account email and we'll send you a link to choose a new password.</p>
+      <label class="f" for="fEmail">Email</label>
+      <input type="text" id="fEmail" inputmode="email" autocomplete="email" required>
+      <div class="err" id="fErr" role="alert"></div>
+      <button class="btn" id="fBtn" type="submit">Send reset link</button>
+      <p style="text-align:center;margin:14px 0 0"><button type="button" class="link" id="backLogin">Back to log in</button></p>
     </form>
 
     <form id="signup" hidden autocomplete="on">
@@ -131,7 +141,7 @@
   const $ = id => document.getElementById(id);
   const next = (() => { const n = new URLSearchParams(location.search).get('next') || ''; return /^\/[a-z0-9_./#-]*$/i.test(n) && !n.startsWith('//') ? n : '/app'; })();
   const mode = m => {
-    $('login').hidden = m !== 'login'; $('signup').hidden = m !== 'signup';
+    $('login').hidden = m !== 'login'; $('signup').hidden = m !== 'signup'; $('forgot').hidden = true;
     $('tLogin').classList.toggle('on', m === 'login'); $('tSignup').classList.toggle('on', m === 'signup');
     document.title = (m === 'login' ? 'Log in' : 'Sign up') + ' | JStar Pro';
     (m === 'login' ? $('lEmail') : $('sName')).focus();
@@ -156,6 +166,15 @@
   const post = body => fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
     .then(async r => ({ ok: r.ok, j: await r.json().catch(() => ({})) })).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
 
+  $('forgotLink').onclick = () => { $('login').hidden = true; $('forgot').hidden = false; $('fEmail').value = $('lEmail').value; $('fEmail').focus(); };
+  $('backLogin').onclick = () => { $('forgot').hidden = true; $('login').hidden = false; };
+  $('forgot').addEventListener('submit', async e => {
+    e.preventDefault(); $('fErr').textContent = ''; $('fBtn').disabled = true; $('fBtn').textContent = 'Sending…';
+    const r = await post({ action: 'forgot', email: $('fEmail').value.trim() });
+    $('fBtn').disabled = false; $('fBtn').textContent = 'Send reset link';
+    if (!r.ok) { $('fErr').textContent = r.j.error || 'Could not send. Try again.'; return; }
+    $('forgot').innerHTML = '<p style="margin:0;line-height:1.55"><b>Check your email.</b> If an account exists for that address, a reset link is on its way. It works for one hour.</p>';
+  });
   $('login').addEventListener('submit', async e => {
     e.preventDefault(); $('lErr').textContent = ''; $('lBtn').disabled = true; $('lBtn').textContent = 'Logging in…';
     const r = await post({ action: 'login', email: $('lEmail').value.trim(), password: $('lPass').value });
