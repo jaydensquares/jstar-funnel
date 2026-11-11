@@ -35,7 +35,13 @@
   .phone .prog i { background:var(--sun); }
   .result { background:linear-gradient(160deg, #0f2150, var(--navy)) !important; }
   .result .save b { color:var(--sun) !important; }
-  .plan.pick { box-shadow:inset 0 4px 0 var(--sun), 0 18px 40px rgba(47,111,237,.14) !important; background:#fff; }
+  .plan.pick { background:linear-gradient(165deg, #3d7bff, var(--brand) 55%, #1f56d6) !important; color:#fff; box-shadow:0 24px 50px rgba(47,111,237,.35) !important; position:relative; z-index:1; border-radius:14px; margin:-10px 0; padding-top:38px; padding-bottom:38px; }
+  .plan.pick .for, .plan.pick .pr span { color:#dbe6ff !important; }
+  .plan.pick li { border-color:rgba(255,255,255,.18) !important; } .plan.pick li span { color:#e6eeff !important; } .plan.pick li b { color:#fff !important; }
+  .plan.pick .btn { background:var(--sun) !important; border-color:var(--sun) !important; color:var(--navy) !important; }
+  .plan.pick .nm::after { content:'Recommended'; font:700 12px var(--body); letter-spacing:.04em; background:var(--sun); color:var(--navy); padding:4px 10px; border-radius:999px; }
+  .plan.pick + .plan { border-left:0 !important; }
+  @media (max-width:899px) { .plan.pick { margin:0; border-radius:0; } .plan.pick + .plan { border-top:0 !important; } }
   .plans { border-color:#d6e2fb !important; }
   .cta2 { background:var(--brand) !important; }
   .cta2 p { color:#dbe6ff !important; }
