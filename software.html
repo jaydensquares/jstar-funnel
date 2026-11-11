@@ -72,28 +72,60 @@
   .stack b { font-size:17px; } .stack em { font-style:normal; font-weight:700; font-variant-numeric:tabular-nums; text-align:right; }
   .stack span { grid-column:1 / -1; color:var(--muted); font-size:15px; }
 
-  /* Slideshow */
-  .tour { margin-top:44px; }
-  .tabs { display:flex; gap:8px; overflow-x:auto; scrollbar-width:none; padding-bottom:4px; margin-bottom:28px; }
-  .tabs::-webkit-scrollbar { display:none; }
-  .tabs button { flex:none; border:1px solid var(--line); background:var(--bg); color:var(--ink2); font:600 15px var(--body); padding:10px 16px; border-radius:999px; cursor:pointer; }
-  .tabs button.on { background:var(--ink); color:var(--bg); border-color:var(--ink); }
-  .slide { display:grid; gap:40px; grid-template-columns:1fr; align-items:center; }
-  @media (min-width:900px) { .slide { grid-template-columns:340px 1fr; gap:72px; } }
-  .phone { width:300px; max-width:82vw; margin:0 auto; aspect-ratio:390/844; border-radius:40px; background:#0b0f17; padding:10px; box-shadow:0 30px 60px rgba(17,24,39,.22), 0 0 0 1px rgba(17,24,39,.08); position:relative; }
-  .phone video, .phone img { width:100%; height:100%; object-fit:cover; object-position:top; border-radius:31px; background:#fff; }
-  .phone .prog { position:absolute; left:28px; right:28px; bottom:-18px; height:3px; background:var(--line); border-radius:2px; overflow:hidden; }
+  /* Comparison table */
+  .cmpw { margin-top:40px; overflow-x:auto; border:1px solid var(--line); border-radius:10px; }
+  .cmp { width:100%; border-collapse:collapse; font-size:15px; min-width:720px; }
+  .cmp th { text-align:left; font-size:13px; font-weight:600; color:var(--muted); padding:12px 18px; background:var(--bg2); border-bottom:1px solid var(--line); }
+  .cmp td { padding:15px 18px; border-bottom:1px solid var(--line); color:var(--ink2); vertical-align:top; }
+  .cmp td b { color:var(--ink); }
+  .cmp .r { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .cmp .us { background:var(--brand-soft); color:var(--ink); font-weight:600; width:26%; }
+  .cmp th.us { color:var(--brand); }
+  .cmp tfoot td { border-bottom:0; background:var(--bg2); }
+  .cmp tfoot .us, .cmp tfoot .us b { background:var(--brand); color:#fff; }
+  @media (max-width:700px) {
+    .cmpw { border:0; border-radius:0; overflow:visible; }
+    .cmp { min-width:0; font-size:15px; }
+    .cmp thead { display:none; }
+    .cmp, .cmp tbody, .cmp tfoot, .cmp tr, .cmp td { display:block; }
+    .cmp tr { border:1px solid var(--line); border-radius:10px; margin-bottom:10px; overflow:hidden; }
+    .cmp td { border:0; padding:4px 16px; text-align:left !important; white-space:normal !important; }
+    .cmp td:first-child { padding-top:14px; }
+    .cmp td:nth-child(2)::before { content:"Most use: "; color:var(--muted); }
+    .cmp td:nth-child(3)::before { content:"Cost: "; color:var(--muted); }
+    .cmp td.us { width:auto; margin-top:10px; padding:10px 16px 12px; }
+    .cmp td.us::before { content:"JStar Pro: "; color:var(--brand); }
+    .cmp tfoot td:first-child { display:none; }
+    .cmp tfoot td:nth-child(2)::before { content:"Usual stack: "; color:var(--muted); }
+    .cmp tfoot td.r { padding-top:14px; }
+    .cmp tfoot td.us::before { color:#fff; opacity:.75; }
+    .vsl .cap { display:none; }
+    .vsl button.play { justify-content:flex-end; }
+    .phone { width:250px; }
+  }
+
+  /* Product tour: step list beside the clip */
+  .tour { margin-top:44px; display:grid; gap:48px; grid-template-columns:1fr; align-items:start; }
+  @media (min-width:960px) { .tour { grid-template-columns:minmax(0,1fr) 360px; gap:80px; } }
+  .steps { list-style:none; margin:0; padding:0; border-top:1px solid var(--line); }
+  .steps > li { border-bottom:1px solid var(--line); }
+  .steps button { width:100%; display:flex; gap:16px; align-items:baseline; background:none; border:0; padding:18px 0; cursor:pointer; text-align:left; font:600 18px var(--body); color:var(--muted); }
+  .steps button:hover { color:var(--ink); }
+  .steps .i { font:600 13px var(--body); color:var(--muted); font-variant-numeric:tabular-nums; width:22px; flex:none; }
+  .steps li.on button { color:var(--ink); }
+  .steps li.on .i { color:var(--brand); }
+  .steps .body { display:none; padding:0 0 22px 38px; }
+  .steps li.on .body { display:block; animation:fd .3s ease; }
+  .steps h3 { font-size:24px; font-weight:700; margin:0 0 10px; }
+  .steps p { color:var(--ink2); margin:0 0 12px; max-width:36em; }
+  .steps .body ul { margin:0; padding:0 0 0 18px; color:var(--ink2); font-size:15.5px; max-width:36em; }
+  .steps .body li { padding:3px 0; } .steps .body li b { color:var(--ink); font-weight:600; }
+  .stage { position:sticky; top:96px; }
+  .phone { width:320px; max-width:82vw; margin:0 auto; aspect-ratio:390/844; border-radius:36px; background:#0b0f17; padding:9px; box-shadow:0 24px 48px rgba(17,24,39,.18); position:relative; }
+  .phone video, .phone img { width:100%; height:100%; object-fit:cover; object-position:top; border-radius:28px; background:#fff; }
+  .phone .prog { position:absolute; left:28px; right:28px; bottom:-16px; height:3px; background:var(--line); border-radius:2px; overflow:hidden; }
   .phone .prog i { display:block; height:100%; width:0; background:var(--brand); }
-  .copy .n { font-size:13px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--brand); }
-  .copy h3 { font-size:clamp(26px, 3vw, 34px); font-weight:800; margin:10px 0 14px; }
-  .copy p { color:var(--ink2); font-size:17px; margin:0 0 16px; max-width:36em; }
-  .copy ul { margin:0; padding:0; list-style:none; border-top:1px solid var(--line); max-width:36em; }
-  .copy li { padding:11px 0 11px 22px; border-bottom:1px solid var(--line); position:relative; font-size:16px; color:var(--ink2); }
-  .copy li::before { content:""; position:absolute; left:2px; top:20px; width:8px; height:8px; border-radius:2px; background:var(--brand); }
-  .copy li b { color:var(--ink); }
-  .nav2 { display:flex; gap:10px; margin-top:22px; align-items:center; }
-  .nav2 button { border:1px solid var(--line); background:var(--bg); color:var(--ink); width:42px; height:42px; border-radius:50%; cursor:pointer; font:600 18px var(--body); }
-  .nav2 span { font-size:14px; color:var(--muted); margin-left:6px; }
+  @media (max-width:959px) { .stage { position:static; order:-1; } }
   .fade { animation:fd .35s ease; } @keyframes fd { from { opacity:.2; transform:translateY(6px); } to { opacity:1; transform:none; } }
 
   /* Calculator */
@@ -117,13 +149,14 @@
   .keep { margin-top:20px; font-size:15px; color:var(--ink2); }
 
   /* Pricing */
-  .plans { display:grid; gap:16px; margin-top:40px; grid-template-columns:1fr; }
-  @media (min-width:900px) { .plans { grid-template-columns:repeat(3,1fr); } }
-  .plan { border:1px solid var(--line); border-radius:12px; padding:26px 24px; display:flex; flex-direction:column; background:var(--bg); }
-  .plan.pick { border-color:var(--brand); box-shadow:0 0 0 1px var(--brand); }
+  .plans { display:grid; gap:0; margin-top:40px; grid-template-columns:1fr; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--bg); }
+  @media (min-width:900px) { .plans { grid-template-columns:repeat(3,1fr); } .plan + .plan { border-left:1px solid var(--line); } }
+  @media (max-width:899px) { .plan + .plan { border-top:1px solid var(--line); } }
+  .plan { padding:28px 26px; display:flex; flex-direction:column; background:var(--bg); }
+  .plan.pick { box-shadow:inset 0 3px 0 var(--brand); }
   .plan .nm { font-family:var(--display); font-weight:800; font-size:20px; display:flex; justify-content:space-between; align-items:center; }
   .plan .nm small { font-family:var(--body); font-size:12px; font-weight:700; color:var(--brand); text-transform:uppercase; letter-spacing:.06em; }
-  .plan .for { color:var(--muted); font-size:15px; margin:4px 0 18px; min-height:2.6em; }
+  .plan .for { color:var(--muted); font-size:15px; margin:4px 0 18px; min-height:3.2em; }
   .plan .pr { font-family:var(--display); font-weight:800; font-size:42px; letter-spacing:-.03em; }
   .plan .pr span { font-family:var(--body); font-size:15px; font-weight:500; color:var(--muted); letter-spacing:0; }
   .plan ul { list-style:none; padding:0; margin:20px 0 24px; font-size:15px; flex:1; }
@@ -133,7 +166,9 @@
   .addon { margin-top:16px; font-size:15px; color:var(--ink2); }
 
   /* FAQ */
-  .faq { margin-top:32px; border-top:1px solid var(--line); max-width:840px; }
+  .faqgrid { display:grid; gap:32px; grid-template-columns:1fr; }
+  @media (min-width:900px) { .faqgrid { grid-template-columns:340px 1fr; gap:64px; } }
+  .faq { border-top:1px solid var(--line); }
   .faq details { border-bottom:1px solid var(--line); padding:18px 0; }
   .faq summary { cursor:pointer; font-weight:700; font-size:17px; list-style:none; display:flex; justify-content:space-between; gap:16px; }
   .faq summary::-webkit-details-marker { display:none; }
@@ -141,9 +176,14 @@
   .faq details[open] summary::after { content:"−"; }
   .faq p { margin:10px 0 0; color:var(--ink2); font-size:16px; }
 
-  .cta2 { padding:88px 0; background:var(--navy); color:var(--on-navy); text-align:center; }
-  .cta2 h2 { font-size:clamp(30px, 3.8vw, 42px); }
-  .cta2 p { color:var(--on-navy2); margin:12px 0 26px; }
+  .cta2 { padding:72px 0; background:var(--navy); color:var(--on-navy); }
+  .cta2 .w { display:flex; justify-content:space-between; align-items:center; gap:32px; flex-wrap:wrap; }
+  .cta2 h2 { font-size:clamp(28px, 3.4vw, 38px); }
+  .cta2 p { color:var(--on-navy2); margin:10px 0 0; max-width:34em; }
+  .cta2 .ctas { display:flex; gap:10px; flex-wrap:wrap; }
+  .cta2 .btn.alt { color:var(--on-navy); border-color:#3a4d75; }
+  .btn.gold { background:var(--gold); border-color:var(--gold); color:var(--navy); }
+  .split { max-width:760px; }
   footer { padding:28px 0 48px; color:var(--muted); font-size:14px; }
   footer .w { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
   footer a { text-decoration:none; } footer a:hover { color:var(--ink); }
@@ -159,11 +199,10 @@
 <main>
   <section class="hero"><div class="w">
     <div>
-      <p class="kicker">For real estate wholesalers</p>
       <h1>One login from ad click to signed contract.</h1>
-      <p class="lead">A lot of wholesalers pay for a list tool, a funnel builder, a deal calculator and a pile of spreadsheets, then copy the same address between all of them. JStar Pro does the part that makes you money in one place: your seller funnel, an offer on every lead, repair estimates from photos, underwriting and contracts.</p>
-      <div class="ctas"><a class="btn" href="#pricing">See plans</a><a class="btn alt" href="#tour">Watch it work</a></div>
-      <p class="fine">From $49 a month. Month to month, cancel anytime.</p>
+      <p class="lead">Your seller funnel, comps, ARV, repairs and MAO on every lead, underwriting and the purchase agreement. Built for wholesalers who are tired of typing the same address into five tools.</p>
+      <div class="ctas"><a class="btn" href="/signup">Start free</a><a class="btn alt" href="#tour">See how it works</a></div>
+      <p class="fine">15 free deal analyses to start. Paid plans from $49/mo, cancel anytime.</p>
     </div>
     <div class="vsl" id="vsl">
       <img src="/media/vsl.jpg" alt="" width="1280" height="720">
@@ -175,34 +214,36 @@
   </div></section>
 
   <section class="s" id="problem"><div class="w">
-    <p class="kicker">The usual setup</p>
-    <h2>You're paying for six tools that don't talk to each other.</h2>
-    <p class="intro">A seller fills out your form. You copy the address into your comps tool, guess at repairs, run the numbers in a spreadsheet, retype everything into a contract, then write the buyer blast from scratch. Every step is another login, and every hour you spend on it is an hour the seller is talking to someone else.</p>
-    <div class="stack">
-      <div><b>Lead lists and comps</b><em>$99/mo</em><span>PropStream Essentials, for pulling lists and checking sales.</span></div>
-      <div><b>Seller funnel</b><em>$97/mo</em><span>ClickFunnels or a similar page builder, plus the time to build the form and write the compliance pages.</span></div>
-      <div><b>Deal analysis</b><em>Another plan</em><span>A calculator app or a spreadsheet you maintain yourself.</span></div>
-      <div><b>Repair estimates</b><em>Your time</em><span>Guesswork from listing photos, or a contractor visit before you can make an offer.</span></div>
-      <div><b>Underwriting and tracking</b><em>Your time</em><span>A spreadsheet or sticky notes for which deals are under contract, assigned or dead.</span></div>
-      <div><b>Contracts and buyer blasts</b><em>Your time</em><span>A Word doc you edit by hand, and an email you rewrite for every deal.</span></div>
+    <div class="split">
+      <div>
+        <h2>You're paying for six tools that don't talk to each other.</h2>
+        <p class="intro">A seller fills out your form. You copy the address into your comps tool, guess at repairs, run numbers in a spreadsheet, retype it all into a contract, then write the buyer blast from scratch. Meanwhile the seller is on the phone with the next wholesaler.</p>
+      </div>
     </div>
+    <div class="cmpw"><table class="cmp">
+      <thead><tr><th>The job</th><th>What most wholesalers use</th><th class="r">Typical cost</th><th class="us">JStar Pro</th></tr></thead>
+      <tbody>
+        <tr><td><b>Seller funnel</b></td><td>ClickFunnels, plus writing your own privacy, terms and SMS consent pages</td><td class="r">$97/mo</td><td class="us">Live the day you sign up</td></tr>
+        <tr><td><b>Comps and ARV</b></td><td>PropStream Essentials</td><td class="r">$99/mo</td><td class="us">On every lead, automatically</td></tr>
+        <tr><td><b>Deal analysis and MAO</b></td><td>DealCheck or a spreadsheet you keep fixing</td><td class="r">$29/mo</td><td class="us">Opening offer and max offer</td></tr>
+        <tr><td><b>Repair estimate</b></td><td>FlipperForce, or waiting on a contractor walkthrough</td><td class="r">$79/mo</td><td class="us">Line items from up to 12 photos</td></tr>
+        <tr><td><b>Underwriting and pipeline</b></td><td>Sticky notes and a Google Sheet</td><td class="r">Your time</td><td class="us">70% rule, buyer profit, 18-point checklist</td></tr>
+        <tr><td><b>Contract and buyer blast</b></td><td>A Word doc you edit by hand</td><td class="r">Your time</td><td class="us">Filled in from the deal, with TX disclosures</td></tr>
+      </tbody>
+      <tfoot><tr><td colspan="2"><b>Total</b></td><td class="r"><b>$304/mo</b> + hours</td><td class="us"><b>From $49/mo</b></td></tr></tfoot>
+    </table></div>
   </div></section>
 
   <section class="s alt" id="tour"><div class="w">
-    <p class="kicker">See it work</p>
-    <h2>Real screens. Real workflow. No mockups.</h2>
-    <p class="intro">Every clip below was recorded in the app. Tap through the steps, or let it play.</p>
-    <div class="tour">
-      <div class="tabs" id="tabs" role="tablist"></div>
-      <div class="slide" id="slide">
-        <div class="phone"><video id="tv" muted playsinline preload="none"></video><div class="prog"><i id="tp"></i></div></div>
-        <div class="copy" id="tc" aria-live="polite"></div>
-      </div>
+    <h2>From the first form fill to the assignment.</h2>
+    <p class="intro">Each clip was recorded in the live app. Pick a step or let it play.</p>
+    <div class="tour" id="slide">
+      <ol class="steps" id="tabs" role="tablist"></ol>
+      <div class="stage"><div class="phone"><video id="tv" muted playsinline preload="none"></video><div class="prog"><i id="tp"></i></div></div></div>
     </div>
   </div></section>
 
   <section class="s" id="compare"><div class="w">
-    <p class="kicker">Do the math</p>
     <h2>What are you paying for right now?</h2>
     <p class="intro">Tick what you use and change any price to what you actually pay. Defaults are current published monthly prices for each example tool. The last two do more than JStar Pro, so they start unticked.</p>
     <div class="calc">
@@ -221,7 +262,6 @@
   </div></section>
 
   <section class="s alt" id="pricing"><div class="w">
-    <p class="kicker">Pricing</p>
     <h2>Every tool on every plan.</h2>
     <p class="intro">Pick by how many deals you analyze each month. Leads from your funnel count toward deal analyses.</p>
     <div class="plans">
@@ -238,7 +278,7 @@
         <a class="btn alt" href="/signup?plan=starter">Start with Starter</a>
       </div>
       <div class="plan pick">
-        <div class="nm">Pro <small>Most popular</small></div>
+        <div class="nm">Pro</div>
         <div class="for">For wholesalers running ads every month.</div>
         <div class="pr">$99<span> / month</span></div>
         <ul>
@@ -267,8 +307,7 @@
   </div></section>
 
   <section class="s" id="faq"><div class="w">
-    <p class="kicker">Questions</p>
-    <h2>Before you sign up</h2>
+    <div class="faqgrid"><div><h2>Before you sign up</h2><p class="intro" style="font-size:16px">Where the numbers come from, what it won't do, and how billing works.</p></div>
     <div class="faq">
       <details><summary>Where do the numbers come from?</summary><p>Property details and recent sales come from public records and listing data covering the U.S. After-repair value is based on the closest recent sales by distance, size, age and date. Repair estimates use cost per square foot by condition, adjusted for the age of the house and any problems the seller reports. Every number is an estimate, so check comps and walk the property before you sign.</p></details>
       <details><summary>How do offers get calculated?</summary><p>Max offer = after-repair value × 70%, minus repairs, minus your assignment fee. Your opening offer starts 5% below that so you have room to negotiate. On any deal you can change the ARV, repairs, contract price and fee and see the effect on your buyer's profit.</p></details>
@@ -278,13 +317,13 @@
       <details><summary>Are the contracts legally ready to use?</summary><p>They are templates with the disclosures Texas requires for wholesalers, filled in from your deal. Laws vary by state and situation. Have a real estate attorney in your state review them once before you use them, and follow your state's rules on marketing contracts you don't own.</p></details>
       <details><summary>What happens if I hit my monthly limit?</summary><p>Your funnel keeps taking leads. They still arrive in your inbox with the seller's details, just without the automatic analysis, until you upgrade or the month resets. Plan limits reset on the 1st and unused usage doesn't roll over. Anything you purchase separately as an add-on doesn't reset.</p></details>
       <details><summary>Can I cancel?</summary><p>Yes, anytime, from Plan &amp; account → Manage billing. You keep access until the end of the period you paid for.</p></details>
-    </div>
+    </div></div>
   </div></section>
 
   <section class="cta2"><div class="w">
-    <h2>Get your funnel live today.</h2>
-    <p>Sign up, add your business info and share your link. Your first lead shows up with an offer already worked out.</p>
-    <a class="btn" href="#pricing">Choose a plan</a>
+    <div><h2>Get your funnel live today.</h2>
+    <p>Sign up, add your business name and phone, and share the link. Your next seller lead comes in with the offer already worked out.</p></div>
+    <div class="ctas"><a class="btn gold" href="/signup">Start free</a><a class="btn alt" href="#pricing">Compare plans</a></div>
   </div></section>
 </main>
 
@@ -329,16 +368,11 @@
   ];
   let cur = 0, timer = null, userPicked = false;
   const v = $('tv');
-  $('tabs').innerHTML = STEPS.map((s, i) => `<button type="button" role="tab" data-i="${i}">${s.tab}</button>`).join('');
+  $('tabs').innerHTML = STEPS.map((s, i) => `<li><button type="button" role="tab" data-i="${i}"><span class="i">${String(i + 1).padStart(2, '0')}</span><span class="t">${s.tab}</span></button><div class="body"><h3>${s.h}</h3><p>${s.p}</p><ul>${s.li.map(x => `<li>${x}</li>`).join('')}</ul></div></li>`).join('');
   $('tabs').querySelectorAll('button').forEach(b => b.onclick = () => { userPicked = true; show(+b.dataset.i); });
   function show(i) {
     cur = (i + STEPS.length) % STEPS.length; const s = STEPS[cur];
-    $('tabs').querySelectorAll('button').forEach((b, k) => { b.classList.toggle('on', k === cur); b.setAttribute('aria-selected', k === cur); });
-    const tb = $('tabs').children[cur]; if (tb && inView) tb.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
-    $('tc').innerHTML = `<div class="fade"><div class="n">${s.n}</div><h3>${s.h}</h3><p>${s.p}</p><ul>${s.li.map(x => `<li>${x}</li>`).join('')}</ul>
-      <div class="nav2"><button type="button" id="prev" aria-label="Previous">‹</button><button type="button" id="nxt" aria-label="Next">›</button><span>${cur + 1} of ${STEPS.length}</span></div></div>`;
-    $('prev').onclick = () => { userPicked = true; show(cur - 1); };
-    $('nxt').onclick = () => { userPicked = true; show(cur + 1); };
+    $('tabs').querySelectorAll(':scope > li').forEach((li, k) => { li.classList.toggle('on', k === cur); li.querySelector('button').setAttribute('aria-selected', k === cur); });
     v.poster = `/media/${s.key}.jpg`;
     if (loaded) { load(s.key); v.play().catch(() => {}); }
   }

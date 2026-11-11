@@ -92,12 +92,16 @@
   .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 </style>
+<link rel="stylesheet" href="/ui.css">
 <script src="/acct.js"></script>
 </head>
-<body>
-<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app">Leads</a><a href="/operator">Run deal</a><a class="on" href="/batch">Batch</a><a href="/photos">Photos</a><a href="/underwriting">Deals</a><a href="/list">Lists</a></nav></div></header>
+<body class="shell">
+<aside class="side"><div class="brandbox"><a class="logo" href="/app">JStar <span>Pro</span></a><div class="ws" id="ws">Owner</div></div>
+<nav class="snav" aria-label="Main"><a class="acct-only" href="/app#leads" data-t="leads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13L21 13v6H3v-6z"/></svg>Leads</a><a href="/underwriting"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V4.5h7V7"/><path d="M3 12.5h18"/></svg>Deals</a><span class="sh">Analyze</span><a href="/operator"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Run an address</a><a class="on" href="/batch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Batch</a><a href="/photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo estimate</a><a href="/list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Owner lists</a><span class="sh acct-only">Funnel</span><a class="acct-only" href="/app#funnel" data-t="funnel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Funnel &amp; business</a><a class="acct-only" href="/app#ads" data-t="ads"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Ad tracking</a><a class="acct-only" href="/app#domain" data-t="domain"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>Domain</a></nav>
+<div class="foot snav"><a class="acct-only" href="/app#account" data-t="account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Plan &amp; account</a></div></aside>
 
-<main class="wrap">
+<main class="wrap page">
+  <div class="ph"><div><h1>Batch analysis</h1><p>Up to 10 addresses at once, sorted by score. Uses 1 deal analysis per address.</p></div></div>
   <section id="gate" class="card">
     <h1>Operator access</h1>
     <p class="sub">Enter your PIN to run a batch.</p>
@@ -112,8 +116,8 @@
 
   <form id="batch" hidden autocomplete="off">
     <section class="card">
-      <h1>Batch run</h1>
-      <p class="sub">Up to 10 properties at once. Beds, baths, sq ft and year come from public record. Pick a condition for each house (sets the repair estimate); use Run deal for exact repairs.</p>
+      <h2>Addresses</h2>
+      <p class="sub">Beds, baths, sq ft and year built come from public record. The condition you pick for each house sets its repair estimate. For exact repair lines, use Run an address.</p>
       <label class="f" for="paste">Paste addresses <span class="opt">(one per line; fills the rows below)</span></label>
       <textarea id="paste" placeholder="422 Martin St, Houston, TX 77018&#10;865 Wakefield Dr&#10;3002 N Shepherd Dr, Houston, TX 77018"></textarea>
       <button type="button" class="btn ghost sm" id="fillBtn" style="margin-top:10px">Fill rows</button>

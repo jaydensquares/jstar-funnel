@@ -80,18 +80,19 @@
   .stat4 b { display:block; font-family:var(--display); font-size:20px; font-variant-numeric:tabular-nums; }
   .stat4 span { font-size:12px; color:var(--muted); }
   .filters { display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; margin-bottom:10px; }
-  .filters button { flex:none; border:1px solid var(--line); background:var(--card); color:var(--ink); border-radius:999px; padding:7px 12px; font:600 13px var(--body); cursor:pointer; }
-  .filters button.on { border-color:var(--brand); background:var(--brand-soft); color:var(--brand); }
-  .deal { display:block; width:100%; text-align:left; font:inherit; color:inherit; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:10px; cursor:pointer; }
-  .deal:hover { border-color:var(--brand); }
+  .filters button { flex:none; border:0; border-bottom:2px solid transparent; background:none; color:var(--muted); border-radius:0; padding:8px 2px; margin-right:14px; font:600 14px var(--body); cursor:pointer; }
+  .filters button.on { border-bottom-color:var(--brand); color:var(--ink); }
+
+
   .deal .top { display:flex; justify-content:space-between; gap:10px; align-items:flex-start; }
   .deal .addr { font-weight:700; }
   .deal .meta { font-size:13px; color:var(--muted); margin-top:4px; font-variant-numeric:tabular-nums; }
   .bar { height:5px; background:var(--line); border-radius:3px; margin-top:10px; overflow:hidden; }
   .bar i { display:block; height:100%; background:var(--brand); }
-  .st { flex:none; font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:999px; background:var(--brand-soft); color:var(--brand); }
-  .st.contract { background:#fff4dc; color:#8a5a00; } .st.assigned { background:#e6f4ea; color:#1e7a3c; } .st.closed { background:#1e7a3c; color:#fff; } .st.dead { background:var(--line); color:var(--muted); }
-  @media (prefers-color-scheme: dark) { .st.contract { background:#3a2f12; color:#f0c674; } .st.assigned { background:#163323; color:#7fd49a; } }
+
+  .st.offer, .st.lead { background:var(--brand-soft); color:var(--brand); } .st.contract { background:var(--warn-bg); color:var(--warn); } .st.assigned, .st.closed { background:var(--ok-bg); color:var(--ok); } .st.dead { background:var(--line2); color:var(--muted); }
+  .filters { border-bottom:1px solid var(--line); margin-bottom:16px !important; gap:0 !important; }
+
   .sticky { position:sticky; top:0; z-index:4; background:var(--bg); padding:10px 0; display:flex; gap:10px; align-items:center; }
   .sticky .btn { width:auto; padding:11px 18px; }
   .sticky select { width:auto; flex:1; }
@@ -113,12 +114,15 @@
   .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 </style>
+<link rel="stylesheet" href="/ui.css">
 <script src="/acct.js"></script>
 </head>
-<body>
-<header><div class="wrap"><a class="logo" href="/">JStar <span>Acquisitions</span></a><nav class="nav"><a class="acct-only" href="/app">Leads</a><a href="/operator">Run deal</a><a href="/batch">Batch</a><a href="/photos">Photos</a><a class="on" href="/underwriting">Deals</a><a href="/list">Lists</a></nav></div></header>
+<body class="shell">
+<aside class="side"><div class="brandbox"><a class="logo" href="/app">JStar <span>Pro</span></a><div class="ws" id="ws">Owner</div></div>
+<nav class="snav" aria-label="Main"><a class="acct-only" href="/app#leads" data-t="leads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13L21 13v6H3v-6z"/></svg>Leads</a><a class="on" href="/underwriting"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V4.5h7V7"/><path d="M3 12.5h18"/></svg>Deals</a><span class="sh">Analyze</span><a href="/operator"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Run an address</a><a href="/batch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Batch</a><a href="/photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo estimate</a><a href="/list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Owner lists</a><span class="sh acct-only">Funnel</span><a class="acct-only" href="/app#funnel" data-t="funnel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Funnel &amp; business</a><a class="acct-only" href="/app#ads" data-t="ads"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Ad tracking</a><a class="acct-only" href="/app#domain" data-t="domain"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>Domain</a></nav>
+<div class="foot snav"><a class="acct-only" href="/app#account" data-t="account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Plan &amp; account</a></div></aside>
 
-<main class="wrap">
+<main class="wrap page">
   <section id="gate" class="card">
     <h1>Operator access</h1>
     <p class="sub">Enter your PIN to open your deals.</p>
@@ -133,15 +137,14 @@
 
   <!-- Pipeline -->
   <section id="pipe" hidden>
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px">
-      <h1 style="margin:0">Deals</h1>
-      <button class="btn" id="newBtn" type="button" style="width:auto;padding:11px 16px">+ New deal</button>
+    <div class="ph"><div><h1>Deals</h1><p>Your pipeline from offer to closing, with underwriting, the due-diligence checklist and contracts on each deal.</p></div>
+      <button class="btn" id="newBtn" type="button">New deal</button>
     </div>
     <div class="stat4">
-      <div><b id="sActive">0</b><span>active deals</span></div>
-      <div><b id="sContract">0</b><span>under contract</span></div>
-      <div><b id="sPending">$0</b><span>fees pending</span></div>
-      <div><b id="sClosed">$0</b><span>fees closed</span></div>
+      <div><b id="sActive">0</b><span>Active deals</span></div>
+      <div><b id="sContract">0</b><span>Under contract</span></div>
+      <div><b id="sPending">$0</b><span>Fees pending</span></div>
+      <div><b id="sClosed">$0</b><span>Fees closed</span></div>
     </div>
     <div class="filters" id="filters"></div>
     <div id="list"><p class="note">Loading…</p></div>
@@ -333,13 +336,17 @@
     $('filters').innerHTML = F.map(([k, l]) => `<button type="button" data-k="${k}" class="${k === filter ? 'on' : ''}">${l}${k === 'all' ? '' : ' ' + (k === 'active' ? active.length : deals.filter(d => d.status === k).length)}</button>`).join('');
     $('filters').querySelectorAll('button').forEach(b => b.onclick = () => { filter = b.dataset.k; renderList(); });
     const show = filter === 'all' ? deals : filter === 'active' ? active : deals.filter(d => d.status === filter);
-    $('list').innerHTML = show.length ? show.map(d => {
+    const dt = x => x ? new Date(x + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—';
+    $('list').innerHTML = show.length ? `<div class="dtw"><table class="dt"><thead><tr><th>Property</th><th>Status</th><th class="r">Contract</th><th class="r hm">Fee</th><th class="hm">Closing</th><th class="hm">Checklist</th></tr></thead><tbody>` + show.map(d => {
       const a = d.address || {}, n = d.numbers || {}, p = progress(d);
-      const bits = [n.contractPrice && `Contract ${$$(n.contractPrice)}`, n.assignmentFee && `Fee ${$$(n.assignmentFee)}`, d.terms?.closingDate && `Close ${new Date(d.terms.closingDate + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`].filter(Boolean).join(' · ');
-      return `<button type="button" class="deal" data-id="${esc(d.id)}"><div class="top"><div><div class="addr">${esc(a.street || 'No address')}</div><div class="meta">${esc([a.city, a.state].filter(Boolean).join(', '))}${d.seller?.name ? ' · ' + esc(d.seller.name) : ''}</div></div><span class="st ${d.status}">${SL[d.status] || d.status}</span></div>
-        <div class="meta">${bits || 'No numbers yet'}</div><div class="bar" title="${p}/${ALLCK.length} checklist"><i style="width:${Math.round(p / ALLCK.length * 100)}%"></i></div></button>`;
-    }).join('') : `<div class="card"><p class="note" style="margin:0">${deals.length ? 'No deals in this view.' : 'No deals yet. Run a property on <a href="/operator">Run deal</a> and tap <b>Save to deals</b>, or tap <b>+ New deal</b>.'}</p></div>`;
-    $('list').querySelectorAll('.deal').forEach(b => b.onclick = () => { location.hash = b.dataset.id; });
+      return `<tr class="deal" data-id="${esc(d.id)}" tabindex="0"><td><b>${esc(a.street || 'No address')}</b><small>${esc([a.city, a.state].filter(Boolean).join(', '))}${d.seller?.name ? ' · ' + esc(d.seller.name) : ''}</small></td>
+        <td><span class="st ${d.status}">${SL[d.status] || d.status}</span></td>
+        <td class="r"><b>${n.contractPrice ? $$(n.contractPrice) : '—'}</b></td>
+        <td class="r hm">${n.assignmentFee ? $$(n.assignmentFee) : '—'}</td>
+        <td class="hm">${dt(d.terms?.closingDate)}</td>
+        <td class="hm"><span class="prog" title="${p} of ${ALLCK.length} done"><i style="width:${Math.round(p / ALLCK.length * 100)}%"></i></span> <span class="note">${p}/${ALLCK.length}</span></td></tr>`;
+    }).join('') + '</tbody></table></div>' : `<div class="dtw"><div class="empty"><b>${deals.length ? 'No deals in this view' : 'No deals yet'}</b><p>${deals.length ? 'Try another filter above.' : 'Run a property on <a href="/operator">Run an address</a> and save it, move a lead over from your inbox, or start one with <b>New deal</b>.'}</p></div></div>`;
+    $('list').querySelectorAll('.deal').forEach(b => { b.onclick = () => { location.hash = b.dataset.id; }; b.onkeydown = e => { if (e.key === 'Enter') b.onclick(); }; });
   }
 
   // ── Editor ──
@@ -359,7 +366,7 @@
     document.querySelectorAll('[data-n]').forEach(el => { const v = d.numbers?.[el.dataset.n]; el.value = v == null ? '' : el.dataset.n === 'buyerCostPct' ? v : '$' + Number(v).toLocaleString(); });
     document.querySelectorAll('[data-c]').forEach(el => { el.checked = !!d.checklist?.[el.dataset.c]; });
     $('status').value = d.status || 'lead';
-    $('analysisBox').innerHTML = d.analysis?.summary ? `<b>From Run deal:</b><br>${esc(d.analysis.summary).replace(/\n/g, '<br>')}` : '';
+    $('analysisBox').innerHTML = d.analysis?.summary ? `<b>From Run an address:</b><br>${esc(d.analysis.summary).replace(/\n/g, '<br>')}` : '';
     $('hist').innerHTML = (d.history || []).slice().reverse().map(h => `${h.at ? new Date(h.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''} · ${esc(h.text)}`).join('<br>') || '—';
     $('delBtn').hidden = !d.id;
     const ready = !!d.id;
