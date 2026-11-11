@@ -247,7 +247,8 @@
     $('ws').textContent = user.company || user.name;
     $('loading').hidden = true; $('appBody').hidden = false;
     const qs = new URLSearchParams(location.search);
-    if (qs.get('welcome')) { $('welcome').hidden = false; $('welcome').innerHTML = `<b>Welcome, ${esc(user.name.split(' ')[0])}.</b> Your seller funnel is live at <a href="${funnelUrl()}" target="_blank" rel="noopener">${esc(funnelUrl().replace(/^https?:\/\//, ''))}</a>. Point your ads at that link. New leads show up here with an offer already worked out.${plan.tier === 'trial' ? ' You\'re on the free trial, so <a href="#account">choose a plan</a> when you\'re ready.' : ''}`; }
+    if (plan.tier === 'trial') { $('welcome').hidden = false; $('welcome').innerHTML = `<b>${qs.get('welcome') ? 'Welcome, ' + esc(user.name.split(' ')[0]) + '. ' : ''}Choose a plan to get started.</b> Your funnel goes live and every tool unlocks as soon as your plan is active. <a href="#account">Choose a plan</a>`; }
+    else if (qs.get('welcome')) { $('welcome').hidden = false; $('welcome').innerHTML = `<b>Welcome, ${esc(user.name.split(' ')[0])}.</b> Your seller funnel is live at <a href="${funnelUrl()}" target="_blank" rel="noopener">${esc(funnelUrl().replace(/^https?:\/\//, ''))}</a>. Point your ads at that link. New leads show up here with an offer already worked out.`; }
     if (qs.get('paid')) { $('welcome').hidden = false; $('welcome').innerHTML = qs.get('paid') === 'domain' ? '<b>Payment received.</b> You can connect your domain below. If it still asks you to upgrade, refresh in a few seconds.' : '<b>Payment received. Your plan is active.</b> If your plan still shows Trial, refresh in a few seconds.'; }
     fillForms(); tab(); loadLeads();
   }
@@ -380,7 +381,7 @@
   function renderPlan() {
     if (!plan) return;
     $('planName').textContent = plan.name;
-    $('planNote').textContent = plan.tier === 'trial' ? 'The trial includes 15 deal analyses, 3 photo estimates and 2,000 list records. Every tool is unlocked.' : `Renews monthly.${plan.domainAddon ? ' Includes the custom domain add-on.' : ''}`;
+    $('planNote').textContent = plan.tier === 'trial' ? 'Choose a plan to turn on your funnel and every tool.' : `Renews monthly.${plan.domainAddon ? ' Includes the custom domain add-on.' : ''}`;
     $('manageBilling').hidden = !plan.hasBilling;
     $('planCards').innerHTML = Object.entries(PLAN_INFO).map(([k, [n, p, f]]) => {
       const cur = plan.tier === k;

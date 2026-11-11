@@ -1,4 +1,5 @@
 import { analyzeLead } from '../lib/pipeline.js';
+import { isActive } from '../lib/plan.js';
 import { lookupLinks } from '../lib/rentcast.js';
 import { sendWebhook, sendEmail, sendSms, sendPush, sendMetaCAPI, dealSheetHtml, smsText } from '../lib/notify.js';
 import { getUserBySlug, bizOf } from '../lib/auth.js';
@@ -31,7 +32,7 @@ export default async function handler(req, res) {
   let tenant = null;
   if (b.tenant) {
     tenant = await getUserBySlug(String(b.tenant).toLowerCase()).catch(() => null);
-    if (!tenant || tenant.disabled) return res.status(404).json({ error: 'This form isn\'t active' });
+    if (!isActive(tenant)) return res.status(404).json({ error: 'This form isn\'t active' });
   }
 
   const required = ['street', 'city', 'state', 'zip', 'firstName', 'phone'];

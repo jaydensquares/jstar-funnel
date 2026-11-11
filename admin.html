@@ -82,7 +82,7 @@
       <input type="text" id="linkOut" readonly>
       <p class="note">Send this to them directly. It stops working once they set a new password, or after 24 hours.</p>
     </div>
-    <p class="note">Monthly revenue counts active Stripe subscriptions only. Comped accounts and trials count as $0. A manual plan change is overwritten if the person later changes their subscription in Stripe.</p>
+    <p class="note">Monthly revenue counts active Stripe subscriptions only. Comped accounts count as $0. Accounts with no plan can log in but can't use any tool, and their funnel is off. A manual plan change is overwritten if the person later changes their subscription in Stripe.</p>
   </div>
 </main>
 <script>
@@ -108,8 +108,8 @@
     $('rows').innerHTML = list.map(r => `
       <tr class="${r.disabled ? 'off' : ''}" data-id="${esc(r.id)}">
         <td><b>${esc(r.name)}</b>${r.disabled ? ' <span class="pill trial">Disabled</span>' : ''}<small>${esc(r.email)}</small><small>${esc(r.company)}${r.phone ? ' · ' + esc(r.phone) : ''}</small></td>
-        <td><select data-act="plan" aria-label="Plan for ${esc(r.name)}">${['trial','starter','pro','team'].map(t => `<option value="${t}" ${t === r.tier ? 'selected' : ''}>${t[0].toUpperCase() + t.slice(1)}</option>`).join('')}</select>
-          <small>${r.paying ? `<span class="pill">Paying ${money(r.mrr)}/mo</span>` : r.comp ? '<span class="pill comp">Comped</span>' : r.tier === 'trial' ? '<span class="pill trial">Trial</span>' : ''}</small></td>
+        <td><select data-act="plan" aria-label="Plan for ${esc(r.name)}">${['trial','starter','pro','team'].map(t => `<option value="${t}" ${t === r.tier ? 'selected' : ''}>${t === 'trial' ? 'No plan' : t[0].toUpperCase() + t.slice(1)}</option>`).join('')}</select>
+          <small>${r.paying ? `<span class="pill">Paying ${money(r.mrr)}/mo</span>` : r.comp ? '<span class="pill comp">Comped</span>' : r.tier === 'trial' ? '<span class="pill trial">Not paid</span>' : ''}</small></td>
         <td>${meter(r.usage.runs, r.limits.runs)}</td>
         <td>${meter(r.usage.photos, r.limits.photos)}</td>
         <td>${r.leads}</td>
@@ -121,7 +121,7 @@
   }
   function stats(t) {
     $('stats').innerHTML = [
-      [money(t.mrr), 'Monthly revenue'], [t.accounts, 'Accounts'], [t.paying, 'Paying'], [t.trial, 'On trial'],
+      [money(t.mrr), 'Monthly revenue'], [t.accounts, 'Accounts'], [t.paying, 'Paying'], [t.trial, 'No plan yet'],
       [t.runs, 'Analyses this month'], [t.photos, 'Photo reports this month'], [t.leads, 'Funnel leads, all time'], [t.comp, 'Comped'],
     ].map(([b, s]) => `<div><b>${esc(b)}</b><span>${s}</span></div>`).join('');
   }

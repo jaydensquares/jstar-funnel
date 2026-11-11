@@ -1,5 +1,6 @@
 // Serves a user's seller funnel (and its privacy/terms pages), branded from their account.
 // Reached via /f/<username>[/privacy|/terms] or, on a connected custom domain, via middleware.
+import { isActive } from '../lib/plan.js';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { getUserBySlug, getUserByHost } from '../lib/auth.js';
@@ -61,7 +62,7 @@ export default async function handler(req, res) {
     else u = await getUserByHost(q.host || req.headers['x-forwarded-host'] || req.headers.host);
   } catch (e) { console.error('funnel lookup', e); }
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
-  if (!u || u.disabled) {
+  if (!isActive(u)) {
     res.setHeader('Cache-Control', 'no-store');
     return res.status(404).send('<!doctype html><meta name="viewport" content="width=device-width"><title>Not found</title><p style="font:16px system-ui;padding:40px;text-align:center">This page isn\'t set up.</p>');
   }

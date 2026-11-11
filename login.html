@@ -89,8 +89,12 @@
   $('tSignup').onclick = () => { history.replaceState(null, '', '#signup'); mode('signup'); };
   $('pfx').textContent = location.host + '/f/';
   const PLANS = { starter: ['Starter', 49], pro: ['Pro', 99], team: ['Team', 199] };
-  const plan = PLANS[new URLSearchParams(location.search).get('plan')] ? new URLSearchParams(location.search).get('plan') : '';
-  if (plan) { $('planPick').hidden = false; $('planPick').innerHTML = `<span><b>${PLANS[plan][0]}</b> · $${PLANS[plan][1]}/month</span><a href="/software#pricing">Change</a>`; $('sBtn').textContent = 'Create account and continue to payment'; }
+  // Every account needs a plan; there's no free trial
+  let plan = PLANS[new URLSearchParams(location.search).get('plan')] ? new URLSearchParams(location.search).get('plan') : 'pro';
+  $('planPick').hidden = false;
+  $('planPick').innerHTML = `<label for="planSel" style="font-weight:600">Plan</label><select id="planSel" style="width:auto">${Object.entries(PLANS).map(([k, [n, p]]) => `<option value="${k}" ${k === plan ? 'selected' : ''}>${n} · $${p}/month</option>`).join('')}</select>`;
+  $('planSel').onchange = e => { plan = e.target.value; };
+  $('sBtn').textContent = 'Create account and continue to payment';
   mode(location.hash === '#signup' || location.pathname.includes('signup') || new URLSearchParams(location.search).get('plan') ? 'signup' : 'login');
 
   // Already logged in → straight to the app
@@ -124,7 +128,7 @@
   $('signup').addEventListener('submit', async e => {
     e.preventDefault(); $('sErr').textContent = ''; $('sBtn').disabled = true; $('sBtn').textContent = 'Creating your account…';
     const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value });
-    if (!r.ok) { $('sBtn').disabled = false; $('sBtn').textContent = plan ? 'Create account and continue to payment' : 'Create account'; $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
+    if (!r.ok) { $('sBtn').disabled = false; $('sBtn').textContent = 'Create account and continue to payment'; $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
     if (plan) {
       $('sBtn').textContent = 'Opening secure checkout…';
       const c = await fetch('/api/billing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'checkout', plan }) }).then(x => x.json().catch(() => ({}))).catch(() => ({}));
