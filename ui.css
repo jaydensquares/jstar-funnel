@@ -5,7 +5,7 @@
   --bg:#f6f7f9; --card:#fff; --ink:#101828; --ink2:#344054; --muted:#667085; --line:#e4e7ec; --line2:#eef0f3; --input:#fff;
   --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#eef2fa; --err:#b42318;
   --ok:#067647; --ok-bg:#ecfdf3; --warn:#93370d; --warn-bg:#fffaeb; --hot:#b42318; --hot-bg:#fef3f2;
-  --display:'Archivo','Helvetica Neue',Arial,sans-serif; --body:'Hanken Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --display:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif; --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   --r1:6px; --r2:10px;
   --t12:12px; --t14:14px; --t16:16px; --t18:18px; --t24:24px; --t32:32px;
   --side:236px;
@@ -24,7 +24,7 @@ a { color:var(--brand); }
 .num, table, .stat b, .price { font-variant-numeric:tabular-nums; }
 
 /* ── Type ── */
-h1 { font-family:var(--display); font-size:var(--t24); line-height:1.2; font-weight:700; letter-spacing:-.015em; margin:0 0 4px; }
+h1 { font-family:var(--display); font-size:var(--t24); line-height:1.2; font-weight:600; letter-spacing:-.01em; margin:0 0 4px; }
 h2 { font-family:var(--body); font-size:var(--t16); font-weight:700; letter-spacing:0; text-transform:none; color:var(--ink); margin:0 0 12px; }
 h2 span, h2 .opt { font-weight:400 !important; color:var(--muted); }
 h3 { font-size:var(--t14); font-weight:700; margin:16px 0 6px; }
