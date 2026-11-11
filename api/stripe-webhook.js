@@ -4,8 +4,8 @@
 import crypto from 'node:crypto';
 import { getUserById, saveUser, sendPlainEmail } from '../lib/auth.js';
 import { getDoc, putDoc } from '../lib/db.js';
-import { tierFromLookup } from '../lib/stripe.js';
-import { PACKS } from '../lib/plan.js';
+import { tierFromLookup, stripe } from '../lib/stripe.js';
+import { PACKS, PLANS, PAID } from '../lib/plan.js';
 import { addCredits } from '../lib/usage.js';
 
 // past_due stays on while Smart Retries work; unpaid / canceled / incomplete turn it off
@@ -60,7 +60,7 @@ export default async function handler(req, res) {
       }
       if (uid && o.subscription) await putDoc(`idx/stripe-sub/${o.subscription}`.toLowerCase(), { uid, feature, tier });
       if (uid && feature === 'customDomain') await setPlan(uid, { customDomain: true, domainSubId: o.subscription }, { stripeCustomerId: o.customer });
-      if (uid && feature === 'plan' && ['starter', 'pro', 'team'].includes(tier)) await setPlan(uid, { tier }, { stripeCustomerId: o.customer, stripeSubId: o.subscription });
+      if (uid && feature === 'plan' && PAID.includes(tier)) await setPlan(uid, { tier, interval: o.metadata?.interval || 'month' }, { stripeCustomerId: o.customer, stripeSubId: o.subscription, ...(o.discounts?.length || o.total_details?.amount_discount ? { refUsed: true } : {}) });
     }
     if (ev.type === 'customer.subscription.updated' || ev.type === 'customer.subscription.deleted') {
       const ix = await getDoc(`idx/stripe-sub/${o.id}`.toLowerCase());
@@ -69,18 +69,30 @@ export default async function handler(req, res) {
       const active = ev.type === 'customer.subscription.updated' && LIVE.includes(o.status);
       // Plan changes made in the billing portal swap the price; read the tier from the current price's lookup key
       const p = o.items?.data?.[0]?.price || {};
-      const envTier = Object.fromEntries(['starter', 'pro', 'team'].map(k => [process.env['STRIPE_PRICE_' + k.toUpperCase()], k]).filter(([x]) => x))[p.id];
-      const tierNow = [tierFromLookup(p.lookup_key), envTier, o.metadata?.tier, ix?.tier].find(t => ['starter', 'pro', 'team'].includes(t));
+      const envTier = Object.fromEntries(PAID.map(k => [process.env['STRIPE_PRICE_' + k.toUpperCase()], k]).filter(([x]) => x))[p.id];
+      const tierNow = [tierFromLookup(p.lookup_key), envTier, p.metadata?.tier, o.metadata?.tier, ix?.tier].find(t => PAID.includes(t));
       if (uid && feature === 'customDomain') await setPlan(uid, { customDomain: active });
       if (uid && feature === 'plan') {
         const u = await getUserById(uid);
-        if (u && (!u.stripeSubId || u.stripeSubId === o.id)) await setPlan(uid, { tier: active && tierNow ? tierNow : 'trial' }, { stripeSubId: active ? o.id : null, billingIssue: o.status === 'past_due' });
+        if (u && (!u.stripeSubId || u.stripeSubId === o.id)) await setPlan(uid, { tier: active && tierNow ? tierNow : 'trial', interval: p.recurring?.interval || 'month' }, { stripeSubId: active ? o.id : null, billingIssue: o.status === 'past_due' });
       }
     }
     // Renewal went through: clear any card-problem flag
     if (ev.type === 'invoice.paid') {
-      const uid = await uidFor(o); const u = uid && await getUserById(uid);
-      if (u?.billingIssue) await saveUser({ ...u, billingIssue: false });
+      const uid = await uidFor(o); let u = uid && await getUserById(uid);
+      if (u?.billingIssue) u = await saveUser({ ...u, billingIssue: false });
+      // Referral reward: the referred account's first real payment earns the referrer one month of their plan as credit
+      if (u?.referredBy && !u.refRewarded && (o.amount_paid || 0) > 0 && (o.subscription || o.parent?.subscription_details?.subscription)) {
+        await saveUser({ ...u, refRewarded: Date.now() });
+        const r = await getUserById(u.referredBy);
+        if (r) {
+          const amt = PLANS[r.plan?.tier]?.price || 49;
+          if (r.stripeCustomerId) await stripe('POST', `customers/${r.stripeCustomerId}/balance_transactions`, { amount: -amt * 100, currency: 'usd', description: `Referral credit: ${u.company || u.name}` }, { idem: `ref-${u.id}` }).catch(e => console.error('ref credit', e.message));
+          const fresh = await getUserById(r.id);
+          await saveUser({ ...fresh, refPending: r.stripeCustomerId ? (fresh.refPending || 0) : (fresh.refPending || 0) + amt, refStats: { ...(fresh.refStats || {}), paid: (fresh.refStats?.paid || 0) + 1, earned: (fresh.refStats?.earned || 0) + amt } });
+          await sendPlainEmail(r.email, 'You earned a free month on JStar Pro', `${u.company || u.name} just became a paying JStar Pro customer from your referral link. We added $${amt} of credit to your account, which covers your next month.\n\nThanks for spreading the word.\n\nJStar Pro`).catch(() => {});
+        }
+      }
     }
     // Card declined: Stripe's Smart Retries keep trying; tell the customer how to fix it
     if (ev.type === 'invoice.payment_failed') {

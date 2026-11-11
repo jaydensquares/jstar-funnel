@@ -14,5 +14,11 @@
     "api/funnel.js": {
       "includeFiles": "{offer,privacy,terms}.html"
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 13 * * *"
+    }
+  ]
 }

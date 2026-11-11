@@ -43,6 +43,16 @@
   .plan.pick + .plan { border-left:0 !important; }
   @media (max-width:899px) { .plan.pick { margin:0; border-radius:0; } .plan.pick + .plan { border-top:0 !important; } }
   .plans { border-color:#d6e2fb !important; }
+  .bill { display:inline-grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:24px; background:#fff; border:1px solid #d6e2fb; border-radius:12px; padding:4px; }
+  .bill button { border:0; background:none; font:600 15px var(--body); color:var(--muted); padding:9px 18px; border-radius:9px; cursor:pointer; }
+  .bill button.on { background:var(--brand); color:#fff; }
+  .bill em { font-style:normal; font-size:12px; font-weight:700; background:var(--sun); color:var(--navy); padding:2px 7px; border-radius:999px; margin-left:4px; }
+  .plans { margin-top:20px !important; }
+  .pr .yr { display:block; font-family:var(--body); font-size:13.5px; font-weight:600; color:#067647; letter-spacing:0; margin-top:4px; }
+  .plan.pick .pr .yr { color:#ffe08a; }
+  .agency { display:grid; grid-template-columns:auto 1fr auto; gap:24px; align-items:center; margin-top:16px; padding:22px 26px; border-radius:14px; background:linear-gradient(120deg,#0a1633,#13306f); color:#fff; }
+  .agency b { display:block; font-size:20px; } .agency span { font-size:13.5px; color:#ffc93c; font-weight:600; } .agency p { margin:0; color:#c6d3f2; font-size:15px; line-height:1.5; }
+  @media (max-width:760px) { .agency { grid-template-columns:1fr; gap:10px; } }
   .cta2 { background:var(--brand) !important; }
   .cta2 p { color:#dbe6ff !important; }
   .cta2 .btn.alt { border-color:rgba(255,255,255,.5) !important; color:#fff !important; }
@@ -298,11 +308,12 @@
   <section class="s alt" id="pricing"><div class="w">
     <h2>Every tool on <mark>every plan.</mark></h2>
     <p class="intro">Pick by how many deals you analyze each month. Leads from your funnel count toward deal analyses.</p>
+    <div class="bill" id="billTog" role="tablist" aria-label="Billing"><button type="button" class="on" data-i="month">Monthly</button><button type="button" data-i="year">Yearly <em>2 months free</em></button></div>
     <div class="plans">
       <div class="plan">
         <div class="nm">Starter</div>
         <div class="for">For getting your first deals under contract.</div>
-        <div class="pr">$49<span> / month</span></div>
+        <div class="pr" data-m="49">$49<span> / month</span></div>
         <ul>
           <li><span>Deal analyses</span><b>100 / mo</b></li>
           <li><span>Mortgage &amp; equity on each</span><b>Included</b></li>
@@ -315,7 +326,7 @@
       <div class="plan pick">
         <div class="nm">Pro</div>
         <div class="for">For wholesalers running ads every month.</div>
-        <div class="pr">$99<span> / month</span></div>
+        <div class="pr" data-m="99">$99<span> / month</span></div>
         <ul>
           <li><span>Deal analyses</span><b>300 / mo</b></li>
           <li><span>Mortgage &amp; equity on each</span><b>Included</b></li>
@@ -328,7 +339,7 @@
       <div class="plan">
         <div class="nm">Team</div>
         <div class="for">For high-volume operators and acquisition teams.</div>
-        <div class="pr">$199<span> / month</span></div>
+        <div class="pr" data-m="199">$199<span> / month</span></div>
         <ul>
           <li><span>Deal analyses</span><b>800 / mo</b></li>
           <li><span>Mortgage &amp; equity on each</span><b>Included</b></li>
@@ -339,6 +350,7 @@
         <a class="btn alt" href="/signup?plan=team">Start with Team</a>
       </div>
     </div>
+    <div class="agency"><div><b>Agency</b><span>Custom pricing</span></div><p>For brokerages and acquisition teams: 2,000+ deal analyses a month, up to 5 team logins, higher photo and list limits, and help setting up your funnel and ads.</p><a class="btn gold" href="/support?topic=agency">Book a call</a></div>
     <p class="addon">Every plan includes your funnel, lead inbox, Run an address, mortgage and equity data, batch analysis, photo estimates, pipeline, underwriting, checklist, contracts, buyer pitches, owner lists and ad tracking.</p>
     <p class="addon" style="font-size:14px;color:var(--muted)"><b>Usage limits:</b> Plan limits reset on the 1st of each month, and unused plan usage doesn't roll over. Need more mid-month? Add-on packs: +100 deal analyses $25, +25 photo estimates $15, +5,000 list records $25. They don't expire.</p>
   </div></section>
@@ -374,6 +386,15 @@
 (() => {
   const $ = id => document.getElementById(id);
   $('yr').textContent = new Date().getFullYear();
+  // Referral links: getjstarpro.com/?ref=<username> is remembered for signup
+  try { const rf = new URLSearchParams(location.search).get('ref'); if (rf && /^[a-z0-9-]{3,30}$/i.test(rf)) localStorage.setItem('jsRef', rf.toLowerCase()); } catch {}
+  // Monthly / yearly pricing (yearly = 10 months)
+  $('billTog').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return; const y = b.dataset.i === 'year';
+    $('billTog').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    document.querySelectorAll('.plan .pr[data-m]').forEach(el => { const m = +el.dataset.m; el.innerHTML = y ? `$${(m * 10).toLocaleString()}<span> / year</span><small class="yr">About $${Math.round(m * 10 / 12)}/mo · you save $${m * 2}</small>` : `$${m}<span> / month</span>`; });
+    document.querySelectorAll('.plan a[href^="/signup?plan="]').forEach(a => { a.href = a.href.replace(/&billing=year/, '') + (y ? '&billing=year' : ''); });
+  });
 
   // ── VSL: load the video only when someone presses play ──
   $('vslPlay').addEventListener('click', () => {

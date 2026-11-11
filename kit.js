@@ -195,7 +195,7 @@
 
   // ── Shell: brand mark, top bar, command palette, usage meter ──
   const PAGES = [
-    ['Leads', '/app#leads', 'inbox', 'Your funnel leads'], ['Deals', '/underwriting', 'deal', 'Pipeline, underwriting, contracts'],
+    ['Leads', '/app#leads', 'inbox', 'Your funnel leads'], ['Deals', '/underwriting', 'deal', 'Pipeline, underwriting, contracts'], ['Buyers', '/app#buyers', 'user', 'Your cash buyers list'],
     ['Run an address', '/operator', 'search', 'Comps, ARV, repairs, offer, mortgage'], ['Batch', '/batch', 'list', 'Up to 10 addresses at once'],
     ['Photo estimate', '/photos', 'camera', 'Repair budget from photos'], ['Owner lists', '/list', 'pin', 'Pull owners by ZIP'],
     ['Funnel & business', '/app#funnel', 'funnel', 'Your funnel link and details'], ['Plan & account', '/app#account', 'user', 'Billing, usage, password'],

@@ -32,6 +32,11 @@ export default async function handler(req, res) {
       if (!STAT.includes(b.status)) return res.status(400).json({ error: 'Bad status.' });
       return res.status(200).json({ lead: await putDoc(key(b.id), { ...lead, status: b.status, updatedAt: Date.now() }) });
     }
+    if (b.action === 'followup') {
+      const d = String(b.date || '');
+      if (d && !/^\d{4}-\d{2}-\d{2}$/.test(d)) return res.status(400).json({ error: 'Bad date.' });
+      return res.status(200).json({ lead: await putDoc(key(b.id), { ...lead, followUpAt: d || null, updatedAt: Date.now() }) });
+    }
     if (b.action === 'convert') {
       if (lead.dealId) return res.status(200).json({ dealId: lead.dealId });
       const L = lead.lead || {}, br = lead.brief || {};

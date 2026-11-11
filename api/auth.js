@@ -1,13 +1,14 @@
 // Accounts: signup, login, logout, me, update settings, change password
 import crypto from 'node:crypto';
-import { planStatus } from '../lib/plan.js';
+import { planStatus, seatsOf, isActive } from '../lib/plan.js';
 import { getUsage } from '../lib/usage.js';
 import { getDoc, putDoc } from '../lib/db.js';
-import { createUser, getUserByEmail, getUserBySlug, checkPassword, hashPassword, sessionCookie, clearCookie, currentUser, publicUser, saveUser, RESERVED, resetToken, userFromResetToken, sendPlainEmail } from '../lib/auth.js';
+import { teamOwner, getUserById, createUser, getUserByEmail, getUserBySlug, checkPassword, hashPassword, sessionCookie, clearCookie, currentUser, publicUser, saveUser, RESERVED, resetToken, userFromResetToken, sendPlainEmail } from '../lib/auth.js';
 
 export const maxDuration = 20;
 const slow = () => new Promise(r => setTimeout(r, 700));
 const str = (v, n = 200) => String(v ?? '').trim().slice(0, n);
+const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 export default async function handler(req, res) {
@@ -19,8 +20,13 @@ export default async function handler(req, res) {
     if (req.query?.action !== 'me') return res.status(400).json({ error: 'Unknown action.' });
     const u = await currentUser(req).catch(() => null);
     if (!u) return res.status(401).json({ error: 'Not logged in.' });
-    const usage = req.query?.usage ? await getUsage(u).catch(() => null) : undefined;
-    return res.status(200).json({ user: publicUser(u), plan: planStatus(u), usage });
+    // Team members see the team owner's plan and usage
+    const o = u.memberOf ? await teamOwner(u) : null;
+    if (u.memberOf && !o) return res.status(200).json({ user: { ...publicUser(u), team: { removed: true } }, plan: { ...planStatus(null), name: 'No access' } });
+    const acct = o || u;
+    const usage = req.query?.usage ? await getUsage(acct).catch(() => null) : undefined;
+    const user = o ? { ...publicUser(u), team: { owner: o.name, company: o.company, slug: o.slug, ownerDomain: o.domain || null } } : publicUser(u);
+    return res.status(200).json({ user, plan: planStatus(acct), usage });
   }
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   if (!String(req.headers['content-type'] || '').includes('application/json')) return res.status(415).json({ error: 'JSON only' });
@@ -41,7 +47,11 @@ export default async function handler(req, res) {
       if (await getUserByEmail(email)) { await slow(); return res.status(409).json({ error: 'An account with that email already exists. Log in instead.' }); }
       if (await getUserBySlug(slug)) return res.status(409).json({ error: 'That username is taken.' });
       const u0 = await createUser({ name, email, password, company, slug, phone });
-      const u = await saveUser({ ...u0, terms: { version: '2026-11-11', at: Date.now() } });
+      // Referral: ?ref=<username> of an account with a plan
+      const ref = /^[a-z0-9-]{3,30}$/.test(str(b.ref, 30).toLowerCase()) ? await getUserBySlug(str(b.ref, 30).toLowerCase()).catch(() => null) : null;
+      const okRef = ref && ref.id !== u0.id && isActive(ref);
+      const u = await saveUser({ ...u0, terms: { version: '2026-11-11', at: Date.now() }, ...(okRef ? { referredBy: ref.id } : {}) });
+      if (okRef) { const r = await getUserById(ref.id); if (r) await saveUser({ ...r, refStats: { ...(r.refStats || {}), signups: (r.refStats?.signups || 0) + 1 } }).catch(() => {}); }
       res.setHeader('Set-Cookie', sessionCookie(u.id, 0));
       return res.status(200).json({ user: publicUser(u), plan: planStatus(u) });
     }
@@ -99,6 +109,33 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
+    if (b.action === 'inviteInfo') {
+      const inv = /^[a-f0-9]{32}$/.test(String(b.token || '')) ? await getDoc(`invites/${b.token}`).catch(() => null) : null;
+      if (!inv || inv.used || Date.now() - inv.at > 14 * 864e5) return res.status(404).json({ error: 'This invite has expired or was already used. Ask for a new one.' });
+      const o = await getUserById(inv.owner);
+      return o ? res.status(200).json({ company: o.company, owner: o.name, email: inv.email }) : res.status(404).json({ error: 'Invite not found.' });
+    }
+    if (b.action === 'join') {
+      const inv = /^[a-f0-9]{32}$/.test(String(b.token || '')) ? await getDoc(`invites/${b.token}`).catch(() => null) : null;
+      if (!inv || inv.used || Date.now() - inv.at > 14 * 864e5) return res.status(400).json({ error: 'This invite has expired or was already used. Ask for a new one.' });
+      const o = await getUserById(inv.owner);
+      if (!o || o.disabled) return res.status(400).json({ error: 'That team is no longer active.' });
+      if ((o.team || []).length >= seatsOf(o)) return res.status(400).json({ error: 'That team is full. Ask the owner to free up a seat.' });
+      const name = str(b.name, 80), email = str(b.email, 120).toLowerCase(), password = String(b.password || '');
+      if (!name) return res.status(400).json({ error: 'Enter your name.' });
+      if (!EMAIL.test(email)) return res.status(400).json({ error: 'Enter a valid email.' });
+      if (password.length < 8) return res.status(400).json({ error: 'Password needs at least 8 characters.' });
+      if (b.agree !== true) return res.status(400).json({ error: 'Check the box to agree to the Terms and Privacy Policy.' });
+      if (await getUserByEmail(email)) { await slow(); return res.status(409).json({ error: 'An account with that email already exists. Use a different email for your team login.' }); }
+      const slug = 'm-' + crypto.randomBytes(5).toString('hex');
+      const m0 = await createUser({ name, email, password, company: o.company, slug, phone: o.phone || '' });
+      const m = await saveUser({ ...m0, memberOf: o.id, terms: { version: '2026-11-11', at: Date.now() } });
+      await saveUser({ ...o, team: [...(o.team || []), { uid: m.id, name, email, at: Date.now() }] });
+      await putDoc(`invites/${b.token}`, { ...inv, used: Date.now(), uid: m.id }, { keep: 1 });
+      res.setHeader('Set-Cookie', sessionCookie(m.id, 0));
+      return res.status(200).json({ ok: true });
+    }
+
     if (b.action === 'logout') { res.setHeader('Set-Cookie', clearCookie()); return res.status(200).json({ ok: true }); }
 
     const u = await currentUser(req);
@@ -117,12 +154,37 @@ export default async function handler(req, res) {
           metaCapiToken: str(s.metaCapiToken ?? u.settings.metaCapiToken, 400),
           googleAdsId: fix(s.googleAdsId ?? '', /^(AW|G)-[A-Z0-9]{4,20}$/i, 24),
           googleAdsLeadLabel: fix(s.googleAdsLeadLabel ?? '', /^[A-Za-z0-9_-]{4,40}$/, 40),
+          emailReminders: s.emailReminders === undefined ? u.settings.emailReminders !== false : !!s.emailReminders,
+          emailRecap: s.emailRecap === undefined ? u.settings.emailRecap !== false : !!s.emailRecap,
         },
       };
       const bad = Object.entries({ 'Meta Pixel ID (numbers only)': next.settings.metaPixelId, 'Google tag ID (like AW-123456789)': next.settings.googleAdsId, 'Google conversion label': next.settings.googleAdsLeadLabel }).find(([, v]) => v === null);
       if (bad) return res.status(400).json({ error: `Check your ${bad[0]}.` });
       const saved = await saveUser({ ...u, ...next });
       return res.status(200).json({ user: publicUser(saved), plan: planStatus(saved) });
+    }
+
+    if (b.action === 'invite' || b.action === 'removeMember') {
+      if (u.memberOf) return res.status(403).json({ error: 'Only the account owner can manage the team.' });
+      if (b.action === 'removeMember') {
+        const team = (u.team || []).filter(m => m.uid !== b.uid);
+        const m = await getUserById(String(b.uid || ''));
+        if (m?.memberOf === u.id) await saveUser({ ...m, memberOf: null, disabled: true, sessVer: (m.sessVer || 0) + 1 });
+        const saved = await saveUser({ ...u, team });
+        return res.status(200).json({ user: publicUser(saved) });
+      }
+      const seats = seatsOf(u), email = str(b.email, 120).toLowerCase();
+      if (!seats) return res.status(403).json({ error: 'Team logins come with the Agency plan.' });
+      if ((u.team || []).length >= seats) return res.status(400).json({ error: `Your plan includes ${seats} team logins and they're all in use.` });
+      if (!EMAIL.test(email)) return res.status(400).json({ error: 'Enter a valid email.' });
+      const token = crypto.randomBytes(16).toString('hex');
+      await putDoc(`invites/${token}`, { owner: u.id, email, at: Date.now() }, { keep: 1 });
+      const link = `https://${req.headers['x-forwarded-host'] || req.headers.host}/signup?invite=${token}`;
+      await sendPlainEmail(email, `${u.name} invited you to ${u.company} on JStar Pro`,
+        `${u.name} added you to ${u.company}'s JStar Pro account. Create your login here (the link works for 14 days):\n\n${link}`,
+        `<p>${esc(u.name)} added you to <b>${esc(u.company)}</b>'s JStar Pro account.</p><p><a href="${link}" style="display:inline-block;background:#2f6fed;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Create your login</a></p><p style="color:#666;font-size:13px">The link works for 14 days.</p>`
+      ).catch(e => console.error('invite email', e.message));
+      return res.status(200).json({ link });
     }
 
     if (b.action === 'password') {

@@ -21,6 +21,12 @@
   .planpick { border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:6px; display:flex; justify-content:space-between; gap:10px; align-items:center; font-size:14.5px; }
   .planpick b { font-family:var(--display); font-size:16px; }
   .planpick a { color:var(--brand); font-weight:600; text-decoration:none; font-size:14px; }
+  .planpick { display:block !important; }
+  .ppick select { width:100%; margin-top:8px; }
+  .seg2 { display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:3px; }
+  .seg2 button { border:0; background:none; font:600 14px var(--body); color:var(--muted); padding:8px; border-radius:7px; cursor:pointer; }
+  .seg2 button.on { background:var(--card); color:var(--ink); box-shadow:0 1px 3px rgba(16,24,40,.1); }
+  .seg2 em { font-style:normal; font-size:11.5px; font-weight:700; color:#067647; background:#ecfdf3; padding:2px 6px; border-radius:999px; margin-left:4px; }
 </style>
 <link rel="stylesheet" href="/ui.css">
 </head>
@@ -69,15 +75,16 @@
       <label class="f" for="sPass">Password</label>
       <input type="password" id="sPass" autocomplete="new-password" minlength="8" required>
       <div class="hint">At least 8 characters.</div>
+      <label class="check" style="align-items:flex-start"><input type="checkbox" id="sAgree" required style="margin-top:3px"><span>I agree to the <a href="/legal/terms" target="_blank">Terms of Service</a> and <a href="/legal/privacy" target="_blank">Privacy Policy</a>, and I'll follow the real estate and telemarketing laws in my state.</span></label>
       <div class="err" id="sErr" role="alert"></div>
       <button class="btn" id="sBtn" type="submit">Create account</button>
-      <p class="hint" style="margin-top:12px">By creating an account you agree to use the contracts and data responsibly and to follow the real estate and telemarketing laws in your state.</p>
     </form>
   </section>
 </main>
 <script>
 (() => {
   const $ = id => document.getElementById(id);
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const next = (() => { const n = new URLSearchParams(location.search).get('next') || ''; return /^\/[a-z0-9_./#-]*$/i.test(n) && !n.startsWith('//') ? n : '/app'; })();
   const mode = m => {
     $('login').hidden = m !== 'login'; $('signup').hidden = m !== 'signup'; $('forgot').hidden = true;
@@ -89,12 +96,34 @@
   $('tSignup').onclick = () => { history.replaceState(null, '', '#signup'); mode('signup'); };
   $('pfx').textContent = location.host + '/f/';
   const PLANS = { starter: ['Starter', 49], pro: ['Pro', 99], team: ['Team', 199] };
-  // Every account needs a plan; there's no free trial
-  let plan = PLANS[new URLSearchParams(location.search).get('plan')] ? new URLSearchParams(location.search).get('plan') : 'pro';
-  $('planPick').hidden = false;
-  $('planPick').innerHTML = `<label for="planSel" style="font-weight:600">Plan</label><select id="planSel" style="width:auto">${Object.entries(PLANS).map(([k, [n, p]]) => `<option value="${k}" ${k === plan ? 'selected' : ''}>${n} · $${p}/month</option>`).join('')}</select>`;
-  $('planSel').onchange = e => { plan = e.target.value; };
+  const qs = new URLSearchParams(location.search);
+  // Every account needs a plan; there's no free trial. Yearly = 10 months' price (2 months free).
+  let plan = PLANS[qs.get('plan')] ? qs.get('plan') : 'pro', interval = qs.get('billing') === 'year' ? 'year' : 'month';
+  // Referral: ?ref=<username>, remembered from the sales page too
+  let ref = (qs.get('ref') || '').toLowerCase(); try { if (ref) localStorage.setItem('jsRef', ref); else ref = localStorage.getItem('jsRef') || ''; } catch {}
+  if (!/^[a-z0-9-]{3,30}$/.test(ref)) ref = '';
+  const drawPlan = () => {
+    const [n, p] = PLANS[plan];
+    $('planPick').innerHTML = `<div class="ppick"><div class="seg2"><button type="button" data-i="month" class="${interval === 'month' ? 'on' : ''}">Monthly</button><button type="button" data-i="year" class="${interval === 'year' ? 'on' : ''}">Yearly <em>2 months free</em></button></div>
+      <select id="planSel" aria-label="Plan">${Object.entries(PLANS).map(([k, [nm, pr]]) => `<option value="${k}" ${k === plan ? 'selected' : ''}>${nm} · ${interval === 'year' ? '$' + (pr * 10).toLocaleString() + '/year' : '$' + pr + '/month'}</option>`).join('')}</select>
+      <p class="hint" style="margin:6px 0 0">${interval === 'year' ? `$${(p * 10).toLocaleString()} billed yearly, about $${Math.round(p * 10 / 12)}/month. You save $${p * 2}.` : ref ? '<b>Referral applied:</b> your first month is free.' : 'Billed monthly. Cancel any time.'} <a href="/support?topic=agency">Agency plan? Book a call</a></p></div>`;
+    $('planSel').onchange = e => { plan = e.target.value; drawPlan(); };
+    $('planPick').querySelectorAll('[data-i]').forEach(b => b.onclick = () => { interval = b.dataset.i; drawPlan(); });
+  };
+  $('planPick').hidden = false; drawPlan();
   $('sBtn').textContent = 'Create account and continue to payment';
+  // Team invite: ?invite=<token> → join an existing account, no plan or payment
+  const invite = /^[a-f0-9]{32}$/.test(qs.get('invite') || '') ? qs.get('invite') : null;
+  if (invite) {
+    $('planPick').hidden = true;
+    ['sCompany', 'sUser', 'sPhone'].forEach(id => { const el = $(id); el.required = false; (el.closest('.pfx') || el).parentElement.querySelectorAll(`[for="${id}"]`).forEach(l => l.hidden = true); (el.closest('.pfx') || el).hidden = true; const h = (el.closest('.pfx') || el).nextElementSibling; if (h?.classList.contains('hint')) h.hidden = true; });
+    $('sBtn').textContent = 'Join the team'; $('sName').closest('.row').style.gridTemplateColumns = '1fr';
+    setTimeout(() => post({ action: 'inviteInfo', token: invite }).then(r => {
+      if (!r.ok) { $('sErr').textContent = r.j.error; $('sBtn').disabled = true; return; }
+      $('signup').insertAdjacentHTML('afterbegin', `<p class="banner" style="margin:0 0 14px"><b>${esc(r.j.owner)}</b> invited you to <b>${esc(r.j.company)}</b> on JStar Pro. Create your login below.</p>`);
+      if (r.j.email) $('sEmail').value = r.j.email;
+    }), 0);
+  }
   mode(location.hash === '#signup' || location.pathname.includes('signup') || new URLSearchParams(location.search).get('plan') ? 'signup' : 'login');
 
   // Already logged in → straight to the app
@@ -129,15 +158,21 @@
   let created = false;
   $('signup').addEventListener('submit', async e => {
     e.preventDefault(); $('sErr').textContent = ''; $('sBtn').disabled = true;
+    if (invite) {
+      $('sBtn').textContent = 'Joining…';
+      const r = await post({ action: 'join', token: invite, name: $('sName').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value, agree: $('sAgree').checked });
+      if (!r.ok) { $('sBtn').disabled = false; $('sBtn').textContent = 'Join the team'; $('sErr').textContent = r.j.error || 'Could not join.'; return; }
+      location.replace('/app'); return;
+    }
     if (!created) {
       $('sBtn').textContent = 'Creating your account…';
-      const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value });
+      const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value, agree: $('sAgree').checked, ref });
       if (!r.ok) { $('sBtn').disabled = false; $('sBtn').textContent = 'Create account and continue to payment'; $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
       created = true;
       $('signup').querySelectorAll('input').forEach(i => { i.disabled = true; });
     }
     $('sBtn').textContent = 'Opening secure checkout…';
-    const c = await fetch('/api/billing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'checkout', plan }) }).then(x => x.json().catch(() => ({}))).catch(() => ({}));
+    const c = await fetch('/api/billing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'checkout', plan, interval }) }).then(x => x.json().catch(() => ({}))).catch(() => ({}));
     if (c.url) { location.href = c.url; return; }
     $('sBtn').disabled = false; $('sBtn').textContent = 'Try payment again';
     $('sErr').textContent = (c.error || 'Payment page couldn\'t open.') + ' Your account is saved; log in any time to finish paying.';

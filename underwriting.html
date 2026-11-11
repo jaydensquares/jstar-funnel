@@ -113,6 +113,14 @@
   @media (prefers-color-scheme: dark) { .signed.ok { background:#163323; } .signed.warn { background:#3a2f12; } }
   .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
+  .dhead { display:flex; justify-content:space-between; align-items:center; margin:14px 0 6px; font-size:14px; }
+  .dlist { max-height:320px; overflow:auto; border:1px solid var(--line); border-radius:12px; }
+  .dlist label { display:flex; align-items:center; gap:12px; padding:10px 12px; border-bottom:1px solid var(--line2); cursor:pointer; font-size:14px; }
+  .dlist label:last-child { border-bottom:0; }
+  .dlist label small { display:block; color:var(--muted); font-size:12.5px; }
+  .dlist label .fit { margin-left:auto; font-size:11.5px; font-weight:700; color:#067647; background:#ecfdf3; padding:3px 8px; border-radius:999px; }
+  .dlist input { width:17px; height:17px; accent-color:var(--brand); flex:none; }
+  .dispo .acct-only { display:block !important; }
 </style>
 <link rel="stylesheet" href="/ui.css">
 <link rel="stylesheet" href="/kit.css">
@@ -249,6 +257,21 @@
       <div class="grid2">
         <a class="btn linkbtn" id="psaBtn" href="#" >Purchase agreement</a>
         <a class="btn ghost linkbtn" id="asgBtn" href="#" >Assignment</a>
+      </div>
+    </section>
+
+    <section class="card dispo acct-only" id="dispoCard">
+      <h2>Send to buyers</h2>
+      <p class="note" style="margin-top:0">Email this deal to the cash buyers on your list who fit it. Save the deal first. <a href="/app#buyers">Manage buyers</a></p>
+      <div id="dispoLast" class="note"></div>
+      <button type="button" class="btn sun" id="dispoBtn">Send to buyers</button>
+      <div id="dispoBox" hidden>
+        <div class="grid2" style="margin-top:12px"><div><label class="f" for="dPrice">Price to buyers</label><input type="text" id="dPrice" inputmode="numeric"></div><div><label class="f" for="dShow">Showings <span class="opt">(optional)</span></label><input type="text" id="dShow" placeholder="Lockbox, Sat 10–12"></div></div>
+        <label class="f" for="dNote">Note to buyers <span class="opt">(optional)</span></label><textarea id="dNote" placeholder="3/2, 1,490 sf, needs updates. Seller needs to close in 30 days."></textarea>
+        <div class="dhead"><b id="dCount"></b><span><button type="button" class="link" id="dAll">All</button> · <button type="button" class="link" id="dMatch">Matches only</button></span></div>
+        <div id="dList" class="dlist"></div>
+        <div class="err" id="dErr" role="alert"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap"><button type="button" class="btn ghost" id="dSms">Copy text version</button><button type="button" class="btn" id="dSend">Send email</button></div>
       </div>
     </section>
 
@@ -391,6 +414,49 @@
     $('list').querySelectorAll('.deal').forEach(b => { b.onclick = () => { location.hash = b.dataset.id; }; b.onkeydown = e => { if (e.key === 'Enter') b.onclick(); }; });
   }
 
+  // ── Send to buyers (dispo) ──
+  let dBuyers = [];
+  const dPriceNow = () => { const n = num($('dPrice').value); return n; };
+  const fits = (b, d, price) => {
+    const a = d.address || {}, areas = (b.areas || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean);
+    const inArea = !areas.length || areas.some(x => [a.city, a.zip, a.county].filter(Boolean).some(v => String(v).toLowerCase().includes(x) || x.includes(String(v).toLowerCase())));
+    return inArea && (!price || ((!b.maxPrice || b.maxPrice >= price) && (!b.minPrice || b.minPrice <= price)));
+  };
+  function drawBuyers(only) {
+    const price = dPriceNow();
+    const list = dBuyers.filter(b => b.email && !b.unsub).map(b => ({ b, fit: fits(b, cur, price) })).sort((x, y) => y.fit - x.fit);
+    $('dList').innerHTML = list.length ? list.map(({ b, fit }) => `<label><input type="checkbox" value="${esc(b.id)}" ${(only === 'all' || fit) ? 'checked' : ''}>${window.JK ? JK.avatar(b.name) : ''}<span><b>${esc(b.name)}</b><small>${esc(b.areas || 'Anywhere')}${b.maxPrice ? ' · up to ' + $$(b.maxPrice) : ''}</small></span>${fit ? '<span class="fit">Fits</span>' : ''}</label>`).join('')
+      : '<p class="note" style="padding:14px;margin:0">No buyers with an email yet. <a href="/app#buyers">Add buyers</a></p>';
+    const upd = () => { const n = $('dList').querySelectorAll('input:checked').length; $('dCount').textContent = `${n} buyer${n === 1 ? '' : 's'} selected`; $('dSend').textContent = n ? `Email ${n} buyer${n === 1 ? '' : 's'}` : 'Send email'; };
+    $('dList').onchange = upd; upd();
+  }
+  $('dispoBtn').onclick = async () => {
+    if (!cur?.id) { $('edErr').textContent = 'Save the deal first.'; return; }
+    $('dispoBtn').disabled = true;
+    const r = await fetch('/api/buyers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'list', pin }) }).then(async x => ({ ok: x.ok, j: await x.json().catch(() => ({})) })).catch(() => ({ ok: false, j: {} }));
+    $('dispoBtn').disabled = false;
+    if (!r.ok) { $('dErr').textContent = r.j.error || 'Could not load buyers.'; return; }
+    dBuyers = r.j.buyers || [];
+    const n = cur.numbers || {}; const p = (n.contractPrice || 0) + (n.assignmentFee || 0);
+    $('dPrice').value = p ? '$' + p.toLocaleString() : '';
+    $('dispoBtn').hidden = true; $('dispoBox').hidden = false; drawBuyers();
+  };
+  $('dPrice').addEventListener('input', () => { const n = num($('dPrice').value); $('dPrice').value = n ? '$' + n.toLocaleString() : ''; drawBuyers(); });
+  $('dAll').onclick = () => drawBuyers('all'); $('dMatch').onclick = () => drawBuyers();
+  const smsText = () => { const a = cur.address || {}, n = cur.numbers || {}, p = dPriceNow(); return [`Off-market: ${[a.street, a.city].filter(Boolean).join(', ')}`, p && `Price ${$$(p)}`, n.arv && `ARV ${$$(n.arv)}`, n.repairs && `Repairs ~${$$(n.repairs)}`, $('dShow').value.trim() && `Showings: ${$('dShow').value.trim()}`, $('dNote').value.trim(), 'Reply if you want it.'].filter(Boolean).join('\n'); };
+  $('dSms').onclick = async () => { try { await navigator.clipboard.writeText(smsText()); window.JK?.toast('Text copied. Paste it into your texting tool.'); } catch { $('dErr').textContent = 'Could not copy.'; } };
+  $('dSend').onclick = async () => {
+    const ids = [...$('dList').querySelectorAll('input:checked')].map(i => i.value);
+    if (!ids.length) { $('dErr').textContent = 'Pick at least one buyer.'; return; }
+    if (dirty && !(await save())) return;
+    $('dErr').textContent = ''; $('dSend').disabled = true; $('dSend').textContent = 'Sending…';
+    const r = await fetch('/api/buyers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'blast', pin, dealId: cur.id, ids, price: dPriceNow(), note: $('dNote').value, showing: $('dShow').value }) }).then(async x => ({ ok: x.ok, j: await x.json().catch(() => ({})) })).catch(() => ({ ok: false, j: {} }));
+    $('dSend').disabled = false;
+    if (!r.ok) { $('dErr').textContent = r.j.error || 'Could not send.'; drawBuyers(); return; }
+    window.JK?.toast(`Sent to ${r.j.sent} buyer${r.j.sent === 1 ? '' : 's'}`); window.JK?.confetti();
+    const g = await api({ action: 'get', id: cur.id }); if (g.ok) fill(g.j.deal);
+  };
+
   // ── Editor ──
   let cur = null, dirty = false;
   $('status').innerHTML = STATUS.map(([k, l]) => `<option value="${k}">${l}</option>`).join('');
@@ -404,6 +470,9 @@
 
   function fill(d) {
     cur = d; dirty = false;
+    $('dispoBox').hidden = true; $('dispoBtn').hidden = false; $('dErr').textContent = '';
+    const lb = (d.history || []).filter(h => /^Sent to \d+ buyer/.test(h.text)).pop();
+    $('dispoLast').textContent = lb ? `Last sent ${new Date(lb.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}: ${lb.text.replace(/^Sent/, 'sent')}.` : '';
     document.querySelectorAll('[data-f]').forEach(el => { el.value = getPath(d, el.dataset.f) ?? ''; });
     document.querySelectorAll('[data-n]').forEach(el => { const v = d.numbers?.[el.dataset.n]; el.value = v == null ? '' : el.dataset.n === 'buyerCostPct' ? v : '$' + Number(v).toLocaleString(); });
     document.querySelectorAll('[data-c]').forEach(el => { el.checked = !!d.checklist?.[el.dataset.c]; });

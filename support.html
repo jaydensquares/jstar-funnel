@@ -22,6 +22,7 @@
   <input type="email" id="email" autocomplete="email" maxlength="120" required>
   <label class="f" for="topic">Topic</label>
   <select id="topic">
+    <option>Agency plan: book a call</option>
     <option>Question about the software</option>
     <option>Billing or my plan</option>
     <option>Something's broken</option>
@@ -29,6 +30,7 @@
     <option>Homeowner: remove my information</option>
     <option>Other</option>
   </select>
+  <div id="phoneRow" hidden><label class="f" for="phone">Phone</label><input type="tel" id="phone" autocomplete="tel" maxlength="30"></div>
   <label class="f" for="msg">Message</label>
   <textarea id="msg" maxlength="4000" required></textarea>
   <input class="hp" type="text" id="web" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -42,13 +44,19 @@
 (() => {
   const $ = id => document.getElementById(id);
   $('yr').textContent = new Date().getFullYear();
+  const setTopic = () => { const ag = /^Agency/.test($('topic').value); $('phoneRow').hidden = !ag; $('msg').placeholder = ag ? 'Team size, how many deals you analyze a month, markets, and the best times to call.' : ''; };
+  if (new URLSearchParams(location.search).get('topic') === 'agency') {
+    $('topic').selectedIndex = 0; document.querySelector('h1').textContent = 'Book an Agency call';
+    document.querySelector('.lg-date').textContent = 'Agency is custom pricing for brokerages and acquisition teams: higher volume, up to 5 team logins and setup help. Tell us about your team and we\'ll set up a call, usually within one business day.';
+  } else $('topic').selectedIndex = 1;
+  $('topic').onchange = setTopic; setTopic();
   fetch('/api/auth?action=me', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : null).then(j => {
     if (j?.user) { if (!$('name').value) $('name').value = j.user.name || ''; if (!$('email').value) $('email').value = j.user.email || ''; }
   }).catch(() => {});
   $('sup').addEventListener('submit', async e => {
     e.preventDefault(); $('err').textContent = ''; $('go').disabled = true; $('go').textContent = 'Sending…';
     try {
-      const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'support', name: $('name').value, email: $('email').value, topic: $('topic').value, message: $('msg').value, web: $('web').value, page: document.referrer }) });
+      const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'support', name: $('name').value, email: $('email').value, topic: $('topic').value, message: ($('phoneRow').hidden || !$('phone').value.trim() ? '' : 'Phone: ' + $('phone').value.trim() + '\n\n') + $('msg').value, web: $('web').value, page: document.referrer }) });
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j.error || 'Could not send. Try again.');
       $('sup').hidden = true; $('done').hidden = false;

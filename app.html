@@ -65,6 +65,16 @@
   .tool { border-radius:var(--r2); padding:18px 20px; }
   .tool b { font-size:16px; font-family:var(--body); font-weight:700; }
   .pl { border-radius:var(--r2); padding:18px; }
+  .fuq { display:flex; gap:14px; margin-top:6px; font-size:13px; }
+  @media (min-width:900px) { .plans { grid-template-columns:repeat(4,1fr) !important; } }
+  .ivtog { grid-column:1 / -1; max-width:360px; }
+  .seg2 { display:grid; grid-template-columns:1fr 1fr; gap:4px; background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:3px; }
+  .seg2 button { border:0; background:none; font:600 14px var(--body); color:var(--muted); padding:8px; border-radius:7px; cursor:pointer; }
+  .seg2 button.on { background:var(--card); color:var(--ink); box-shadow:0 1px 3px rgba(16,24,40,.1); }
+  .seg2 em { font-style:normal; font-size:11.5px; font-weight:700; color:#067647; background:#ecfdf3; padding:2px 6px; border-radius:999px; margin-left:4px; }
+  .pl .pp small { color:#067647; font-weight:600; }
+  .pl.agency { background:linear-gradient(160deg, #0c1d45, #13306f); color:#fff; border:0; } .pl.agency .pp, .pl.agency ul { color:#c6d3f2; }
+  body.member .side a[data-t="funnel"], body.member .side a[data-t="ads"], body.member .side a[data-t="domain"], body.member .side .sh.acct-only, body.member #planSec, body.member #usageCard .packs { display:none !important; }
   @media (max-width:980px) { .lvgrid { grid-template-columns:1fr; } .lvside { position:static; order:-1; } }
   @media (max-width:640px) { .leadbar { flex-direction:column; align-items:stretch; } .leadbar input { max-width:none; } }
 </style>
@@ -74,7 +84,7 @@
 </head>
 <body class="shell acct">
 <aside class="side"><div class="brandbox"><a class="logo" href="/app">JStar <span>Pro</span></a><div class="ws" id="ws">Owner</div></div>
-<nav class="snav" aria-label="Main"><a class="acct-only on" href="/app#leads" data-t="leads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13L21 13v6H3v-6z"/></svg>Leads</a><a href="/underwriting"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V4.5h7V7"/><path d="M3 12.5h18"/></svg>Deals</a><span class="sh">Analyze</span><a href="/operator"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Run an address</a><a href="/batch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Batch</a><a href="/photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo estimate</a><a href="/list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Owner lists</a><span class="sh acct-only">Funnel</span><a class="acct-only" href="/app#funnel" data-t="funnel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Funnel &amp; business</a><a class="acct-only" href="/app#ads" data-t="ads"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Ad tracking</a><a class="acct-only" href="/app#domain" data-t="domain"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>Domain</a></nav>
+<nav class="snav" aria-label="Main"><a class="acct-only on" href="/app#leads" data-t="leads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13L21 13v6H3v-6z"/></svg>Leads</a><a href="/underwriting"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V4.5h7V7"/><path d="M3 12.5h18"/></svg>Deals</a><a class="acct-only" href="/app#buyers" data-t="buyers"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5.5 6.5-5.5s5.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5c1.6.8 2.6 2.6 3 5.5"/></svg>Buyers</a><span class="sh">Analyze</span><a href="/operator"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Run an address</a><a href="/batch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Batch</a><a href="/photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo estimate</a><a href="/list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Owner lists</a><span class="sh acct-only">Funnel</span><a class="acct-only" href="/app#funnel" data-t="funnel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Funnel &amp; business</a><a class="acct-only" href="/app#ads" data-t="ads"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Ad tracking</a><a class="acct-only" href="/app#domain" data-t="domain"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>Domain</a></nav>
 <div class="foot snav"><a class="acct-only" href="#" id="replayTour"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/></svg>Take the tour</a><a class="acct-only" href="/app#account" data-t="account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Plan &amp; account</a><a class="acct-only" href="/support"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.7M12 17h.01"/></svg>Support</a></div></aside>
 
 <main class="wrap page">
@@ -107,6 +117,9 @@
               <div class="lvbtns"><a class="btn" id="lvCall" href="#">Call seller</a><a class="btn ghost" id="lvText" href="#">Text</a></div>
               <label class="f" for="lvStatus">Status</label>
               <select id="lvStatus"><option value="new">New</option><option value="contacted">Contacted</option><option value="converted">In deals</option><option value="dead">Dead</option></select>
+              <label class="f" for="lvFollow">Follow up on</label>
+              <div class="copyrow"><input type="date" id="lvFollow"><button class="btn ghost" type="button" id="lvFollowClr" title="Clear">Clear</button></div>
+              <div class="fuq"><button type="button" class="link" data-d="1">Tomorrow</button><button type="button" class="link" data-d="3">In 3 days</button><button type="button" class="link" data-d="7">Next week</button></div>
               <button class="btn ghost wide" id="lvConvert" type="button">Move to deals</button>
               <div class="err" id="lvErr" role="alert"></div>
             </section>
@@ -116,6 +129,36 @@
       </div>
     </section>
 
+
+    <!-- BUYERS -->
+    <section data-p="buyers" hidden>
+      <div class="ph"><div><h1>Cash buyers</h1><p>Your buyers list. Open any deal and hit <b>Send to buyers</b> to email it to the ones who fit.</p></div><div style="display:flex;gap:8px"><button class="btn ghost" type="button" id="bImport">Import CSV</button><button class="btn" type="button" id="bAdd">Add buyer</button></div></div>
+      <div class="stat4 rise" id="buyStats">
+        <div class="c0g"><span class="ki c0" data-ic="user"></span><b id="bTotal">0</b><span>Buyers</span></div>
+        <div class="c2g"><span class="ki c2" data-ic="msg"></span><b id="bEmail">0</b><span>Can get email blasts</span></div>
+        <div class="c3g"><span class="ki c3" data-ic="pin"></span><b id="bAreas">0</b><span>Areas covered</span></div>
+        <div class="c1g"><span class="ki c1" data-ic="money"></span><b id="bMax">—</b><span>Highest max price</span></div>
+      </div>
+      <form class="card" id="bForm" hidden>
+        <h2 id="bFormH">Add buyer</h2>
+        <div class="row"><div><label class="f" for="bfName">Name</label><input type="text" id="bfName" required></div><div><label class="f" for="bfCo">Company <span class="opt">(optional)</span></label><input type="text" id="bfCo"></div></div>
+        <div class="row"><div><label class="f" for="bfEmail">Email</label><input type="text" id="bfEmail" inputmode="email"></div><div><label class="f" for="bfPhone">Phone</label><input type="tel" id="bfPhone"></div></div>
+        <label class="f" for="bfAreas">Buys in <span class="opt">(cities or ZIPs, comma separated; blank = anywhere)</span></label><input type="text" id="bfAreas" placeholder="Dallas, Garland, 75211">
+        <div class="row3"><div><label class="f" for="bfType">Buys as</label><select id="bfType"><option value="any">Any</option><option value="flipper">Flipper</option><option value="landlord">Landlord</option><option value="builder">Builder</option></select></div><div><label class="f" for="bfMin">Min price</label><input type="text" id="bfMin" inputmode="numeric" placeholder="$"></div><div><label class="f" for="bfMax">Max price</label><input type="text" id="bfMax" inputmode="numeric" placeholder="$"></div></div>
+        <label class="f" for="bfNotes">Notes</label><textarea id="bfNotes" placeholder="Closes in 10 days with cash, likes 3/2s built after 1960…"></textarea>
+        <div class="err" id="bfErr" role="alert"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn ghost" type="button" id="bfCancel">Cancel</button><button class="btn" type="submit" id="bfSave">Save buyer</button></div>
+      </form>
+      <section class="card" id="bImpBox" hidden>
+        <h2>Import buyers</h2>
+        <p class="note" style="margin-top:-6px">Upload a CSV or paste rows. Columns we read: name, company, email, phone, areas, min price, max price, type, notes. Duplicates (same email or phone) are skipped.</p>
+        <input type="file" id="bFile" accept=".csv,text/csv"><textarea id="bPaste" placeholder="name,email,phone,areas,max price&#10;Mike Torres,mike@example.com,2145550199,&quot;Dallas, Garland&quot;,250000" style="margin-top:10px;min-height:110px"></textarea>
+        <div class="err" id="bImpErr" role="alert"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px"><button class="btn ghost" type="button" id="bImpCancel">Cancel</button><button class="btn" type="button" id="bImpGo">Import</button></div>
+      </section>
+      <div class="leadbar"><span class="note" id="bNote"></span><input type="search" id="bQ" placeholder="Search name, area or company" aria-label="Search buyers"></div>
+      <div id="bList"><p class="note">Loading…</p></div>
+    </section>
 
     <!-- TOOLS -->
     <section data-p="tools" hidden>
@@ -208,16 +251,34 @@
     <!-- ACCOUNT -->
     <section data-p="account" hidden>
       <div class="ph"><div><h1>Plan &amp; account</h1><p id="who"></p></div><button class="btn ghost" type="button" id="logout">Log out</button></div>
-      <section class="card">
+      <section class="card" id="planSec">
         <h2>Your plan</h2>
         <div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px"><div style="font-family:var(--display);font-size:22px;font-weight:700" id="planName"></div><button class="link" type="button" id="manageBilling" hidden>Manage billing</button></div>
         <p class="note" id="planNote" style="margin:4px 0 0"></p>
         <div class="plans" id="planCards"></div>
         <p class="err" id="planErr" role="alert"></p>
       </section>
-      <section class="card">
+      <section class="card" id="usageCard">
         <h2>This month's usage</h2>
         <div id="usage"></div>
+      </section>
+      <section class="card" id="teamCard" hidden>
+        <h2>Team logins <span id="teamCount"></span></h2>
+        <p class="note" style="margin-top:-6px">Teammates get their own login and work in this account: same leads, deals, buyers and limits. They can't change billing or funnel settings.</p>
+        <div id="teamList"></div>
+        <form id="inviteForm" class="copyrow" style="margin-top:12px"><input type="text" id="invEmail" inputmode="email" placeholder="teammate@email.com" aria-label="Teammate email"><button class="btn" type="submit" id="invBtn">Send invite</button></form>
+        <p class="err" id="invErr" role="alert"></p><p class="note" id="invLink"></p>
+      </section>
+      <section class="card refcard" id="refCard" hidden>
+        <h2>Refer a wholesaler, get a free month</h2>
+        <p class="note" style="margin-top:-6px">They get their first month free. When they make their first payment, you get a month of your plan as credit. No limit.</p>
+        <div class="copyrow"><input type="text" id="refLink" readonly><button class="btn sun" type="button" id="refCopy">Copy link</button></div>
+        <div class="urings" id="refStats" style="margin-top:14px"></div>
+      </section>
+      <section class="card" id="prefsCard">
+        <h2>Emails from JStar Pro</h2>
+        <label class="check"><input type="checkbox" id="pRem"> Daily follow-up reminders (leads going cold, follow-ups due, closings coming up)</label>
+        <label class="check"><input type="checkbox" id="pRecap"> Monthly recap on the 1st (leads, offers, deals and fees)</label>
       </section>
       <form class="card" id="pwForm">
         <h2>Change password</h2>
@@ -260,18 +321,25 @@
     if (qs.get('paid')) { $('welcome').hidden = false; $('welcome').innerHTML = qs.get('paid') === 'domain' ? '<b>Payment received.</b> You can connect your domain below. If it still asks you to upgrade, refresh in a few seconds.' : '<b>Payment received. Your plan is active.</b> Your tools unlock in a few seconds.'; }
     // Just paid but Stripe's webhook hasn't landed yet: check a few times, then reload with the plan on
     if (qs.get('paid') && plan.tier === 'trial') { let n = 0; const t = setInterval(async () => { const m = await fetch('/api/auth?action=me').then(x => x.json()).catch(() => null); if (m?.plan?.tier && m.plan.tier !== 'trial') { clearInterval(t); location.replace('/app#leads'); } else if (++n > 15) clearInterval(t); }, 2000); }
-    fillForms(); tab(); loadLeads();
+    if (user.team?.owner || user.memberOf) { // teammate login: work in the owner's account, no billing or funnel settings
+      document.body.classList.add('member');
+      $('who').textContent = `Logged in as ${user.email} · on ${user.team?.company || 'the'} team`;
+    }
+    fillForms(); fillPrefs(); tab(); loadLeads();
   }
-  const funnelUrl = () => user.domain?.status === 'live' ? `https://${user.domain.name}` : `${location.origin}/f/${user.slug}`;
+  // Teammates share the owner's funnel
+  const funnelUrl = () => { const t = user.team, d = t ? t.ownerDomain : user.domain, slug = t?.slug || user.slug; return d?.status === 'live' ? `https://${d.name}` : `${location.origin}/f/${slug}`; };
 
   // ── Tabs ──
   function tab() {
     const t = (location.hash.slice(1) || 'leads').split('/')[0];
-    const ok = ['leads', 'tools', 'funnel', 'ads', 'domain', 'account'].includes(t) ? t : 'leads';
+    let ok = ['leads', 'buyers', 'tools', 'funnel', 'ads', 'domain', 'account'].includes(t) ? t : 'leads';
+    if (document.body.classList.contains('member') && ['funnel', 'ads', 'domain'].includes(ok)) ok = 'leads';
     if (plan.tier === 'trial' && ok !== 'account') { history.replaceState(null, '', '#account'); return tab(); } // no plan: only Plan & account
     document.querySelectorAll('[data-p]').forEach(s => s.hidden = s.dataset.p !== ok);
     document.querySelectorAll('.side a[data-t]').forEach(a => a.classList.toggle('on', a.dataset.t === ok));
     if (ok === 'domain') loadDomain();
+    if (ok === 'buyers') loadBuyers();
     if (ok === 'account') { renderUsage(); renderPlan(); }
     if (ok === 'leads') { const id = location.hash.split('/')[1]; id ? openLead(id) : closeLead(); }
   }
@@ -327,7 +395,7 @@
           <td class="r"><b>${b.mao ? `${$k(b.opening)} – ${$k(b.mao)}` : '<span class="note">No offer</span>'}</b>${b.mao && b.value ? `<span class="offerbar" title="Offer range as a share of ARV"><i style="left:${Math.round((b.opening || b.mao) / b.value * 100)}%;width:${Math.max(3, Math.round((b.mao - (b.opening || b.mao)) / b.value * 100))}%"></i></span>` : ''}</td>
           <td class="r hm">${b.value ? $$(b.value) : '—'}</td>
           <td class="hm"><span class="src"><i style="background:${/google/i.test(l.source || '') ? '#36bffa' : /meta|facebook|insta/i.test(l.source || '') ? '#7a5af8' : '#98a2b3'}"></i>${esc(l.source || 'Direct')}</span></td>
-          <td class="hm">${ST[l.status] || esc(l.status)}</td>
+          <td class="hm">${ST[l.status] || esc(l.status)}${l.followUpAt && !['dead', 'converted'].includes(l.status) ? `<small style="color:${l.followUpAt <= new Date().toLocaleDateString('en-CA') ? 'var(--err)' : 'var(--brand)'};font-weight:600">Follow up ${new Date(l.followUpAt + 'T12:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</small>` : ''}</td>
           <td class="r"><span class="note">${ago(l.createdAt)}</span></td>
           <td class="r hm"><div class="rowacts">${L.phone ? `<a href="tel:${esc(String(L.phone).replace(/\D/g, ''))}" title="Call" data-stop>${J.svg('phone')}</a><a class="tx" href="sms:${esc(String(L.phone).replace(/\D/g, ''))}" title="Text" data-stop>${J.svg('msg')}</a>` : ''}</div></td></tr>`;
       }).join('') : `<tr><td colspan="8"><div class="empty" style="padding:24px"><p>No leads match.</p></div></td></tr>`) + '</tbody></table></div>';
@@ -354,7 +422,7 @@
     $('lvSeller').innerHTML = `<h2>Seller</h2>` + (sx.length ? `<div class="kv">${sx.map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>` : '<p class="note" style="margin:0">No extra details.</p>');
     const digits = String(L.phone || '').replace(/\D/g, '');
     $('lvCall').href = 'tel:' + digits; $('lvText').href = 'sms:' + digits;
-    $('lvStatus').value = curLead.status;
+    $('lvStatus').value = curLead.status; $('lvFollow').value = curLead.followUpAt || '';
     $('lvConvert').textContent = curLead.dealId ? 'Open in deals' : 'Move to deals';
     $('lvSheet').innerHTML = curLead.html || `<pre>${esc(curLead.summary)}</pre>`;
     const J = window.JK, snap = J ? J.snapshot({ ...b, asking: b.asking }, { title: b.mao ? 'Offer range' : 'Deal', sub: b.call || '' }) : '';
@@ -375,6 +443,16 @@
     if (!r.ok) { $('lvErr').textContent = r.j.error || 'Could not move it.'; $('lvConvert').textContent = 'Move to deals'; return; }
     location.href = '/underwriting#' + r.j.dealId;
   };
+  const setFollow = async d => {
+    if (!curLead) return; $('lvFollow').value = d || '';
+    const r = await post('/api/leads', { action: 'followup', id: curLead.id, date: d || '' });
+    if (!r.ok) { $('lvErr').textContent = r.j.error || 'Could not save.'; return; }
+    curLead = { ...curLead, followUpAt: d || null }; const i = leads.findIndex(l => l.id === curLead.id); if (i >= 0) leads[i].followUpAt = d || null;
+    window.JK?.toast(d ? `We'll remind you ${new Date(d + 'T12:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}` : 'Follow-up cleared');
+  };
+  $('lvFollow').onchange = () => setFollow($('lvFollow').value);
+  $('lvFollowClr').onclick = () => setFollow('');
+  document.querySelectorAll('.fuq [data-d]').forEach(b => b.onclick = () => { const d = new Date(); d.setDate(d.getDate() + +b.dataset.d); setFollow(d.toLocaleDateString('en-CA')); });
   $('lvStatus').onchange = async () => {
     const st = $('lvStatus').value; const r = await post('/api/leads', { action: 'status', id: curLead.id, status: st });
     if (!r.ok) { $('lvErr').textContent = r.j.error || 'Could not update.'; return; }
@@ -407,23 +485,28 @@
   async function loadDomain() { const r = await post('/api/domain', { action: 'status' }); if (r.ok) { dom = r.j; renderDomain(); } }
   async function checkout(key, btn, errEl) {
     if (btn) btn.disabled = true;
-    const r = await post('/api/billing', { action: 'checkout', plan: key });
+    const r = await post('/api/billing', { action: 'checkout', plan: key, interval: key === 'domain' ? 'month' : ival });
     if (btn) btn.disabled = false;
     if (r.ok && r.j.url) { location.href = r.j.url; return; }
     $(errEl).textContent = r.j.error || 'Could not open checkout.';
   }
+  let ival = 'month';
   const PLAN_INFO = { starter: ['Starter', 49, ['100 deal analyses / mo, with mortgage & equity', '10 photo estimates / mo', '4,000 list records / mo', 'Custom domain: $19/mo add-on']], pro: ['Pro', 99, ['300 deal analyses / mo, with mortgage & equity', '30 photo estimates / mo', '12,000 list records / mo', 'Custom domain included']], team: ['Team', 199, ['800 deal analyses / mo, with mortgage & equity', '80 photo estimates / mo', '30,000 list records / mo', 'Custom domain included']] };
   function renderPlan() {
     if (!plan) return;
     $('planName').textContent = plan.name;
-    if (plan.operator) { $('planNote').textContent = 'Operator account: every feature, no monthly limits, no billing. Leads from your own funnel land in your inbox here too.'; $('manageBilling').hidden = true; $('planCards').innerHTML = ''; return; }
+    if (plan.operator) { $('planNote').textContent = 'Operator account: every feature, no monthly limits, no billing. Leads from your own funnel land in your inbox here too.'; $('manageBilling').hidden = true; $('planCards').innerHTML = ''; renderTeam(); renderRef(); return; }
     $('planNote').textContent = plan.tier === 'trial' ? 'Choose a plan to turn on your funnel and every tool.' : `Renews monthly.${plan.domainAddon ? ' Includes the custom domain add-on.' : ''}`;
     $('manageBilling').hidden = !plan.hasBilling;
-    $('planCards').innerHTML = Object.entries(PLAN_INFO).map(([k, [n, p, f]]) => {
-      const cur = plan.tier === k;
-      return `<div class="pl ${cur ? 'cur' : ''}"><b>${n}</b><span class="pp">$${p}/month</span><ul>${f.map(x => `<li>${x}</li>`).join('')}</ul>${cur ? '<span class="note" style="margin:0">Current plan</span>' : `<button class="btn ${k === 'pro' ? '' : 'ghost'}" type="button" data-plan="${k}" ${plan.ready[k] ? '' : 'disabled'}>${plan.ready[k] ? (plan.tier === 'trial' ? 'Choose ' : 'Switch to ') + n : 'Available soon'}</button>`}</div>`;
-    }).join('');
+    if (plan.tier !== 'trial') $('planNote').textContent = `${plan.interval === 'year' ? 'Billed yearly' : 'Billed monthly'}.${plan.domainAddon ? ' Includes the custom domain add-on.' : ''}${plan.tier === 'agency' ? ' Custom Agency plan.' : ''}`;
+    $('planCards').innerHTML = `<div class="ivtog"><div class="seg2"><button type="button" data-i="month" class="${ival === 'month' ? 'on' : ''}">Monthly</button><button type="button" data-i="year" class="${ival === 'year' ? 'on' : ''}">Yearly <em>2 months free</em></button></div></div>` + Object.entries(PLAN_INFO).map(([k, [n, p, f]]) => {
+      const cur = plan.tier === k && (plan.interval || 'month') === ival;
+      const price = ival === 'year' ? `$${(p * 10).toLocaleString()}/year <small>· save $${p * 2}</small>` : `$${p}/month`;
+      return `<div class="pl ${plan.tier === k ? 'cur' : ''}"><b>${n}</b><span class="pp">${price}</span><ul>${f.map(x => `<li>${x}</li>`).join('')}</ul>${cur ? '<span class="note" style="margin:0">Current plan</span>' : `<button class="btn ${k === 'pro' ? '' : 'ghost'}" type="button" data-plan="${k}" ${plan.ready[k] ? '' : 'disabled'}>${plan.ready[k] ? (plan.tier === 'trial' ? 'Choose ' : 'Switch to ') + n + (ival === 'year' ? ' yearly' : '') : 'Available soon'}</button>`}</div>`;
+    }).join('') + `<div class="pl agency ${plan.tier === 'agency' ? 'cur' : ''}"><b>Agency</b><span class="pp">Custom pricing</span><ul><li>2,000+ deal analyses / mo</li><li>Up to 5 team logins</li><li>Higher photo and list limits</li><li>Setup help and priority support</li></ul>${plan.tier === 'agency' ? '<span class="note" style="margin:0">Current plan</span>' : '<a class="btn sun" href="/support?topic=agency">Book a call</a>'}</div>`;
+    $('planCards').querySelectorAll('[data-i]').forEach(b => b.onclick = () => { ival = b.dataset.i; renderPlan(); });
     $('planCards').querySelectorAll('[data-plan]').forEach(b => b.onclick = () => checkout(b.dataset.plan, b, 'planErr'));
+    renderTeam(); renderRef();
   }
   $('manageBilling').onclick = async () => { const r = await post('/api/billing', { action: 'portal' }); if (r.ok && r.j.url) location.href = r.j.url; else $('planErr').textContent = r.j.error || 'Could not open billing.'; };
 
@@ -453,6 +536,105 @@
   };
   $('dCheck').onclick = async () => { $('dCheck').disabled = true; const r = await post('/api/domain', { action: 'check' }); $('dCheck').disabled = false; if (r.ok) { dom = r.j; user.domain = dom.domain; renderDomain(); fillForms(); flash($('dCheck'), 'Checked'); } };
   $('dRemove').onclick = async () => { if (!confirm('Disconnect this domain from your funnel?')) return; const r = await post('/api/domain', { action: 'remove' }); if (r.ok) { dom = r.j; user.domain = null; renderDomain(); fillForms(); } };
+
+  // ── Buyers ──
+  let buyers = [], bEdit = null;
+  const money = v => { const n = Number(String(v || '').replace(/[^\d]/g, '')); return n || null; };
+  async function loadBuyers() {
+    const r = await post('/api/buyers', { action: 'list' });
+    if (!r.ok) { $('bList').innerHTML = `<p class="err">${esc(r.j.error || 'Could not load buyers.')}</p>`; return; }
+    buyers = r.j.buyers || []; renderBuyers(true);
+  }
+  function renderBuyers(anim) {
+    const J = window.JK, areas = new Set(buyers.flatMap(b => (b.areas || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean)));
+    const vals = { bTotal: buyers.length, bEmail: buyers.filter(b => b.email && !b.unsub).length, bAreas: areas.size };
+    Object.entries(vals).forEach(([id, v]) => { $(id).dataset.count = v; $(id).textContent = v; });
+    const mx = Math.max(0, ...buyers.map(b => b.maxPrice || 0)); $('bMax').textContent = mx ? $k(mx) : '—';
+    if (J && anim) { document.querySelectorAll('#buyStats .ki').forEach(k => { k.innerHTML = J.svg(k.dataset.ic); }); J.animate($('buyStats')); }
+    const q = ($('bQ').value || '').trim().toLowerCase();
+    const rows = buyers.filter(b => !q || [b.name, b.company, b.areas, b.email].join(' ').toLowerCase().includes(q));
+    if (!buyers.length) { $('bList').innerHTML = `<div class="dtw"><div class="empty"><b>No buyers yet</b><p>Add the cash buyers you work with, or import a CSV. Then send any deal to the ones who fit in one click.</p></div></div>`; return; }
+    const T = { flipper: 'Flipper', landlord: 'Landlord', builder: 'Builder', any: 'Any' };
+    $('bList').innerHTML = `<div class="dtw"><table class="dt"><thead><tr><th>Buyer</th><th class="hm">Buys in</th><th class="hm">Type</th><th class="r">Price range</th><th class="hm">Contact</th><th class="hm"></th></tr></thead><tbody>${rows.map(b => `<tr data-id="${esc(b.id)}">
+      <td><div class="who">${J ? J.avatar(b.name) : ''}<div><b>${esc(b.name)}</b><small>${esc(b.company || '')}${b.unsub ? ' <span class="pill COLD">Unsubscribed</span>' : ''}</small></div></div></td>
+      <td class="hm">${esc(b.areas || 'Anywhere')}</td><td class="hm">${T[b.type] || 'Any'}</td>
+      <td class="r"><b>${b.minPrice || b.maxPrice ? `${b.minPrice ? $k(b.minPrice) : '$0'} – ${b.maxPrice ? $k(b.maxPrice) : 'any'}` : '<span class="note">Any</span>'}</b></td>
+      <td class="hm"><small style="display:block">${esc(b.email || '')}</small><small>${esc(b.phone || '')}</small></td>
+      <td class="r hm"><div class="rowacts">${b.phone ? `<a href="tel:${esc(b.phone.replace(/\D/g, ''))}" title="Call" data-stop>${J ? J.svg('phone') : 'Call'}</a>` : ''}<a href="#" class="tx" title="Delete" data-del="${esc(b.id)}" data-stop style="background:#fef3f2;color:#b42318">✕</a></div></td></tr>`).join('') || '<tr><td colspan="6"><div class="empty" style="padding:24px"><p>No buyers match.</p></div></td></tr>'}</tbody></table></div>`;
+    $('bNote').textContent = `${rows.length} of ${buyers.length}`;
+    $('bList').querySelectorAll('[data-stop]').forEach(a => a.onclick = e => e.stopPropagation());
+    $('bList').querySelectorAll('[data-del]').forEach(a => a.onclick = async e => { e.preventDefault(); e.stopPropagation(); if (!confirm('Delete this buyer?')) return; const r = await post('/api/buyers', { action: 'delete', id: a.dataset.del }); if (r.ok) { buyers = buyers.filter(x => x.id !== a.dataset.del); renderBuyers(); J?.toast('Buyer deleted'); } });
+    $('bList').querySelectorAll('tr[data-id]').forEach(tr => tr.onclick = () => openBuyer(buyers.find(b => b.id === tr.dataset.id)));
+    J?.animate($('bList'));
+  }
+  function openBuyer(b) {
+    bEdit = b || null; $('bImpBox').hidden = true; $('bForm').hidden = false; $('bfErr').textContent = '';
+    $('bFormH').textContent = b ? 'Edit buyer' : 'Add buyer';
+    [['bfName', 'name'], ['bfCo', 'company'], ['bfEmail', 'email'], ['bfPhone', 'phone'], ['bfAreas', 'areas'], ['bfNotes', 'notes']].forEach(([id, k]) => { $(id).value = b?.[k] || ''; });
+    $('bfType').value = b?.type || 'any'; $('bfMin').value = b?.minPrice ? '$' + b.minPrice.toLocaleString() : ''; $('bfMax').value = b?.maxPrice ? '$' + b.maxPrice.toLocaleString() : '';
+    $('bfName').focus(); $('bForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  $('bAdd').onclick = () => openBuyer(null);
+  $('bfCancel').onclick = () => { $('bForm').hidden = true; };
+  ['bfMin', 'bfMax'].forEach(id => $(id).addEventListener('input', () => { const n = money($(id).value); $(id).value = n ? '$' + n.toLocaleString() : ''; }));
+  $('bForm').onsubmit = async e => {
+    e.preventDefault(); $('bfSave').disabled = true;
+    const buyer = { id: bEdit?.id, name: $('bfName').value, company: $('bfCo').value, email: $('bfEmail').value, phone: $('bfPhone').value, areas: $('bfAreas').value, type: $('bfType').value, minPrice: money($('bfMin').value), maxPrice: money($('bfMax').value), notes: $('bfNotes').value };
+    const r = await post('/api/buyers', { action: 'save', buyer }); $('bfSave').disabled = false;
+    if (!r.ok) { $('bfErr').textContent = r.j.error || 'Could not save.'; return; }
+    const i = buyers.findIndex(x => x.id === r.j.buyer.id); if (i >= 0) buyers[i] = r.j.buyer; else buyers.push(r.j.buyer);
+    $('bForm').hidden = true; renderBuyers(); window.JK?.toast(bEdit ? 'Buyer saved' : 'Buyer added');
+  };
+  $('bQ').oninput = () => renderBuyers();
+  $('bImport').onclick = () => { $('bForm').hidden = true; $('bImpBox').hidden = false; $('bImpErr').textContent = ''; };
+  $('bImpCancel').onclick = () => { $('bImpBox').hidden = true; };
+  $('bFile').onchange = async () => { const f = $('bFile').files[0]; if (f) $('bPaste').value = await f.text(); };
+  // Small CSV parser (quotes, commas inside quotes)
+  const csv = t => { const out = []; let row = [], f = '', q = false; for (let i = 0; i < t.length; i++) { const c = t[i]; if (q) { if (c === '"' && t[i + 1] === '"') { f += '"'; i++; } else if (c === '"') q = false; else f += c; } else if (c === '"') q = true; else if (c === ',') { row.push(f); f = ''; } else if (c === '\n' || c === '\r') { if (c === '\r' && t[i + 1] === '\n') i++; row.push(f); out.push(row); row = []; f = ''; } else f += c; } if (f || row.length) { row.push(f); out.push(row); } return out.filter(r => r.some(x => x.trim())); };
+  $('bImpGo').onclick = async () => {
+    const rows = csv($('bPaste').value); if (rows.length < 2) { $('bImpErr').textContent = 'Add a header row and at least one buyer.'; return; }
+    const H = rows[0].map(h => h.trim().toLowerCase()), col = (...ks) => H.findIndex(h => ks.some(k => h.includes(k)));
+    const ix = { name: col('name', 'contact'), company: col('company', 'llc', 'entity'), email: col('email'), phone: col('phone', 'mobile', 'cell'), areas: col('area', 'city', 'zip', 'market'), minPrice: col('min'), maxPrice: col('max', 'budget'), type: col('type', 'strategy'), notes: col('note') };
+    if (ix.name < 0) { $('bImpErr').textContent = 'Couldn\'t find a "name" column.'; return; }
+    const list = rows.slice(1).map(r => Object.fromEntries(Object.entries(ix).filter(([, i]) => i >= 0).map(([k, i]) => [k, (r[i] || '').trim()]))).map(x => ({ ...x, type: /flip/i.test(x.type || '') ? 'flipper' : /land|rent|hold/i.test(x.type || '') ? 'landlord' : /build/i.test(x.type || '') ? 'builder' : 'any' }));
+    $('bImpGo').disabled = true; const r = await post('/api/buyers', { action: 'import', rows: list }); $('bImpGo').disabled = false;
+    if (!r.ok) { $('bImpErr').textContent = r.j.error || 'Import failed.'; return; }
+    $('bImpBox').hidden = true; $('bPaste').value = ''; window.JK?.toast(`Added ${r.j.added} buyer${r.j.added === 1 ? '' : 's'}${r.j.skipped ? `, skipped ${r.j.skipped} duplicates` : ''}`); loadBuyers();
+  };
+
+  // ── Team, referrals, email prefs ──
+  function renderTeam() {
+    const seats = plan.seats || 0, team = user.team || [];
+    $('teamCard').hidden = !seats || !!user.memberOf;
+    if ($('teamCard').hidden) return;
+    $('teamCount').textContent = `(${team.length} of ${seats})`;
+    $('teamList').innerHTML = team.length ? `<div class="kv">${team.map(m => `<div><span style="display:flex;align-items:center;gap:10px;color:var(--ink)">${window.JK ? JK.avatar(m.name) : ''}<span><b style="display:block;text-align:left">${esc(m.name)}</b><small class="note">${esc(m.email)}</small></span></span><button class="link" type="button" data-rm="${esc(m.uid)}" style="color:var(--err)">Remove</button></div>`).join('')}</div>` : '<p class="note">No teammates yet.</p>';
+    $('inviteForm').hidden = team.length >= seats;
+    $('teamList').querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => {
+      if (!confirm('Remove this teammate? Their login stops working right away.')) return;
+      const r = await post('/api/auth', { action: 'removeMember', uid: b.dataset.rm }); if (r.ok) { user = r.j.user; renderTeam(); window.JK?.toast('Teammate removed'); }
+    });
+  }
+  $('inviteForm').onsubmit = async e => {
+    e.preventDefault(); $('invErr').textContent = ''; $('invLink').textContent = ''; $('invBtn').disabled = true;
+    const r = await post('/api/auth', { action: 'invite', email: $('invEmail').value.trim() });
+    $('invBtn').disabled = false;
+    if (!r.ok) { $('invErr').textContent = r.j.error || 'Could not send.'; return; }
+    $('invEmail').value = ''; $('invLink').innerHTML = `Invite sent. You can also send them this link: <a href="${esc(r.j.link)}">${esc(r.j.link)}</a>`; window.JK?.toast('Invite sent');
+  };
+  function renderRef() {
+    $('refCard').hidden = !!user.memberOf || plan.tier === 'trial';
+    if ($('refCard').hidden) return;
+    $('refLink').value = `${location.origin.includes('localhost') ? location.origin : 'https://getjstarpro.com'}/?ref=${user.slug}`;
+    const st = user.refStats || {};
+    $('refStats').innerHTML = [['signups', 'Signed up'], ['paid', 'Became paying'], ['earned', 'Credit earned']].map(([k, l]) => `<div><div><b>${k === 'earned' ? '$' + (st[k] || 0).toLocaleString() : (st[k] || 0)}</b><span>${l}</span></div></div>`).join('');
+  }
+  $('refCopy').onclick = async () => { try { await navigator.clipboard.writeText($('refLink').value); } catch { $('refLink').select(); document.execCommand('copy'); } flash($('refCopy'), 'Copied'); };
+  const fillPrefs = () => { const s = user.settings || {}; $('pRem').checked = s.emailReminders !== false; $('pRecap').checked = s.emailRecap !== false; };
+  ['pRem', 'pRecap'].forEach(id => $(id).onchange = async () => {
+    const r = await post('/api/auth', { action: 'update', settings: { ...user.settings, emailReminders: $('pRem').checked, emailRecap: $('pRecap').checked } });
+    if (r.ok) { user = r.j.user; window.JK?.toast('Saved'); } else fillPrefs();
+  });
 
   // ── Account ──
   function renderUsage() {
