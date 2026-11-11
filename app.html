@@ -118,7 +118,7 @@
     <section data-p="tools" hidden>
       <div class="ph"><div><h1>Tools</h1><p>Everything included on every plan.</p></div></div>
       <a class="tool" href="/operator"><div class="tt"><b>Run an address</b><span class="open">Open</span></div>
-        <p>Type any address, whether it's a call-in, a list lead or a house you drove by. In about ten seconds you get recent comparable sales, the after-repair value, a repair estimate by condition, your max and opening offer, and a deal sheet with a ready-to-send buyer pitch. Add exact repair line items to replace the estimate. Works for houses and vacant lots.</p>
+        <p>Type any address, whether it's a call-in, a list lead or a house you drove by. In about ten seconds you get recent comparable sales, the after-repair value, a repair estimate by condition, your max and opening offer, the recorded mortgage balance and equity with any liens or pre-foreclosure, and a deal sheet with a ready-to-send buyer pitch. Add exact repair line items to replace the estimate. Works for houses and vacant lots.</p>
         <span class="uses">Uses 1 deal analysis</span></a>
       <a class="tool" href="/batch"><div class="tt"><b>Batch analysis</b><span class="open">Open</span></div>
         <p>Paste up to 10 addresses, set the condition for each, and get every offer in one table, sorted by score. Tap any row for its full deal sheet or export the table to CSV.</p>
@@ -386,7 +386,7 @@
     if (r.ok && r.j.url) { location.href = r.j.url; return; }
     $(errEl).textContent = r.j.error || 'Could not open checkout.';
   }
-  const PLAN_INFO = { starter: ['Starter', 49, ['100 deal analyses / mo', '10 photo estimates / mo', '4,000 list records / mo', 'Custom domain: $19/mo add-on']], pro: ['Pro', 99, ['300 deal analyses / mo', '30 photo estimates / mo', '12,000 list records / mo', 'Custom domain included']], team: ['Team', 199, ['800 deal analyses / mo', '80 photo estimates / mo', '30,000 list records / mo', 'Custom domain included']] };
+  const PLAN_INFO = { starter: ['Starter', 49, ['100 deal analyses / mo, with mortgage & equity', '10 photo estimates / mo', '4,000 list records / mo', 'Custom domain: $19/mo add-on']], pro: ['Pro', 99, ['300 deal analyses / mo, with mortgage & equity', '30 photo estimates / mo', '12,000 list records / mo', 'Custom domain included']], team: ['Team', 199, ['800 deal analyses / mo, with mortgage & equity', '80 photo estimates / mo', '30,000 list records / mo', 'Custom domain included']] };
   function renderPlan() {
     if (!plan) return;
     $('planName').textContent = plan.name;
