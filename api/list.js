@@ -45,7 +45,7 @@ export default async function handler(req, res) {
     calls++;
     if (!r.ok) {
       const body = await r.text().catch(() => '');
-      if (!all.length) return res.status(502).json({ error: `RentCast ${r.status}: ${body.slice(0, 200)}` });
+      if (!all.length) { console.error('list source', r.status, body.slice(0, 300)); return res.status(502).json({ error: r.status === 429 ? 'Property records are busy. Try again in a minute.' : 'Couldn\'t pull property records for that ZIP. Try again.' }); }
       break;
     }
     const rows = await r.json();
