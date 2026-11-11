@@ -6,6 +6,7 @@
     .then(r => (r.ok ? r.json() : null))
     .then(j => {
       if (!j?.user) return;
+      if (j.plan?.tier === 'trial') { location.replace('/app#account'); return; } // no plan yet: pay first
       window.ACCT = j.user;
       document.body.classList.add('acct');
       const ws = document.getElementById('ws');

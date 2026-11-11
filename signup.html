@@ -125,16 +125,22 @@
     if (!r.ok) { $('lErr').textContent = r.j.error || 'Could not log in.'; return; }
     location.replace(next);
   });
+  // Account first, then straight to Stripe Checkout. Nobody gets into the app without paying.
+  let created = false;
   $('signup').addEventListener('submit', async e => {
-    e.preventDefault(); $('sErr').textContent = ''; $('sBtn').disabled = true; $('sBtn').textContent = 'Creating your account…';
-    const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value });
-    if (!r.ok) { $('sBtn').disabled = false; $('sBtn').textContent = 'Create account and continue to payment'; $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
-    if (plan) {
-      $('sBtn').textContent = 'Opening secure checkout…';
-      const c = await fetch('/api/billing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'checkout', plan }) }).then(x => x.json().catch(() => ({}))).catch(() => ({}));
-      if (c.url) { location.href = c.url; return; }
+    e.preventDefault(); $('sErr').textContent = ''; $('sBtn').disabled = true;
+    if (!created) {
+      $('sBtn').textContent = 'Creating your account…';
+      const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value });
+      if (!r.ok) { $('sBtn').disabled = false; $('sBtn').textContent = 'Create account and continue to payment'; $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
+      created = true;
+      $('signup').querySelectorAll('input').forEach(i => { i.disabled = true; });
     }
-    location.replace('/app?welcome=1' + (plan ? '&plan=' + plan : ''));
+    $('sBtn').textContent = 'Opening secure checkout…';
+    const c = await fetch('/api/billing', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'checkout', plan }) }).then(x => x.json().catch(() => ({}))).catch(() => ({}));
+    if (c.url) { location.href = c.url; return; }
+    $('sBtn').disabled = false; $('sBtn').textContent = 'Try payment again';
+    $('sErr').textContent = (c.error || 'Payment page couldn\'t open.') + ' Your account is saved; log in any time to finish paying.';
   });
 })();
 </script>
