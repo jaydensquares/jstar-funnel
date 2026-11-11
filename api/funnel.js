@@ -22,7 +22,8 @@ function brandSpan(brand) {
 function renderFunnel(u, base) {
   const brand = u.company || u.name, s = u.settings || {};
   let h = file('offer.html');
-  const SITE = { brand, phone: u.phone, metaPixelId: s.metaPixelId || '', googleAdsId: s.googleAdsId || '', googleAdsLeadLabel: s.googleAdsLeadLabel || '', demo: false, tenant: u.slug, base, address: s.address || '' };
+  const d = String(u.phone || '').replace(/\D/g, '').slice(-10), phone = d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : u.phone;
+  const SITE = { brand, phone, metaPixelId: s.metaPixelId || '', googleAdsId: s.googleAdsId || '', googleAdsLeadLabel: s.googleAdsLeadLabel || '', demo: false, tenant: u.slug, base, address: s.address || '' };
   h = h.replace(/window\.SITE = \{[\s\S]*?\n  \};/, `window.SITE = ${js(SITE)};`);
   h = h.replace(/<title>[^<]*<\/title>/, `<title>Get a Cash Offer | ${esc(brand)}</title>`);
   h = h.replace('aria-label="JStar Acquisitions home"', `aria-label="${esc(brand)} home"`);
@@ -37,6 +38,10 @@ function renderFunnel(u, base) {
   h = h.replace('body.pageUrl = location.href;', 'body.pageUrl = location.href;\n    body.tenant = S.tenant;');
   // Remove the owner's GoHighLevel tracking + its native-submit hook
   h = h.replace(/<!-- GoHighLevel external tracking -->\s*<script[\s\S]*?<\/script>/, '');
+  // Customers don't have the owner's chat widget: give sellers a floating Text us button to the customer's phone instead
+  if (d.length === 10) h = h.replace('</body>', `<a href="sms:+1${d}" class="txtus" aria-label="Text us"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z"/></svg><span>Text us</span></a>
+<style>.txtus{position:fixed;right:18px;bottom:18px;z-index:50;display:flex;align-items:center;gap:8px;padding:13px 18px;border-radius:999px;background:#1a3f8f;color:#fff;font:700 15px system-ui,sans-serif;text-decoration:none;box-shadow:0 10px 26px rgba(10,22,51,.3)}.txtus:hover{filter:brightness(1.1)}@media(min-width:900px){.txtus{bottom:24px;right:24px}}</style>
+</body>`);
   return h;
 }
 
