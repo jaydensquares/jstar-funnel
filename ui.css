@@ -1,9 +1,9 @@
 /* JStar Pro: shared styles for the dashboard, tool pages, auth pages and admin.
    Loaded after each page's own <style>, so it sets the base and page CSS only adds what's unique. */
 :root {
-  --navy:#0c1a33; --navy2:#13254a; --on-navy:#e9eef7; --on-navy2:#93a1bb; --gold:#c6a052;
-  --bg:#f6f7f9; --card:#fff; --ink:#101828; --ink2:#344054; --muted:#667085; --line:#e4e7ec; --line2:#eef0f3; --input:#fff;
-  --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#eef2fa; --err:#b42318;
+  --navy:#0a1633; --navy2:#142a5c; --on-navy:#f5f8ff; --on-navy2:#9fb0d4; --gold:#ffc93c;
+  --bg:#f4f7fd; --card:#fff; --ink:#101828; --ink2:#344054; --muted:#667085; --line:#e4e7ec; --line2:#eef0f3; --input:#fff;
+  --brand:#2f6fed; --brand-ink:#fff; --brand-soft:#eaf1ff; --err:#d92d20;
   --ok:#067647; --ok-bg:#ecfdf3; --warn:#93370d; --warn-bg:#fffaeb; --hot:#b42318; --hot-bg:#fef3f2;
   --display:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif; --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   --r1:6px; --r2:10px;
@@ -86,7 +86,7 @@ form.card > .btn[type=submit], form.card > button.btn:last-child { display:flex;
 .stat4 { grid-template-columns:repeat(4, 1fr); }
 .stat > div, .stat4 > div { background:none; border:0; border-radius:0; padding:14px 18px; border-left:1px solid var(--line); }
 .stat > div:first-child, .stat4 > div:first-child { border-left:0; }
-.stat b, .stat4 b { display:block; font:700 22px/1.2 var(--display); letter-spacing:-.01em; color:var(--ink); }
+.stat b, .stat4 b { display:block; font:700 24px/1.2 var(--display); letter-spacing:-.01em; color:var(--brand); }
 .stat span, .stat4 span { font-size:13px; color:var(--muted); }
 @media (max-width:640px) {
   .stat4 { grid-template-columns:1fr 1fr; }
@@ -136,7 +136,7 @@ body.shell { display:grid; grid-template-columns:var(--side) minmax(0, 1fr); min
 .snav { display:flex; flex-direction:column; gap:1px; margin-top:22px; }
 .snav a { display:flex; align-items:center; gap:10px; padding:7px 10px; border-radius:var(--r1); color:#c6d0e2; text-decoration:none; font-size:var(--t14); font-weight:500; }
 .snav a:hover { background:var(--navy2); color:#fff; }
-.snav a.on { background:#1c3160; color:#fff; font-weight:600; }
+.snav a.on { background:#1d3a80; color:#fff; font-weight:600; box-shadow:inset 3px 0 0 var(--gold); }
 .snav a svg { width:16px; height:16px; flex:none; stroke:currentColor; fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round; opacity:.85; }
 .snav .sh { font-size:12px; font-weight:600; color:#7f8ca6; padding:16px 10px 6px; }
 .side .foot { margin-top:auto; padding-top:16px; }

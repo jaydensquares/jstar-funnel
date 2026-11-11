@@ -12,14 +12,41 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:#ffffff; --bg2:#f5f6f8; --ink:#111827; --ink2:#374151; --muted:#6b7280; --line:#e5e7eb;
-    --navy:#0b1730; --on-navy:#f3f5fa; --on-navy2:#a9b6cf; --gold:#c9a75a;
-    --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#eef2fb; --ok:#166534;
+    --bg:#ffffff; --bg2:#f2f6ff; --ink:#0f1a33; --ink2:#36425c; --muted:#66728a; --line:#e2e8f5;
+    --navy:#0a1633; --on-navy:#f5f8ff; --on-navy2:#aebddc; --gold:#ffc93c; --sun:#ffc93c; --mint:#2fd38a; --coral:#ff6b5a;
+    --brand:#2f6fed; --brand-ink:#fff; --brand-soft:#eaf1ff; --ok:#12a150;
     --display:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif; --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
   }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
     --bg:#0e1116; --bg2:#151a22; --ink:#f3f4f6; --ink2:#d1d5db; --muted:#9ca3af; --line:#273042;
     --brand:#5b8def; --brand-soft:#17223a; --ok:#86efac; color-scheme:dark; } }
+  /* Brighter, friendlier accents */
+  .hero { background:radial-gradient(900px 520px at 85% 15%, rgba(47,111,237,.38), transparent 60%), radial-gradient(700px 420px at 0% 100%, rgba(47,211,138,.14), transparent 60%), var(--navy) !important; }
+  .hero h1 em { font-style:normal; color:var(--sun); }
+  .hero .ctas .btn:not(.alt) { background:var(--sun); border-color:var(--sun); color:var(--navy); }
+  .hero .ctas .btn:not(.alt):hover { filter:brightness(1.05); }
+  .vsl .pb { background:var(--sun) !important; box-shadow:0 0 0 8px rgba(255,201,60,.22); }
+  .top .btn { background:var(--sun) !important; border-color:var(--sun) !important; color:var(--navy) !important; }
+  .cmp .us { background:var(--brand-soft); }
+  .cmp tfoot .us, .cmp tfoot .us b { background:var(--brand) !important; }
+  .steps li.on .i { color:var(--brand); }
+  .steps li.on button .t { box-shadow:inset 0 -6px 0 rgba(255,201,60,.55); }
+  .phone { box-shadow:0 30px 60px rgba(47,111,237,.28), 0 0 0 1px rgba(15,26,51,.08); }
+  .phone .prog i { background:var(--sun); }
+  .result { background:linear-gradient(160deg, #0f2150, var(--navy)) !important; }
+  .result .save b { color:var(--sun) !important; }
+  .plan.pick { box-shadow:inset 0 4px 0 var(--sun), 0 18px 40px rgba(47,111,237,.14) !important; background:#fff; }
+  .plans { border-color:#d6e2fb !important; }
+  .cta2 { background:var(--brand) !important; }
+  .cta2 p { color:#dbe6ff !important; }
+  .cta2 .btn.alt { border-color:rgba(255,255,255,.5) !important; color:#fff !important; }
+  .btn.gold { background:var(--sun) !important; border-color:var(--sun) !important; color:var(--navy) !important; }
+  .faq summary::after { color:var(--brand) !important; }
+  .tool input[type=checkbox] { accent-color:var(--brand); }
+  mark { background:linear-gradient(transparent 58%, rgba(255,201,60,.75) 58%, rgba(255,201,60,.75) 92%, transparent 92%); color:inherit; padding:0 .06em; }
+  .steps .i { display:inline-grid; place-items:center; width:30px !important; height:30px; border-radius:50%; background:var(--line); color:var(--muted); }
+  .steps li.on .i { background:var(--brand); color:#fff !important; }
+  .cmp th.us { background:var(--sun) !important; color:var(--navy) !important; }
   * { box-sizing:border-box; }
   html, body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:17px; line-height:1.55; -webkit-font-smoothing:antialiased; }
   a { color:inherit; }
@@ -199,7 +226,7 @@
 <main>
   <section class="hero"><div class="w">
     <div>
-      <h1>One login from ad click to signed contract.</h1>
+      <h1>One login from ad click to <em>signed contract.</em></h1>
       <p class="lead">Your seller funnel, comps, ARV, repairs and MAO on every lead, the mortgage balance and equity behind it, underwriting and the purchase agreement. Built for wholesalers who are tired of typing the same address into five tools.</p>
       <div class="ctas"><a class="btn" href="#pricing">See plans</a><a class="btn alt" href="#tour">See how it works</a></div>
       <p class="fine">Plans from $49/mo. Month to month, cancel anytime.</p>
@@ -216,7 +243,7 @@
   <section class="s" id="problem"><div class="w">
     <div class="split">
       <div>
-        <h2>You're paying for six tools that don't talk to each other.</h2>
+        <h2>You're paying for <mark>six tools</mark> that don't talk to each other.</h2>
         <p class="intro">A seller fills out your form. You copy the address into your comps tool, guess at repairs, run numbers in a spreadsheet, retype it all into a contract, then write the buyer blast from scratch. Meanwhile the seller is on the phone with the next wholesaler.</p>
       </div>
     </div>
@@ -263,7 +290,7 @@
   </div></section>
 
   <section class="s alt" id="pricing"><div class="w">
-    <h2>Every tool on every plan.</h2>
+    <h2>Every tool on <mark>every plan.</mark></h2>
     <p class="intro">Pick by how many deals you analyze each month. Leads from your funnel count toward deal analyses.</p>
     <div class="plans">
       <div class="plan">

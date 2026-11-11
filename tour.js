@@ -62,7 +62,7 @@
   .gs-top { display:flex; justify-content:space-between; align-items:baseline; gap:12px; }
   .gs-top b { font-size:16px; } .gs-top span { font-size:13px; color:var(--muted, #667085); }
   .gs-bar { height:4px; background:var(--line, #e4e7ec); border-radius:2px; margin:10px 0 6px; overflow:hidden; }
-  .gs-bar i { display:block; height:100%; background:var(--brand, #1a3f8f); transition:width .6s ease; }
+  .gs-bar i { display:block; height:100%; background:linear-gradient(90deg, var(--brand, #2f6fed), #2fd38a); transition:width .6s ease; }
   .gs ul { list-style:none; margin:0; padding:0; }
   .gs li { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--line2, #eef0f3); font-size:14px; }
   .gs li:last-child { border-bottom:0; }
