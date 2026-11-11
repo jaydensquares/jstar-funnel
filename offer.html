@@ -7,7 +7,8 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Sell your house as-is for cash, anywhere in the U.S. No repairs, no commissions, close on your timeline.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/seller.css">
 
 <script>
   // ═══ EDIT THESE ═══════════════════════════════════════════════
@@ -45,171 +46,27 @@
   }
 </script>
 
-<style>
-  /* Layout: navy hero band with copy left / form card right (stacked on phones, card overlaps the band edge); quiet light page below. */
-  :root {
-    --navy: #0c1a33; --navy-2: #13254a; --on-navy: #f2f5fb; --on-navy-muted: #a9b5cc;
-    --bg: #f4f6fa; --card: #ffffff; --ink: #0f1729; --muted: #5b6578; --line: #e0e5ee; --input: #ffffff;
-    --brand: #1a3f8f; --brand-hover: #15347a; --brand-ink: #ffffff; --brand-soft: #ebf0fa;
-    --gold: #c6a052; --gold-soft: #f6efdf; --err: #b42318;
-    --display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
-    --body: 'Hanken Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-    --navy: #0a1427; --navy-2: #102042; --bg: #0d121c; --card: #151c2a; --ink: #eef2f8; --muted: #98a3b5; --line: #273148; --input: #111827;
-    --brand: #4f7fe0; --brand-hover: #6b93ea; --brand-ink: #ffffff; --brand-soft: #1a2640; --gold: #d8b468; --gold-soft: #2a2416; --err: #ff8a7a; color-scheme: dark } }
-  :root[data-theme="dark"] {
-    --navy: #0a1427; --navy-2: #102042; --bg: #0d121c; --card: #151c2a; --ink: #eef2f8; --muted: #98a3b5; --line: #273148; --input: #111827;
-    --brand: #4f7fe0; --brand-hover: #6b93ea; --brand-ink: #ffffff; --brand-soft: #1a2640; --gold: #d8b468; --gold-soft: #2a2416; --err: #ff8a7a; color-scheme: dark }
-
-  * { box-sizing: border-box; }
-  [hidden] { display: none !important; }
-  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; -webkit-font-smoothing: antialiased; }
-  a { color: inherit; }
-  .gutter { padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
-  .inner { max-width: 1120px; margin: 0 auto; }
-
-  /* ── Hero band ── */
-  .band { background: radial-gradient(1200px 500px at 85% -10%, var(--navy-2), transparent 60%), var(--navy); color: var(--on-navy); padding-block: 0 120px; position: relative; }
-  .band::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: .5; }
-  header { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-block: 22px; }
-  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .logo svg { width: 26px; height: 26px; flex: none; }
-  .logo b { font-family: var(--display); font-weight: 700; font-size: 17px; letter-spacing: .01em; }
-  .logo b span { color: var(--gold); }
-  .call { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-size: 14px; font-weight: 600; color: var(--on-navy); border: 1px solid rgba(255,255,255,.22); padding: 9px 14px; border-radius: 999px; white-space: nowrap; transition: border-color .2s, background .2s; }
-  .call:hover { border-color: var(--gold); background: rgba(255,255,255,.04); }
-  .call svg { width: 14px; height: 14px; }
-
-  .hero { display: grid; gap: 40px; grid-template-columns: 1fr; padding-top: 28px; }
-  .eyebrow { display: inline-flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
-  .eyebrow::before { content: ""; width: 28px; height: 1px; background: var(--gold); }
-  h1 { font-family: var(--display); font-weight: 800; font-size: clamp(34px, 5.4vw, 56px); line-height: 1.02; letter-spacing: -.035em; margin: 18px 0 18px; text-wrap: balance; }
-  h1 em { font-style: normal; color: var(--gold); }
-  .lede { color: var(--on-navy-muted); font-size: 18px; line-height: 1.55; margin: 0 0 28px; max-width: 30em; }
-  .proof { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-  .proof li { display: flex; gap: 12px; align-items: flex-start; font-size: 15.5px; color: var(--on-navy); }
-  .proof li svg { width: 20px; height: 20px; flex: none; margin-top: 1px; color: var(--gold); }
-  .proof li small { display: block; color: var(--on-navy-muted); font-size: 13.5px; margin-top: 2px; }
-
-  /* ── Form card ── */
-  .formwrap { position: relative; }
-  .card { background: var(--card); color: var(--ink); border-radius: 18px; padding: 28px 24px 24px; box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 30px 60px -20px rgba(5,12,28,.45), 0 0 0 1px var(--line); }
-  .card-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
-  .card-top .k { font-size: 11.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-  .card-top .k b { color: var(--brand); }
-  .segs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 24px; }
-  .segs i { height: 4px; border-radius: 4px; background: var(--line); transition: background .3s; }
-  .segs i.on { background: var(--brand); }
-  .segs i.now { background: var(--gold); }
-
-  .step { display: none; }
-  .step.active { display: block; animation: rise .3s ease; }
-  @keyframes rise { from { opacity: .4; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-  h2 { font-family: var(--display); font-weight: 700; font-size: 24px; letter-spacing: -.02em; line-height: 1.15; margin: 0 0 6px; text-wrap: balance; }
-  .sub { color: var(--muted); font-size: 15px; line-height: 1.5; margin: 0 0 18px; }
-
-  label.f { display: block; font-size: 13px; font-weight: 600; margin: 14px 0 7px; color: var(--ink); }
-  label.f .opt-tag { font-weight: 400; color: var(--muted); }
-  input[type=text], input[type=tel], input[type=email], input[type=number], select, textarea {
-    width: 100%; font: inherit; font-size: 16px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--input); color: var(--ink); transition: border-color .15s, box-shadow .15s;
-  }
-  textarea { resize: vertical; min-height: 88px; line-height: 1.45; }
-  input::placeholder, textarea::placeholder { color: var(--muted); opacity: .7; }
-  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-soft); }
-  .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
-  .row3 { display: grid; gap: 12px; grid-template-columns: 1fr 1fr 1fr; }
-  .row > div, .row3 > div { min-width: 0; }
-
-  .tenant { margin-top: 16px; padding: 4px 16px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); }
-  .tenant-head { font-size: 11.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--brand); margin-top: 12px; }
-  .opts { display: grid; gap: 8px; }
-  .opts.two { grid-template-columns: 1fr 1fr; }
-  .opt { position: relative; display: block; }
-  .opt input { position: absolute; opacity: 0; pointer-events: none; }
-  .opt span { display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--line); border-radius: 10px; padding: 13px 14px; cursor: pointer; font-weight: 600; font-size: 15px; background: var(--input); transition: border-color .15s, background .15s; }
-  .opt span small { display: block; color: var(--muted); font-weight: 400; font-size: 13px; margin-top: 2px; }
-  .opt span::after { content: ""; width: 18px; height: 18px; flex: none; border-radius: 50%; border: 1.5px solid var(--line); transition: all .15s; }
-  .opt input[type=checkbox] + span::after { border-radius: 5px; }
-  .opt:hover span { border-color: color-mix(in srgb, var(--brand) 40%, var(--line)); }
-  .opt input:checked + span { border-color: var(--brand); background: var(--brand-soft); }
-  .opt input:checked + span::after { border-color: var(--brand); background: var(--brand); box-shadow: inset 0 0 0 3px var(--card); }
-  .opt input:focus-visible + span { box-shadow: 0 0 0 4px var(--brand-soft); }
-
-  .nav { display: flex; gap: 10px; margin-top: 24px; align-items: center; }
-  button { font: inherit; cursor: pointer; border: 0; }
-  .next { flex: 1; display: inline-flex; justify-content: center; align-items: center; gap: 10px; background: var(--brand); color: var(--brand-ink); border-radius: 10px; padding: 16px 20px; font-family: var(--display); font-weight: 700; font-size: 16px; letter-spacing: .005em; box-shadow: 0 10px 24px -12px var(--brand); transition: background .15s, transform .1s; }
-  .next:hover { background: var(--brand-hover); }
-  .next:active { transform: translateY(1px); }
-  .next:disabled { opacity: .65; cursor: wait; }
-  .next:focus-visible, .back:focus-visible, .call:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
-  .back { background: transparent; color: var(--muted); padding: 16px 8px; font-weight: 600; font-size: 15px; }
-  .err { color: var(--err); font-size: 13.5px; margin-top: 12px; min-height: 18px; }
-  .secure { display: flex; align-items: center; justify-content: center; gap: 6px; color: var(--muted); font-size: 12.5px; margin-top: 12px; }
-  .secure svg { width: 13px; height: 13px; }
-
-  .consent { display: flex; gap: 10px; align-items: flex-start; font-size: 11.5px; color: var(--muted); line-height: 1.5; margin-top: 16px; }
-  .consent a, .fine a { color: var(--brand); text-decoration: underline; }
-  .consent input { margin-top: 2px; width: 17px; height: 17px; flex: none; accent-color: var(--brand); }
-  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-
-  .done { text-align: center; padding: 18px 4px 8px; }
-  .done .seal { width: 64px; height: 64px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto 16px; background: var(--gold-soft); color: var(--gold); }
-  .done .seal svg { width: 30px; height: 30px; }
-
-  /* ── Below the fold ── */
-  main { margin-top: -96px; position: relative; z-index: 1; }
-  .how { padding-block: 72px 24px; }
-  .how h3 { font-family: var(--display); font-weight: 700; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 24px; }
-  .how ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
-  .how li { border-top: 1px solid var(--line); padding-top: 18px; }
-  .how .n { font-family: var(--display); font-weight: 800; font-size: 14px; color: var(--gold); letter-spacing: .04em; }
-  .how b { display: block; font-family: var(--display); font-size: 19px; font-weight: 700; letter-spacing: -.01em; margin: 8px 0 6px; }
-  .how p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.55; max-width: 32em; }
-
-  footer { padding-block: 40px 56px; }
-  .fine { border-top: 1px solid var(--line); padding-top: 28px; color: var(--muted); font-size: 12.5px; line-height: 1.6; max-width: 820px; }
-  .fine h4 { font-size: 11.5px; text-transform: uppercase; letter-spacing: .14em; margin: 0 0 12px; color: var(--ink); }
-  .fine p { margin: 0 0 10px; }
-  .fine b { color: var(--ink); }
-
-  @media (min-width: 900px) {
-    .band { padding-block: 0 80px; }
-    .hero { grid-template-columns: 1.05fr 1fr; gap: 64px; align-items: start; padding-top: 48px; }
-    .hero-copy { padding-top: 24px; position: sticky; top: 24px; }
-    main { margin-top: 0; }
-    .how { padding-block: 80px 24px; }
-    .card { padding: 34px 32px 28px; }
-  }
-  @media (max-width: 899px) {
-    .formwrap-desktop { display: none; }
-  }
-  @media (min-width: 900px) { .formwrap-mobile { display: none; } }
-  @media (max-width: 380px) { .row3 { grid-template-columns: 1fr 1fr; } .opts.two { grid-template-columns: 1fr; } }
-  @media (prefers-reduced-motion: reduce) { .step.active { animation: none; } * { transition: none !important; } }
-</style>
-</head>
 <body>
 
 <div class="band">
   <div class="inner gutter">
     <header>
       <a class="logo" href="/" aria-label="JStar Acquisitions home">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="none" stroke="currentColor" stroke-opacity=".25"/><path d="M16 6.5l2.6 6.1 6.6.5-5 4.3 1.6 6.4L16 20.4l-5.8 3.4 1.6-6.4-5-4.3 6.6-.5z" fill="#c6a052"/></svg>
+        <span class="mk"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z"/></svg></span>
         <b id="brand"></b>
       </a>
-      <a class="call" id="callbtn" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span id="callnum"></span></a>
+      <a class="call" id="callbtn" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span id="callnum"></span></a>
     </header>
 
     <div class="hero">
       <div class="hero-copy">
-        <span class="eyebrow">Cash home buyers · All 50 states</span>
+        <span class="badge"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></i>Local cash home buyer · Free, no-obligation offer</span>
         <h1>Sell your house as-is. <em>Get a cash offer in 24 hours.</em></h1>
         <p class="lede">No repairs, no showings, no agent commissions. Tell us about the property and we'll come back with a straightforward cash offer. You pick the closing date.</p>
         <ul class="proof">
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div>Any condition<small>Outdated, damaged, vacant, inherited, tenant-occupied</small></div></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div>Zero fees or commissions<small>We pay standard closing costs</small></div></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg><div>Close in as little as 7 days<small>Or wait until you're ready</small></div></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.5 2.5-2.4-.6-.6-2.4z"/></svg></span><div><b>Any condition</b><small>Outdated, damaged, vacant, inherited, tenant-occupied</small></div></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg></span><div><b>Zero fees or commissions</b><small>We pay standard closing costs</small></div></li>
+          <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M9 15l2 2 4-4"/></svg></span><div><b>Close in as little as 7 days</b><small>Or wait until you're ready</small></div></li>
         </ul>
       </div>
       <div class="formwrap formwrap-desktop" id="slot-desktop"></div>
@@ -221,17 +78,18 @@
   <div class="formwrap formwrap-mobile" id="slot-mobile">
   <form class="card" id="f" novalidate autocomplete="on">
     <div class="card-top">
-      <span class="k">Free cash offer</span>
+      <span class="k free"><i></i>Free cash offer</span>
       <span class="k" id="stepcount">Step <b>1</b> of 5</span>
     </div>
+    <div class="pbar"><i id="pbar"></i></div>
     <div class="segs" id="segs"><i></i><i></i><i></i><i></i><i></i></div>
 
     <!-- 1 · Address -->
     <section class="step active" data-step="1">
       <h2>Where's the property?</h2>
-      <p class="sub">We'll pull the public records so you don't have to.</p>
+      <p class="sub">Takes about 60 seconds. We'll pull the public records so you don't have to.</p>
       <label class="f" for="street">Street address</label>
-      <input type="text" id="street" name="street" autocomplete="address-line1" placeholder="123 Main St" required>
+      <div class="addr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><input type="text" id="street" name="street" autocomplete="address-line1" placeholder="123 Main St" required></div>
       <label class="f" for="city">City</label>
       <input type="text" id="city" name="city" autocomplete="address-level2" required>
       <div class="row">
@@ -244,14 +102,13 @@
     <section class="step" data-step="2">
       <h2>Tell us about the house</h2>
       <p class="sub">Your best guess is fine.</p>
-      <label class="f" for="propertyType">Property type</label>
-      <select id="propertyType" name="propertyType">
-        <option value="single_family">Single family</option>
-        <option value="townhouse">Townhouse</option>
-        <option value="condo">Condo</option>
-        <option value="multi_family">Duplex / multi-family (2–4)</option>
-        <option value="manufactured">Mobile / manufactured</option>
-      </select>
+      <div class="tiles five" role="radiogroup" aria-label="Property type">
+        <label class="opt"><input type="radio" name="propertyType" value="single_family" checked><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></i><div>House</div></span></label>
+        <label class="opt"><input type="radio" name="propertyType" value="townhouse"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 20V10l5-4 5 4v10"/><path d="M12 20V10l5-4 5 4v10"/><path d="M2 20h20"/></svg></i><div>Townhouse</div></span></label>
+        <label class="opt"><input type="radio" name="propertyType" value="condo"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M11 21v-3h2v3"/></svg></i><div>Condo</div></span></label>
+        <label class="opt"><input type="radio" name="propertyType" value="multi_family"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12l5-5 5 5 5-5 5 5"/><path d="M4 11v9h16v-9"/><path d="M12 12v8"/></svg></i><div>Duplex / 2–4</div></span></label>
+        <label class="opt"><input type="radio" name="propertyType" value="manufactured"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="9" width="20" height="9" rx="1.5"/><path d="M6 18v2M18 18v2M6 13h3M15 13h3"/></svg></i><div>Mobile home</div></span></label>
+      </div>
       <div class="row3">
         <div><label class="f" for="bedrooms">Beds</label>
           <select id="bedrooms" name="bedrooms"><option value="">—</option><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option value="6">6+</option></select></div>
@@ -268,11 +125,11 @@
       <h2>What shape is it in?</h2>
       <p class="sub">We buy in any condition. An honest answer gets you a more accurate offer.</p>
       <div class="opts">
-        <label class="opt"><input type="radio" name="condition" value="turnkey"><span><div>Move-in ready<small>Updated, nothing needed</small></div></span></label>
-        <label class="opt"><input type="radio" name="condition" value="cosmetic"><span><div>Needs a little TLC<small>Paint, carpet, minor fixes</small></div></span></label>
-        <label class="opt"><input type="radio" name="condition" value="moderate"><span><div>Needs updating<small>Dated kitchen or bathrooms</small></div></span></label>
-        <label class="opt"><input type="radio" name="condition" value="heavy"><span><div>Needs major repairs<small>Roof, foundation, HVAC, water damage</small></div></span></label>
-        <label class="opt"><input type="radio" name="condition" value="gut"><span><div>Needs everything<small>Full renovation or teardown</small></div></span></label>
+        <label class="opt"><input type="radio" name="condition" value="turnkey"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 17l.7 1.8 1.8.7-1.8.7L19 22l-.7-1.8-1.8-.7 1.8-.7z"/></svg></i><div>Move-in ready<small>Updated, nothing needed</small></div></span></label>
+        <label class="opt"><input type="radio" name="condition" value="cosmetic"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2l4 4-9.5 9.5-4-4z"/><path d="M8.5 11.5L5 15c-1.5 1.5-1 4-3 5 3 1 6 0 7-1.5l3-3"/></svg></i><div>Needs a little TLC<small>Paint, carpet, minor fixes</small></div></span></label>
+        <label class="opt"><input type="radio" name="condition" value="moderate"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 12l-8.5 8.5a2.1 2.1 0 0 1-3-3L12 9"/><path d="M17.6 6.4L20 4l-4-4-2.4 2.4"/><path d="M12 9l3-3 6 6-3 3z"/></svg></i><div>Needs updating<small>Dated kitchen or bathrooms</small></div></span></label>
+        <label class="opt"><input type="radio" name="condition" value="heavy"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.3 3.9L2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></i><div>Needs major repairs<small>Roof, foundation, HVAC, water damage</small></div></span></label>
+        <label class="opt"><input type="radio" name="condition" value="gut"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h5l2-4-3-3 2-3"/><path d="M14 20h5V10"/></svg></i><div>Needs everything<small>Full renovation or teardown</small></div></span></label>
       </div>
       <label class="f" style="margin-top:20px">Any known issues? <span class="opt-tag">(optional)</span></label>
       <div class="opts two">
@@ -289,15 +146,16 @@
     <section class="step" data-step="4">
       <h2>Your situation</h2>
       <p class="sub">This helps us shape an offer that works for you.</p>
-      <label class="f" for="timeline">How soon do you want to sell?</label>
-      <select id="timeline" name="timeline" required>
-        <option value="">Select</option>
-        <option value="asap">As soon as possible</option>
-        <option value="30">Within 30 days</option>
-        <option value="90">1–3 months</option>
-        <option value="later">3+ months</option>
-        <option value="unsure">Just exploring</option>
-      </select>
+      <label class="f">How soon do you want to sell?</label>
+      <div class="tiles" role="radiogroup" aria-label="Timeline">
+        <label class="opt"><input type="radio" name="timeline" value="asap"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></i><div>ASAP</div></span></label>
+        <label class="opt"><input type="radio" name="timeline" value="30"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></i><div>Within 30 days</div></span></label>
+        <label class="opt"><input type="radio" name="timeline" value="90"><span><i class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M9 15l2 2 4-4"/></svg></i><div>1–3 months</div></span></label>
+      </div>
+      <div class="opts two" style="margin-top:8px">
+        <label class="opt"><input type="radio" name="timeline" value="later"><span>3+ months</span></label>
+        <label class="opt"><input type="radio" name="timeline" value="unsure"><span>Just exploring</span></label>
+      </div>
       <label class="f" for="reason">Main reason for selling</label>
       <select id="reason" name="reason">
         <option value="">Select</option>
@@ -335,14 +193,14 @@
     <!-- 5 · Contact -->
     <section class="step" data-step="5">
       <h2>Where should we send your offer?</h2>
-      <p class="sub">A member of our acquisitions team will reach out within 24 hours.</p>
+      <p class="sub">Last step. A member of our acquisitions team will reach out within 24 hours.</p>
       <div class="row">
         <div><label class="f" for="firstName">First name</label><input type="text" id="firstName" name="firstName" autocomplete="given-name" required></div>
         <div><label class="f" for="lastName">Last name</label><input type="text" id="lastName" name="lastName" autocomplete="family-name"></div>
       </div>
       <label class="f" for="phone">Phone</label>
       <input type="tel" id="phone" name="phone" autocomplete="tel" inputmode="tel" placeholder="(555) 555-0123" required>
-      <label class="f" for="email">Email</label>
+      <label class="f" for="email">Email <span class="opt-tag">(optional)</span></label>
       <input type="email" id="email" name="email" autocomplete="email">
       <label class="consent">
         <input type="checkbox" name="smsConsent" id="smsConsent">
@@ -354,35 +212,79 @@
     <!-- Done -->
     <section class="step" data-step="6">
       <div class="done">
-        <div class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
+        <div class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
         <h2>Thank you, <span id="doneName"></span>.</h2>
-        <p class="sub">We're reviewing your property now. Expect a call or text from our team shortly, usually within a few hours during business hours.</p>
-        <p class="sub">Prefer to talk now? Call <a id="doneCall" href="#" style="font-weight:700;color:var(--brand)"></a></p>
+        <p class="sub">We got your request and we're reviewing your property now.</p>
+        <ol class="nextup">
+          <li class="now"><i>✓</i><div><b>We review your property</b>Recent sales nearby, condition and your situation.</div></li>
+          <li><i>2</i><div><b>We call or text you with your offer</b>Usually within a few hours during business hours.</div></li>
+          <li><i>3</i><div><b>You pick the closing date</b>As soon as 7 days, or whenever you're ready. No obligation.</div></li>
+        </ol>
+        <p class="sub" style="margin-top:14px">Prefer to talk now? Call <a id="doneCall" href="#" style="font-weight:700;color:var(--brand)"></a></p>
       </div>
     </section>
 
     <div class="err" id="err" role="alert"></div>
     <div class="nav" id="nav">
       <button type="button" class="back" id="back" hidden>Back</button>
-      <button type="button" class="next" id="next"><span id="nextLabel">Get my cash offer</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      <button type="button" class="next" id="next"><span id="nextLabel">Get my cash offer</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
     </div>
-    <div class="secure" id="secure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Free, no obligation. Your info stays private.</div>
+    <div class="secure" id="secure"><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Your info stays private</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Free, no obligation</span></div>
   </form>
   </div>
 
-  <section class="how">
-    <h3>How it works</h3>
+  <section class="blk how">
+    <span class="kick">How it works</span>
+    <h3>Three steps from first call to cash in hand</h3>
     <ol>
-      <li><span class="n">01</span><b>Tell us about the property</b><p>Takes about 60 seconds. No obligation, no pressure.</p></li>
-      <li><span class="n">02</span><b>Get your cash offer</b><p>We review recent sales nearby and come back with a clear number, usually within 24 hours.</p></li>
-      <li><span class="n">03</span><b>Pick your closing date</b><p>Close with a title company near you in as little as 7 days, or whenever works for you.</p></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></span><span class="n">01</span><b>Tell us about the property</b><p>Takes about 60 seconds. No obligation, no pressure.</p></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg></span><span class="n">02</span><b>Get your cash offer</b><p>We review recent sales nearby and come back with a clear number, usually within 24 hours.</p></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/><path d="M9 15l2 2 4-4"/></svg></span><span class="n">03</span><b>Pick your closing date</b><p>Close with a title company near you in as little as 7 days, or whenever works for you.</p></li>
     </ol>
+  </section>
+
+  <section class="blk">
+    <span class="kick">Your options</span>
+    <h3>Selling to us vs. listing with an agent</h3>
+    <div class="cmp"><table>
+      <thead><tr><th></th><th class="us" id="cmpUs">Selling to us</th><th>Listing with an agent</th></tr></thead>
+      <tbody>
+        <tr><td>Commissions</td><td class="us">None</td><td class="them">Often 5–6% of the price</td></tr>
+        <tr><td>Repairs and cleaning</td><td class="us">None. Sell it as-is</td><td class="them">Usually expected</td></tr>
+        <tr><td>Showings and open houses</td><td class="us">None</td><td class="them">Often many</td></tr>
+        <tr><td>Closing costs</td><td class="us">We pay standard costs</td><td class="them">Typically split, seller pays part</td></tr>
+        <tr><td>Time to close</td><td class="us">As little as 7 days</td><td class="them">Often 30–60+ days after an accepted offer</td></tr>
+        <tr><td>Certainty</td><td class="us">Cash, no loan approval</td><td class="them">Buyer financing can fall through</td></tr>
+      </tbody>
+    </table></div>
+    <p class="cmpnote">Listing with an agent can get you a higher price, and it's often the right call for a house in great shape with time to sell. A cash sale trades some of that price for speed, certainty and no repairs. We'll tell you straight which makes more sense for you.</p>
+  </section>
+
+  <section class="blk">
+    <span class="kick">Questions</span>
+    <h3>What sellers ask us most</h3>
+    <div class="faq">
+      <details><summary>Do I need to make repairs or clean out the house?</summary><p>No. We buy houses as-is, in any condition. Take what you want and leave the rest.</p></details>
+      <details><summary>How do you come up with the offer?</summary><p>We look at recent sales of similar homes nearby, the repairs the house needs, and your timeline. Then we give you one clear number and walk you through how we got there.</p></details>
+      <details><summary>Are there any fees or commissions?</summary><p>No commissions and no fees to you. We pay standard closing costs.</p></details>
+      <details><summary>How fast can you close?</summary><p>In as little as 7 days if the title is clear, or on whatever date works for you.</p></details>
+      <details><summary>Will you be the one buying my house?</summary><p>We may close on it ourselves, or we may assign our contract to another buyer who closes on the same price and terms you agreed to. We tell you this in writing before you sign anything. The details are in the disclaimers below.</p></details>
+      <details><summary>Am I obligated to sell if I ask for an offer?</summary><p>No. The offer is free and you can say no. You're welcome to talk with an agent or attorney before signing anything.</p></details>
+    </div>
+  </section>
+
+  <section class="final">
+    <h3>Find out what your house is worth to a cash buyer</h3>
+    <p>It takes about 60 seconds and there's no obligation. Prefer to talk? Give us a call.</p>
+    <div class="acts"><button type="button" class="next" id="finalCta"><span>Get my cash offer</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><a class="call" id="finalCall" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg><span id="finalNum"></span></a></div>
   </section>
 
   <footer>
     <div class="fine" id="disclosure"></div>
   </footer>
 </main>
+
+<div class="sticky" id="sticky"><button type="button" class="next" id="stickyCta"><span>Get my cash offer</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><a class="ring" id="stickyCall" href="#" aria-label="Call us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg></a></div>
 
 <script>
 (() => {
@@ -409,6 +311,7 @@
   const tel = 'tel:' + S.phone.replace(/[^\d+]/g, '');
   $('callbtn').href = tel; $('callnum').textContent = S.phone;
   $('doneCall').href = tel; $('doneCall').textContent = S.phone;
+  $('finalCall').href = tel; $('finalNum').textContent = S.phone; $('stickyCall').href = tel;
   const consentBase = `By checking this box, I agree to receive calls and text messages from ${S.brand} at the number provided, including messages sent using automated technology, about selling my property. Consent is not a condition of any purchase. Msg & data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help.`;
   // Saved with each lead (plain text, with full policy URLs)
   const consentText = `${consentBase} Privacy Policy: ${location.origin}/privacy.html. Terms: ${location.origin}/terms.html.`;
@@ -451,6 +354,7 @@
     cur = n;
     steps.forEach(s => s.classList.toggle('active', +s.dataset.step === n));
     [...$('segs').children].forEach((el, i) => { el.className = i + 1 < n ? 'on' : i + 1 === n ? 'now' : ''; if (n > TOTAL) el.className = 'on'; });
+    $('pbar').style.width = Math.min(100, (n > TOTAL ? 100 : (n - 1) / TOTAL * 100 + 8)) + '%';
     $('stepcount').innerHTML = n <= TOTAL ? `Step <b>${n}</b> of ${TOTAL}` : 'Complete';
     $('back').hidden = n === 1 || n > TOTAL;
     $('nextLabel').textContent = n === 1 ? 'Get my cash offer' : n === TOTAL ? 'Send my offer request' : 'Continue';
@@ -535,6 +439,17 @@
   form.querySelectorAll('input[name=condition]').forEach(r => r.addEventListener('change', () => setTimeout(() => $('next').click(), 200)));
   form.addEventListener('submit', e => { e.preventDefault(); if (announcing) return; $('next').click(); });
   form.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox') { e.preventDefault(); $('next').click(); } });
+
+  // Big CTAs and the sticky phone bar jump to the form
+  const toForm = () => { form.scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(() => { const el = form.querySelector('.step.active input:not([type=hidden]):not([type=radio]):not([type=checkbox]), .step.active select'); if (el && cur === 1) el.focus({ preventScroll: true }); }, 450); };
+  $('finalCta').addEventListener('click', toForm); $('stickyCta').addEventListener('click', toForm);
+  if ('IntersectionObserver' in window) {
+    let formSeen = true; const io = new IntersectionObserver(es => { es.forEach(e => { formSeen = e.isIntersecting; }); $('sticky').classList.toggle('on', !formSeen && cur <= TOTAL && scrollY > 300); }, { threshold: 0.05 });
+    io.observe(form); addEventListener('scroll', () => $('sticky').classList.toggle('on', !formSeen && cur <= TOTAL && scrollY > 300), { passive: true });
+  }
+  $('cmpUs').textContent = 'Selling to ' + S.brand;
+  // On phones the floating Text us button (customer funnels) moves into the sticky bar so it never covers the form
+  setTimeout(() => { const t = document.querySelector('.txtus'); if (t && !$('stickyText')) $('stickyCall').insertAdjacentHTML('beforebegin', `<a class="ring" id="stickyText" href="${t.getAttribute('href')}" aria-label="Text us"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.5 7.2L4 21l1.8-5.5A8 8 0 1 1 21 12z"/></svg></a>`); }, 0);
 
   show(1);
 })();
