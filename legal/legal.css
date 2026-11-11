@@ -1,0 +1,25 @@
+/* Terms, privacy and support pages */
+.lg-w { max-width:760px; margin:0 auto; padding:0 20px; }
+.lg-top { background:#0a1633; color:#fff; }
+.lg-top .lg-w { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:60px; flex-wrap:wrap; }
+.lg-logo { color:#fff; text-decoration:none; font-weight:700; font-size:19px; letter-spacing:-.01em; }
+.lg-logo span { color:#ffc93c; }
+.lg-top nav { display:flex; gap:18px; font-size:14px; }
+.lg-top nav a { color:#c7d3ec; text-decoration:none; }
+.lg-top nav a:hover, .lg-top nav a[aria-current] { color:#fff; }
+.lg-doc { padding-top:40px; padding-bottom:56px; }
+.lg-doc h1 { font-size:36px; letter-spacing:-.02em; line-height:1.1; margin:0 0 6px; }
+.lg-date { color:var(--muted); font-size:14px; margin:0 0 24px; }
+.lg-doc h2 { font-size:20px; margin:34px 0 10px; scroll-margin-top:16px; }
+.lg-doc p, .lg-doc li { font-size:16px; line-height:1.65; color:var(--ink2); }
+.lg-doc ul { padding-left:20px; }
+.lg-doc li { margin:6px 0; }
+.lg-doc b { color:var(--ink); }
+.lg-toc { display:flex; flex-wrap:wrap; gap:6px 14px; padding:14px 16px; border:1px solid var(--line); border-radius:12px; background:var(--card); font-size:14px; }
+.lg-toc a { text-decoration:none; }
+.lg-tbl td:first-child { font-weight:600; white-space:nowrap; }
+.lg-foot { border-top:1px solid var(--line); padding:22px 0; font-size:14px; color:var(--muted); }
+.lg-sup { max-width:560px; }
+.lg-sup textarea { min-height:150px; resize:vertical; }
+.lg-sup .hp { position:absolute; left:-9999px; }
+@media (max-width:600px) { .lg-doc h1 { font-size:28px; } .lg-top nav { gap:14px; } }

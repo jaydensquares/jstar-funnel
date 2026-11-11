@@ -191,3 +191,9 @@ header .wrap { display:flex; justify-content:space-between; align-items:center; 
 .authwrap .tabs button { border-radius:4px; font-size:var(--t14); }
 
 @media (prefers-reduced-motion: reduce) { * { animation:none !important; transition:none !important; } }
+
+/* Add-on packs */
+.packs { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:6px 0 8px; }
+.packs .btn { flex-direction:column; align-items:flex-start; gap:2px; padding:12px 14px; text-align:left; }
+.packs .btn span { font-size:14px; font-weight:600; } .packs .btn b { font-size:18px; color:var(--brand); }
+@media (max-width:600px) { .packs { grid-template-columns:1fr; } .packs .btn { flex-direction:row; justify-content:space-between; align-items:center; } }

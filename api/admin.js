@@ -3,6 +3,7 @@ import { pinMatches } from '../lib/pin.js';
 import { getDoc, listDocs, countDocs } from '../lib/db.js';
 import { getUserById, saveUser, resetToken } from '../lib/auth.js';
 import { PLANS, DOMAIN_ADDON_PRICE, tierOf } from '../lib/plan.js';
+import { meterKey, allowances } from '../lib/meter.js';
 
 export const maxDuration = 60;
 const ID = /^[a-z0-9]{6,32}$/;
@@ -47,7 +48,10 @@ export default async function handler(req, res) {
         photos: rows.reduce((s, r) => s + r.usage.photos, 0),
         leads: rows.reduce((s, r) => s + r.leads, 0),
       };
-      return res.status(200).json({ rows, totals, month: m });
+      const prev = new Date(); prev.setUTCDate(1); prev.setUTCMonth(prev.getUTCMonth() - 1);
+      const [cur, last] = await Promise.all([getDoc(meterKey(m)).catch(() => null), getDoc(meterKey(prev.toISOString().slice(0, 7).replace('-', ''))).catch(() => null)]);
+      const support = (await listDocs('support').catch(() => [])).sort((a, z) => z.at - a.at).slice(0, 10);
+      return res.status(200).json({ rows, totals, month: m, data: { cur: cur || {}, last: last || {}, allow: allowances() }, support });
     }
 
     if (!ID.test(String(b.id || ''))) return res.status(400).json({ error: 'Bad account id.' });

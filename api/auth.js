@@ -1,5 +1,7 @@
 // Accounts: signup, login, logout, me, update settings, change password
+import crypto from 'node:crypto';
 import { planStatus } from '../lib/plan.js';
+import { getDoc, putDoc } from '../lib/db.js';
 import { createUser, getUserByEmail, getUserBySlug, checkPassword, hashPassword, sessionCookie, clearCookie, currentUser, publicUser, saveUser, RESERVED, resetToken, userFromResetToken, sendPlainEmail } from '../lib/auth.js';
 
 export const maxDuration = 20;
@@ -32,9 +34,11 @@ export default async function handler(req, res) {
       if (RESERVED.has(slug)) return res.status(400).json({ error: 'That username is taken.' });
       if (password.length < 8) return res.status(400).json({ error: 'Password needs at least 8 characters.' });
       if (String(phone).replace(/\D/g, '').length < 10) return res.status(400).json({ error: 'Enter a 10-digit phone number for your funnel.' });
+      if (b.agree !== true) return res.status(400).json({ error: 'Check the box to agree to the Terms and Privacy Policy.' });
       if (await getUserByEmail(email)) { await slow(); return res.status(409).json({ error: 'An account with that email already exists. Log in instead.' }); }
       if (await getUserBySlug(slug)) return res.status(409).json({ error: 'That username is taken.' });
-      const u = await createUser({ name, email, password, company, slug, phone });
+      const u0 = await createUser({ name, email, password, company, slug, phone });
+      const u = await saveUser({ ...u0, terms: { version: '2026-11-11', at: Date.now() } });
       res.setHeader('Set-Cookie', sessionCookie(u.id, 0));
       return res.status(200).json({ user: publicUser(u), plan: planStatus(u) });
     }
@@ -66,6 +70,29 @@ export default async function handler(req, res) {
       if (String(b.password || '').length < 8) return res.status(400).json({ error: 'Password needs at least 8 characters.' });
       const saved = await saveUser({ ...u, passHash: hashPassword(b.password), sessVer: (u.sessVer || 0) + 1 });
       res.setHeader('Set-Cookie', sessionCookie(saved.id, saved.sessVer));
+      return res.status(200).json({ ok: true });
+    }
+
+    if (b.action === 'support') {
+      // Support form → saved, then emailed to the owner with reply-to set to the sender
+      if (b.web) return res.status(200).json({ ok: true }); // honeypot
+      const name = str(b.name, 80), email = str(b.email, 120).toLowerCase(), topic = str(b.topic, 60), message = str(b.message, 4000);
+      if (!name || !EMAIL.test(email)) return res.status(400).json({ error: 'Enter your name and a valid email.' });
+      if (message.length < 5) return res.status(400).json({ error: 'Add a message.' });
+      const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'x';
+      const rk = `rl/support/${crypto.createHash('sha256').update(ip).digest('hex').slice(0, 24)}`;
+      const rl = await getDoc(rk).catch(() => null), hour = Math.floor(Date.now() / 36e5);
+      const n = rl?.hour === hour ? rl.n : 0;
+      if (n >= 5) return res.status(429).json({ error: 'Too many messages. Try again in an hour.' });
+      await putDoc(rk, { hour, n: n + 1 }, { keep: 1 }).catch(() => {});
+      const me = await currentUser(req).catch(() => null);
+      const id = `${Date.now().toString(36)}${crypto.randomBytes(3).toString('hex')}`;
+      const doc = { id, at: Date.now(), name, email, topic, message, uid: me?.id || null, company: me?.company || null, plan: me?.plan?.tier || null };
+      await putDoc(`support/${id}`, doc, { keep: 1 }).catch(e => console.error('support save', e.message));
+      const to = process.env.SUPPORT_EMAIL || process.env.NOTIFY_EMAIL;
+      if (to) await sendPlainEmail(to, `[JStar Pro support] ${topic}: ${name}`,
+        `${message}\n\nFrom: ${name} <${email}>${me ? `\nAccount: ${me.company} (${me.plan?.tier || 'no plan'})` : ''}\nTopic: ${topic}\nReply to this email to answer them.`,
+        undefined, email).catch(e => console.error('support email', e.message));
       return res.status(200).json({ ok: true });
     }
 

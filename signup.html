@@ -69,9 +69,9 @@
       <label class="f" for="sPass">Password</label>
       <input type="password" id="sPass" autocomplete="new-password" minlength="8" required>
       <div class="hint">At least 8 characters.</div>
+      <label class="check" style="align-items:flex-start"><input type="checkbox" id="sAgree" required style="margin-top:3px"><span>I agree to the <a href="/legal/terms" target="_blank">Terms of Service</a> and <a href="/legal/privacy" target="_blank">Privacy Policy</a>, and I'll follow the real estate and telemarketing laws in my state.</span></label>
       <div class="err" id="sErr" role="alert"></div>
       <button class="btn" id="sBtn" type="submit">Create account</button>
-      <p class="hint" style="margin-top:12px">By creating an account you agree to use the contracts and data responsibly and to follow the real estate and telemarketing laws in your state.</p>
     </form>
   </section>
 </main>
@@ -131,7 +131,7 @@
     e.preventDefault(); $('sErr').textContent = ''; $('sBtn').disabled = true;
     if (!created) {
       $('sBtn').textContent = 'Creating your account…';
-      const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value });
+      const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value, agree: $('sAgree').checked });
       if (!r.ok) { $('sBtn').disabled = false; $('sBtn').textContent = 'Create account and continue to payment'; $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
       created = true;
       $('signup').querySelectorAll('input').forEach(i => { i.disabled = true; });

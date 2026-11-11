@@ -45,6 +45,17 @@
   .linkbox { margin-top:12px; }
   .linkbox input { font-size:13px; }
   .empty { padding:28px; text-align:center; color:var(--muted); }
+  .admgrid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:16px 0; }
+  .admgrid .card { margin:0; }
+  .drow { display:flex; justify-content:space-between; gap:16px; align-items:center; padding:10px 0; border-top:1px solid var(--line2); }
+  .drow:first-child { border-top:0; }
+  .drow small, .sup small { display:block; color:var(--muted); font-size:12px; }
+  .sup small { display:inline; }
+  .dnum { min-width:120px; text-align:right; font-variant-numeric:tabular-nums; font-weight:600; }
+  .sup { padding:10px 0; border-top:1px solid var(--line2); font-size:14px; } .sup:first-child { border-top:0; }
+  .sup p { margin:4px 0; color:var(--ink2); white-space:pre-wrap; }
+  #support { max-height:320px; overflow:auto; }
+  @media (max-width:800px) { .admgrid { grid-template-columns:1fr; } }
 </style>
 <link rel="stylesheet" href="/ui.css">
 <meta name="robots" content="noindex">
@@ -66,6 +77,11 @@
   <div id="dash" hidden>
     <h1 style="margin-bottom:14px">Accounts</h1>
     <div class="stat4 eight" id="stats"></div>
+    <div class="admgrid">
+      <section class="card"><h2>Data usage this month</h2><div id="dataUse"></div>
+        <p class="note">Calls JStar Pro made to your data providers, all accounts combined. Repeat addresses come from the 30-day cache and don't count. Set your plan sizes in Vercel with RENTCAST_MONTHLY_CALLS and REALIE_MONTHLY_CALLS.</p></section>
+      <section class="card"><h2>Support messages</h2><div id="support"></div></section>
+    </div>
     <div class="tools">
       <input type="text" id="q" placeholder="Search name, email, company or domain" aria-label="Search accounts">
       <button class="sbtn" id="refresh" type="button">Refresh</button>
@@ -125,13 +141,27 @@
       [t.runs, 'Analyses this month'], [t.photos, 'Photo reports this month'], [t.leads, 'Funnel leads, all time'], [t.comp, 'Comped'],
     ].map(([b, s]) => `<div><b>${esc(b)}</b><span>${s}</span></div>`).join('');
   }
+  function dataUse(d) {
+    if (!d) return;
+    const c = d.cur || {}, l = d.last || {}, a = d.allow || {};
+    const line = (name, k, sub) => { const used = c[k] || 0, cap = a[k];
+      return `<div class="drow"><div><b>${name}</b><small>${sub} · last month ${(l[k] || 0).toLocaleString()}</small></div><div class="dnum">${cap ? meter(used, cap) : used.toLocaleString()}</div></div>`; };
+    const tok = ((c.anthropicIn || 0) + (c.anthropicOut || 0));
+    $('dataUse').innerHTML = line('RentCast', 'rentcast', 'values, rents, list pages') + line('Realie', 'realie', 'mortgage and equity lookups')
+      + line('Anthropic (AI)', 'anthropic', `photo reports · ${tok.toLocaleString()} tokens`);
+  }
+  function support(list) {
+    $('support').innerHTML = list.length ? list.map(m => `<div class="sup"><div><b>${esc(m.name)}</b> <small>${esc(m.topic)} · ${date(m.at)}${m.company ? ' · ' + esc(m.company) : ''}</small></div>
+      <p>${esc(m.message).slice(0, 400)}</p><a href="mailto:${esc(m.email)}?subject=${encodeURIComponent('Re: ' + m.topic)}">${esc(m.email)}</a></div>`).join('')
+      : '<p class="note">No messages yet. The support page at /support emails you and lists them here.</p>';
+  }
   async function load() {
     $('err').textContent = ''; $('refresh').disabled = true;
     const r = await call({ action:'list' });
     $('refresh').disabled = false;
     if (r.status === 401) { sessionStorage.removeItem('jsPin'); $('dash').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'Wrong PIN.'; return false; }
     if (!r.ok) { $('err').textContent = r.j.error || 'Could not load.'; return true; }
-    rows = r.j.rows; stats(r.j.totals); render();
+    rows = r.j.rows; stats(r.j.totals); render(); dataUse(r.j.data); support(r.j.support || []);
     $('asof').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
     return true;
   }

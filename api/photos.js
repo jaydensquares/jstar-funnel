@@ -2,6 +2,7 @@
 // a condition tier, line-item repair estimate, red flags and walkthrough questions.
 import { getActor } from '../lib/auth.js';
 import { useQuota } from '../lib/usage.js';
+import { meter } from '../lib/meter.js';
 
 export const maxDuration = 60;
 
@@ -110,6 +111,7 @@ Always answer by calling the report tool exactly once. Do not reply with plain t
     return res.status(502).json({ error: msg });
   }
   const j = await r.json();
+  meter('anthropic', 1, { anthropicIn: j.usage?.input_tokens || 0, anthropicOut: j.usage?.output_tokens || 0 });
   const out = j.content?.find(c => c.type === 'tool_use')?.input;
   if (!out) return res.status(502).json({ error: 'AI returned no report. Try again.' });
 

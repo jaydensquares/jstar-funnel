@@ -5,6 +5,8 @@ import crypto from 'node:crypto';
 import { getUserById, saveUser, sendPlainEmail } from '../lib/auth.js';
 import { getDoc, putDoc } from '../lib/db.js';
 import { tierFromLookup } from '../lib/stripe.js';
+import { PACKS } from '../lib/plan.js';
+import { addCredits } from '../lib/usage.js';
 
 // past_due stays on while Smart Retries work; unpaid / canceled / incomplete turn it off
 const LIVE = ['active', 'trialing', 'past_due'];
@@ -44,9 +46,18 @@ export default async function handler(req, res) {
   const ev = JSON.parse(payload);
   try {
     const o = ev.data?.object || {};
-    if (ev.type === 'checkout.session.completed') {
+    if (ev.type === 'checkout.session.completed' || ev.type === 'checkout.session.async_payment_succeeded') {
       const uid = o.client_reference_id || o.metadata?.uid;
       const feature = o.metadata?.feature, tier = o.metadata?.tier;
+      // Add-on pack: add credits once per paid session
+      if (uid && feature === 'pack' && PACKS[o.metadata?.pack] && o.payment_status === 'paid') {
+        const ik = `idx/stripe-pack/${o.id}`.toLowerCase();
+        if (!(await getDoc(ik).catch(() => null))) {
+          const pk = PACKS[o.metadata.pack];
+          await addCredits(uid, pk.kind, pk.n);
+          await putDoc(ik, { uid, pack: o.metadata.pack, at: Date.now() }, { keep: 1 });
+        }
+      }
       if (uid && o.subscription) await putDoc(`idx/stripe-sub/${o.subscription}`.toLowerCase(), { uid, feature, tier });
       if (uid && feature === 'customDomain') await setPlan(uid, { customDomain: true, domainSubId: o.subscription }, { stripeCustomerId: o.customer });
       if (uid && feature === 'plan' && ['starter', 'pro', 'team'].includes(tier)) await setPlan(uid, { tier }, { stripeCustomerId: o.customer, stripeSubId: o.subscription });

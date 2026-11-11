@@ -1,6 +1,6 @@
 // Stripe Checkout (plans and the custom-domain add-on) and the Stripe customer portal (switch plan, card, invoices, cancel).
 import { currentUser, saveUser } from '../lib/auth.js';
-import { tierOf, PLANS } from '../lib/plan.js';
+import { tierOf, PLANS, PACKS, isActive } from '../lib/plan.js';
 import { stripe as api, priceFor } from '../lib/stripe.js';
 
 const stripe = (path, params, opt) => api('POST', path, params, opt);
@@ -48,6 +48,26 @@ export default async function handler(req, res) {
         allow_promotion_codes: 'true',
       };
       // Sales tax: turn on with STRIPE_TAX=1 once Stripe Tax is set up and you're registered in Texas
+      if (process.env.STRIPE_TAX === '1') Object.assign(params, { 'automatic_tax[enabled]': 'true', 'customer_update[address]': 'auto', 'customer_update[name]': 'auto', billing_address_collection: 'required' });
+      const s = await stripe('checkout/sessions', params);
+      return res.status(200).json({ url: s.url });
+    }
+    if (b.action === 'pack') {
+      // One-time add-on pack; credits are added by the webhook once payment clears
+      const pack = PACKS[b.pack] ? b.pack : null;
+      if (!pack) return res.status(400).json({ error: 'Pick a pack.' });
+      if (!isActive(u)) return res.status(400).json({ error: 'Choose a plan first. Add-on packs work on top of a plan.' });
+      const price = await priceFor('pack_' + pack);
+      if (!price) return res.status(503).json({ error: 'That pack isn\'t available yet.' });
+      u = await ensureCustomer(u);
+      const params = {
+        mode: 'payment', customer: u.stripeCustomerId,
+        'line_items[0][price]': price, 'line_items[0][quantity]': '1',
+        success_url: `${origin}/app?pack=${pack}#account`, cancel_url: `${origin}/app#account`,
+        client_reference_id: u.id, 'metadata[uid]': u.id, 'metadata[feature]': 'pack', 'metadata[pack]': pack,
+        'payment_intent_data[metadata][uid]': u.id, 'payment_intent_data[metadata][pack]': pack,
+        'invoice_creation[enabled]': 'true',
+      };
       if (process.env.STRIPE_TAX === '1') Object.assign(params, { 'automatic_tax[enabled]': 'true', 'customer_update[address]': 'auto', 'customer_update[name]': 'auto', billing_address_collection: 'required' });
       const s = await stripe('checkout/sessions', params);
       return res.status(200).json({ url: s.url });

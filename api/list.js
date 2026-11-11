@@ -2,6 +2,7 @@
 // Each page of up to 500 records = 1 RentCast API call.
 import { getActor } from '../lib/auth.js';
 import { useQuota } from '../lib/usage.js';
+import { meter } from '../lib/meter.js';
 
 export const maxDuration = 60;
 
@@ -42,7 +43,7 @@ export default async function handler(req, res) {
   for (let page = 0; page < maxCalls; page++) {
     const params = new URLSearchParams({ zipCode: zip, propertyType: types.join('|'), limit: '500', offset: String(page * 500) });
     const r = await fetch(`https://api.rentcast.io/v1/properties?${params}`, { headers: { 'X-Api-Key': key, Accept: 'application/json' } });
-    calls++;
+    calls++; meter('rentcast');
     if (!r.ok) {
       const body = await r.text().catch(() => '');
       if (!all.length) { console.error('list source', r.status, body.slice(0, 300)); return res.status(502).json({ error: r.status === 429 ? 'Property records are busy. Try again in a minute.' : 'Couldn\'t pull property records for that ZIP. Try again.' }); }

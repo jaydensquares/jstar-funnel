@@ -10,7 +10,12 @@ const PLATFORM = /(^|\.)getjstarpro\.com$/i; // JStar Pro's own domain
 export default function middleware(request) {
   const url = new URL(request.url);
   const host = (request.headers.get('host') || url.hostname).toLowerCase().replace(/:\d+$/, '');
-  if (PLATFORM.test(host)) return url.pathname === '/' ? rewrite(new URL('/software', request.url)) : undefined;
+  if (PLATFORM.test(host)) {
+    if (url.pathname === '/') return rewrite(new URL('/software', request.url));
+    const legal = url.pathname.replace(/^\/|\.html$/g, '');
+    if (legal === 'terms' || legal === 'privacy') return rewrite(new URL(`/legal/${legal}`, request.url));
+    return;
+  }
   if (OWN.test(host)) return; // normal site
   const page = url.pathname.replace(/^\//, '').replace(/\.html$/, '');
   const dest = new URL(`/api/funnel?host=${encodeURIComponent(host)}${page ? `&page=${page}` : ''}`, request.url);
