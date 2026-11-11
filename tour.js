@@ -80,15 +80,17 @@
   const store = { get: k => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 
   const STEPS = [
-    { sel: '.side a[data-t=leads]', h: 'Leads', p: 'Every seller who fills out your funnel lands here. Before you call, the property has already been run against recent sales, so you see the ARV, repairs and your offer range.', li: ['Mortgage balance, equity and any pre-foreclosure on every lead', 'Sort by score, offer or date', 'Open a lead to call, text, or move it to Deals'] },
-    { sel: '.side a[href="/underwriting"]', h: 'Deals', p: 'Your pipeline from offer to closing. Each deal has an underwriting calculator, an 18-point due-diligence checklist, and a purchase agreement and assignment filled in for you.' },
+    { sel: '.side a[data-t=leads]', h: 'Leads', p: 'Every seller who fills out your funnel lands here. Before you call, the property has already been run against recent sales, so you see the ARV, repairs and your offer range.', li: ['Mortgage balance, equity and any pre-foreclosure on every lead', 'Drag the offer slider to see your fee and what the seller keeps', 'Set a follow-up date and we\'ll remind you by email'] },
+    { sel: '.side a[href="/underwriting"]', h: 'Deals', p: 'Your pipeline as a board: drag a deal from Offer sent to Under contract to Closed. Each deal has an underwriting calculator, an 18-point checklist, and a purchase agreement and assignment filled in for you.' },
+    { sel: '.side a[data-t=buyers]', h: 'Buyers', p: 'Your cash buyers list. Add buyers or import a spreadsheet, then open any deal and hit Send to buyers to email it to everyone who buys in that area and price range.' },
     { sel: '.side a[href="/operator"]', h: 'Run an address', p: 'For call-ins, list leads or a house you drove past. Type the address and get comps, ARV, repairs, your max and opening offer, and a buyer pitch in about ten seconds.', li: ['See what\'s owed: recorded loans, estimated equity, liens and foreclosure filings', 'A red flag when the payoff is above your max offer'] },
     { sel: '.side a[href="/photos"]', h: 'Photo estimate', p: 'Upload up to 12 listing or walkthrough photos for a line-by-line repair budget, red flags, and what to check on the walkthrough. Batch runs up to 10 addresses at once.' },
     { sel: '.side a[href="/list"]', h: 'Owner lists', p: 'Pull owners in any ZIP from public records: absentee, out-of-state, long-time owners and vacant lots. Download the CSV for your skip-tracing service.' },
     { sel: '.side a[data-t=funnel]', h: 'Funnel & business', p: 'Your seller funnel is already live. Check your business name, phone and address here, then copy your link into your ads.' },
     { sel: '.side a[data-t=ads]', h: 'Ad tracking', p: 'Paste your Meta Pixel and Google Ads tag so every funnel lead counts as a conversion and each lead shows which ad it came from.' },
     { sel: '.side a[data-t=domain]', h: 'Your own domain', p: 'Run your funnel on a domain you own, like sellmyhousefastdallas.com. Included on Pro and Team.' },
-    { sel: '.side a[data-t=account]', h: 'Plan & account', p: 'Your plan, this month\'s usage, and billing. Change plans or update your card any time.' },
+    { sel: '#jkCmd', h: 'Search anything', p: 'Find any lead by name or street, jump to a page, or type an address and hit Enter to run it. Shortcut: Ctrl K (⌘K on a Mac).' },
+    { sel: '.side a[data-t=account]', h: 'Plan & account', p: 'Your plan, usage and billing. Switch to yearly for 2 months free, add teammates on Agency, and grab your referral link: you and a friend both get 50% off a month.' },
     { sel: '#gsCard', h: 'Start here', p: 'This checklist gets you to your first lead. It ticks itself off as you go. You can replay this tour from the sidebar any time.', last: true },
   ];
 
