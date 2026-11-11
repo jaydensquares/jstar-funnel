@@ -1,8 +1,15 @@
-// Stripe webhook: turns the custom-domain add-on on/off. Point Stripe at /api/stripe-webhook with
-// events checkout.session.completed, customer.subscription.updated, customer.subscription.deleted.
+// Stripe webhook: keeps each account's plan and the custom-domain add-on in sync with Stripe.
+// Events: checkout.session.completed, customer.subscription.updated, customer.subscription.deleted,
+//         invoice.paid, invoice.payment_failed
 import crypto from 'node:crypto';
-import { getUserById, saveUser } from '../lib/auth.js';
+import { getUserById, saveUser, sendPlainEmail } from '../lib/auth.js';
 import { getDoc, putDoc } from '../lib/db.js';
+import { tierFromLookup } from '../lib/stripe.js';
+
+// past_due stays on while Smart Retries work; unpaid / canceled / incomplete turn it off
+const LIVE = ['active', 'trialing', 'past_due'];
+const uidFor = async o => o.metadata?.uid || o.subscription_details?.metadata?.uid || o.parent?.subscription_details?.metadata?.uid
+  || (await getDoc(`idx/stripe-sub/${o.subscription || o.parent?.subscription_details?.subscription || ''}`.toLowerCase()).catch(() => null))?.uid;
 
 export const config = { api: { bodyParser: false } };
 
@@ -48,14 +55,31 @@ export default async function handler(req, res) {
       const ix = await getDoc(`idx/stripe-sub/${o.id}`.toLowerCase());
       const uid = o.metadata?.uid || ix?.uid;
       const feature = o.metadata?.feature || ix?.feature;
-      const active = ev.type === 'customer.subscription.updated' && ['active', 'trialing', 'past_due'].includes(o.status);
-      // Plan changes made in the billing portal swap the price; read the tier from the current price
-      const priceToTier = Object.fromEntries(['starter', 'pro', 'team'].map(k => [process.env['STRIPE_PRICE_' + k.toUpperCase()], k]).filter(([p]) => p));
-      const tierNow = priceToTier[o.items?.data?.[0]?.price?.id] || o.metadata?.tier || ix?.tier;
+      const active = ev.type === 'customer.subscription.updated' && LIVE.includes(o.status);
+      // Plan changes made in the billing portal swap the price; read the tier from the current price's lookup key
+      const p = o.items?.data?.[0]?.price || {};
+      const envTier = Object.fromEntries(['starter', 'pro', 'team'].map(k => [process.env['STRIPE_PRICE_' + k.toUpperCase()], k]).filter(([x]) => x))[p.id];
+      const tierNow = [tierFromLookup(p.lookup_key), envTier, o.metadata?.tier, ix?.tier].find(t => ['starter', 'pro', 'team'].includes(t));
       if (uid && feature === 'customDomain') await setPlan(uid, { customDomain: active });
       if (uid && feature === 'plan') {
         const u = await getUserById(uid);
-        if (u && (!u.stripeSubId || u.stripeSubId === o.id)) await setPlan(uid, { tier: active ? tierNow : 'trial' }, { stripeSubId: active ? o.id : null });
+        if (u && (!u.stripeSubId || u.stripeSubId === o.id)) await setPlan(uid, { tier: active && tierNow ? tierNow : 'trial' }, { stripeSubId: active ? o.id : null, billingIssue: o.status === 'past_due' });
+      }
+    }
+    // Renewal went through: clear any card-problem flag
+    if (ev.type === 'invoice.paid') {
+      const uid = await uidFor(o); const u = uid && await getUserById(uid);
+      if (u?.billingIssue) await saveUser({ ...u, billingIssue: false });
+    }
+    // Card declined: Stripe's Smart Retries keep trying; tell the customer how to fix it
+    if (ev.type === 'invoice.payment_failed') {
+      const uid = await uidFor(o); const u = uid && await getUserById(uid);
+      if (u) {
+        await saveUser({ ...u, billingIssue: true });
+        const amt = '$' + ((o.amount_due || 0) / 100).toFixed(2);
+        const link = 'https://getjstarpro.com/app#account';
+        await sendPlainEmail(u.email, 'Your JStar Pro payment didn\'t go through',
+          `Hi ${u.name.split(' ')[0]},\n\nYour card was declined for your JStar Pro payment of ${amt}. We'll try again automatically over the next few days.\n\nTo keep your funnel and tools running, update your card: open ${link} and tap Manage billing.\n\nJStar Pro`).catch(e => console.error('dunning email', e));
       }
     }
   } catch (e) { console.error('stripe webhook', e); return res.status(500).end(); }
