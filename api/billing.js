@@ -52,9 +52,9 @@ export default async function handler(req, res) {
         'subscription_data[metadata][uid]': u.id, 'subscription_data[metadata][feature]': feature, 'subscription_data[metadata][tier]': key, 'subscription_data[metadata][interval]': interval,
         'metadata[interval]': interval,
       };
-      // Referred and paying monthly: first month free (yearly already includes 2 free months)
+      // Referred and paying monthly: 50% off the first month (yearly already includes 2 free months)
       const firstPlan = feature === 'plan' && !u.stripeSubId && !u.refUsed;
-      if (firstPlan && u.referredBy && interval === 'month') params['discounts[0][coupon]'] = 'jstarpro-ref-1mo';
+      if (firstPlan && u.referredBy && interval === 'month') params['discounts[0][coupon]'] = 'jstarpro-ref-50';
       else params.allow_promotion_codes = 'true';
       // Sales tax: turn on with STRIPE_TAX=1 once Stripe Tax is set up and you're registered in Texas
       if (process.env.STRIPE_TAX === '1') Object.assign(params, { 'automatic_tax[enabled]': 'true', 'customer_update[address]': 'auto', 'customer_update[name]': 'auto', billing_address_collection: 'required' });

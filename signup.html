@@ -106,7 +106,7 @@
     const [n, p] = PLANS[plan];
     $('planPick').innerHTML = `<div class="ppick"><div class="seg2"><button type="button" data-i="month" class="${interval === 'month' ? 'on' : ''}">Monthly</button><button type="button" data-i="year" class="${interval === 'year' ? 'on' : ''}">Yearly <em>2 months free</em></button></div>
       <select id="planSel" aria-label="Plan">${Object.entries(PLANS).map(([k, [nm, pr]]) => `<option value="${k}" ${k === plan ? 'selected' : ''}>${nm} · ${interval === 'year' ? '$' + (pr * 10).toLocaleString() + '/year' : '$' + pr + '/month'}</option>`).join('')}</select>
-      <p class="hint" style="margin:6px 0 0">${interval === 'year' ? `$${(p * 10).toLocaleString()} billed yearly, about $${Math.round(p * 10 / 12)}/month. You save $${p * 2}.` : ref ? '<b>Referral applied:</b> your first month is free.' : 'Billed monthly. Cancel any time.'} <a href="/support?topic=agency">Agency plan? Book a call</a></p></div>`;
+      <p class="hint" style="margin:6px 0 0">${interval === 'year' ? `$${(p * 10).toLocaleString()} billed yearly, about $${Math.round(p * 10 / 12)}/month. You save $${p * 2}.` : ref ? '<b>Referral applied:</b> 50% off your first month.' : 'Billed monthly. Cancel any time.'} <a href="/support?topic=agency">Agency plan? Book a call</a></p></div>`;
     $('planSel').onchange = e => { plan = e.target.value; drawPlan(); };
     $('planPick').querySelectorAll('[data-i]').forEach(b => b.onclick = () => { interval = b.dataset.i; drawPlan(); });
   };

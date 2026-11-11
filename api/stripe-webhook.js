@@ -81,16 +81,16 @@ export default async function handler(req, res) {
     if (ev.type === 'invoice.paid') {
       const uid = await uidFor(o); let u = uid && await getUserById(uid);
       if (u?.billingIssue) u = await saveUser({ ...u, billingIssue: false });
-      // Referral reward: the referred account's first real payment earns the referrer one month of their plan as credit
+      // Referral reward: the referred account's first real payment earns the referrer 50% off their next month (as account credit)
       if (u?.referredBy && !u.refRewarded && (o.amount_paid || 0) > 0 && (o.subscription || o.parent?.subscription_details?.subscription)) {
         await saveUser({ ...u, refRewarded: Date.now() });
         const r = await getUserById(u.referredBy);
         if (r) {
-          const amt = PLANS[r.plan?.tier]?.price || 49;
+          const amt = Math.round((PLANS[r.plan?.tier]?.price || 49) / 2);
           if (r.stripeCustomerId) await stripe('POST', `customers/${r.stripeCustomerId}/balance_transactions`, { amount: -amt * 100, currency: 'usd', description: `Referral credit: ${u.company || u.name}` }, { idem: `ref-${u.id}` }).catch(e => console.error('ref credit', e.message));
           const fresh = await getUserById(r.id);
           await saveUser({ ...fresh, refPending: r.stripeCustomerId ? (fresh.refPending || 0) : (fresh.refPending || 0) + amt, refStats: { ...(fresh.refStats || {}), paid: (fresh.refStats?.paid || 0) + 1, earned: (fresh.refStats?.earned || 0) + amt } });
-          await sendPlainEmail(r.email, 'You earned a free month on JStar Pro', `${u.company || u.name} just became a paying JStar Pro customer from your referral link. We added $${amt} of credit to your account, which covers your next month.\n\nThanks for spreading the word.\n\nJStar Pro`).catch(() => {});
+          await sendPlainEmail(r.email, 'You earned 50% off next month on JStar Pro', `${u.company || u.name} just became a paying JStar Pro customer from your referral link. We added $${amt} of credit to your account, which takes 50% off your next bill. Every referral earns another 50% off.\n\nThanks for spreading the word.\n\nJStar Pro`).catch(() => {});
         }
       }
     }
