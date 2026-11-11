@@ -1,6 +1,6 @@
 // Owner dashboard: every account, its plan, usage and leads. PIN only.
 import { pinMatches } from '../lib/pin.js';
-import { getDoc, listDocs, countDocs } from '../lib/db.js';
+import { getDoc, putDoc, deleteDoc, listDocs, countDocs } from '../lib/db.js';
 import { getUserById, saveUser, resetToken } from '../lib/auth.js';
 import { PLANS, DOMAIN_ADDON_PRICE, tierOf } from '../lib/plan.js';
 import { meterKey, allowances } from '../lib/meter.js';
@@ -15,7 +15,7 @@ function row(u, usage, leads) {
   const paying = !!u.stripeSubId && tier !== 'trial';
   return {
     id: u.id, name: u.name, email: u.email, company: u.company || '', slug: u.slug, phone: u.phone || '',
-    createdAt: u.createdAt, disabled: !!u.disabled, tier, comp: !!u.plan?.comp, paying,
+    createdAt: u.createdAt, disabled: !!u.disabled, tier, comp: !!u.plan?.comp, paying, operator: !!u.operator,
     domainAddon: !!u.plan?.customDomain, domain: u.domain ? { name: u.domain.name, status: u.domain.status } : null,
     usage: { runs: usage?.runs || 0, photos: usage?.photos || 0, listCalls: usage?.listCalls || 0 }, limits: PLANS[tier].limits,
     leads,
@@ -63,6 +63,17 @@ export default async function handler(req, res) {
       // A manual (comp) plan. A Stripe subscription change later will overwrite it.
       const saved = await saveUser({ ...u, plan: { ...(u.plan || {}), tier: b.tier, comp: b.tier !== 'trial' && !u.stripeSubId } });
       return res.status(200).json({ ok: true, tier: tierOf(saved) });
+    }
+    if (b.action === 'operator' || b.action === 'unoperator') {
+      // One operator account: every paid feature, no limits, and your own funnel's leads land in its inbox
+      const on = b.action === 'operator';
+      if (on) {
+        const prev = await getDoc('idx/operator').catch(() => null);
+        if (prev?.uid && prev.uid !== u.id) { const p = await getUserById(prev.uid); if (p) await saveUser({ ...p, operator: false }); }
+        await putDoc('idx/operator', { uid: u.id, at: Date.now() });
+      } else await deleteDoc('idx/operator');
+      await saveUser({ ...u, operator: on });
+      return res.status(200).json({ ok: true });
     }
     if (b.action === 'disable' || b.action === 'enable') {
       // Disabling also signs them out everywhere

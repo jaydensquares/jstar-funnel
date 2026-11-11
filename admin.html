@@ -56,6 +56,8 @@
   .sup p { margin:4px 0; color:var(--ink2); white-space:pre-wrap; }
   #support { max-height:320px; overflow:auto; }
   @media (max-width:800px) { .admgrid { grid-template-columns:1fr; } }
+  .sbtn.opon { background:#2f6fed; color:#fff; border-color:#2f6fed; }
+  .pill.opr { background:linear-gradient(90deg,#2f6fed,#7a5af8); color:#fff; }
 </style>
 <link rel="stylesheet" href="/ui.css">
 <meta name="robots" content="noindex">
@@ -125,13 +127,13 @@
       <tr class="${r.disabled ? 'off' : ''}" data-id="${esc(r.id)}">
         <td><b>${esc(r.name)}</b>${r.disabled ? ' <span class="pill trial">Disabled</span>' : ''}<small>${esc(r.email)}</small><small>${esc(r.company)}${r.phone ? ' · ' + esc(r.phone) : ''}</small></td>
         <td><select data-act="plan" aria-label="Plan for ${esc(r.name)}">${['trial','starter','pro','team'].map(t => `<option value="${t}" ${t === r.tier ? 'selected' : ''}>${t === 'trial' ? 'No plan' : t[0].toUpperCase() + t.slice(1)}</option>`).join('')}</select>
-          <small>${r.paying ? `<span class="pill">Paying ${money(r.mrr)}/mo</span>` : r.comp ? '<span class="pill comp">Comped</span>' : r.tier === 'trial' ? '<span class="pill trial">Not paid</span>' : ''}</small></td>
+          <small>${r.operator ? '<span class="pill opr">Operator · unlimited</span>' : r.paying ? `<span class="pill">Paying ${money(r.mrr)}/mo</span>` : r.comp ? '<span class="pill comp">Comped</span>' : r.tier === 'trial' ? '<span class="pill trial">Not paid</span>' : ''}</small></td>
         <td>${meter(r.usage.runs, r.limits.runs)}</td>
         <td>${meter(r.usage.photos, r.limits.photos)}</td>
         <td>${r.leads}</td>
         <td><a href="/f/${esc(r.slug)}" target="_blank" rel="noopener">/f/${esc(r.slug)}</a>${r.domain ? `<small>${esc(r.domain.name)} · ${esc(r.domain.status || '')}</small>` : r.domainAddon ? '<small>Domain paid, not set up</small>' : ''}</td>
         <td>${date(r.createdAt)}</td>
-        <td><div class="act"><button class="sbtn" data-act="resetLink" type="button">Reset link</button>
+        <td><div class="act"><button class="sbtn ${r.operator ? 'opon' : ''}" data-act="${r.operator ? 'unoperator' : 'operator'}" type="button" title="Operator: every feature, no limits, your own funnel's leads land in this inbox">${r.operator ? 'Operator ✓' : 'Make operator'}</button><button class="sbtn" data-act="resetLink" type="button">Reset link</button>
           <button class="sbtn ${r.disabled ? '' : 'warn'}" data-act="${r.disabled ? 'enable' : 'disable'}" type="button">${r.disabled ? 'Enable' : 'Disable'}</button></div></td>
       </tr>`).join('');
   }

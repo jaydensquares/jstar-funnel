@@ -3,7 +3,7 @@ import { isActive } from '../lib/plan.js';
 import { lookupLinks } from '../lib/rentcast.js';
 import { sendWebhook, sendEmail, sendSms, sendPush, sendMetaCAPI, dealSheetHtml, smsText } from '../lib/notify.js';
 import { getUserBySlug, bizOf } from '../lib/auth.js';
-import { putDoc, newId } from '../lib/db.js';
+import { putDoc, getDoc, newId } from '../lib/db.js';
 import { useQuota } from '../lib/usage.js';
 import { brief, leadSource } from '../lib/brief.js';
 
@@ -96,6 +96,17 @@ export default async function handler(req, res) {
     r.forEach((x, i) => x.status === 'rejected' && console.error(['tenant email', 'tenant capi'][i], x.reason));
     return res.status(200).json({ ok: true });
   }
+
+  // Your own funnel (no tenant): also save it to the operator account's inbox, if one is set
+  try {
+    const op = await getDoc('idx/operator').catch(() => null);
+    if (op?.uid) {
+      const id = newId(); let html = '';
+      try { html = dealSheetHtml(payload); } catch {}
+      await putDoc(`t/${op.uid}/leads/${id}`, { id, createdAt: Date.now(), status: 'new', source: leadSource(lead.tracking), lead,
+        brief: payload.error ? null : brief(payload), summary: payload.error ? `Analysis failed: ${payload.error}` : smsText(payload), html });
+    }
+  } catch (e) { console.error('save operator lead', e); }
 
   // Fan out notifications; never fail the seller's submit because of them
   const results = await Promise.allSettled([

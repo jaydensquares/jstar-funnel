@@ -416,6 +416,7 @@
   function renderPlan() {
     if (!plan) return;
     $('planName').textContent = plan.name;
+    if (plan.operator) { $('planNote').textContent = 'Operator account: every feature, no monthly limits, no billing. Leads from your own funnel land in your inbox here too.'; $('manageBilling').hidden = true; $('planCards').innerHTML = ''; return; }
     $('planNote').textContent = plan.tier === 'trial' ? 'Choose a plan to turn on your funnel and every tool.' : `Renews monthly.${plan.domainAddon ? ' Includes the custom domain add-on.' : ''}`;
     $('manageBilling').hidden = !plan.hasBilling;
     $('planCards').innerHTML = Object.entries(PLAN_INFO).map(([k, [n, p, f]]) => {
@@ -456,6 +457,7 @@
   // ── Account ──
   function renderUsage() {
     if (!usage) { $('usage').innerHTML = '<p class="note">Loading…</p>'; return; }
+    if (usage.operator) { $('usage').innerHTML = `<div class="urings">${[['runs', 'Deal analyses'], ['photos', 'Photo estimates'], ['listCalls', 'List calls']].map(([k, l]) => `<div><span class="ring" style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#2f6fed,#7a5af8);color:#fff;font:700 22px var(--body)">∞</span><div><b>${(usage[k] || 0).toLocaleString()} used</b><span>${l} · unlimited</span></div></div>`).join('')}</div>`; return; }
     const L = usage.limits || {};
     const J = window.JK, COL = { runs: ['#4a85ff', '#2f6fed'], photos: ['#9b8afb', '#7a5af8'], listCalls: ['#32d583', '#12b76a'] };
     $('usage').innerHTML = '<div class="urings">' + [['runs', 'Deal analyses', 1], ['photos', 'Photo estimates', 1], ['listCalls', 'List records', 500]].map(([k, l, x]) => {

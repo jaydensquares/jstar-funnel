@@ -228,6 +228,7 @@
   }
   function meterbox(u) {
     const foot = document.querySelector('.side .foot'); if (!foot || !u?.limits || document.querySelector('.meterbox')) return;
+    if (u.operator) { foot.insertAdjacentHTML('beforebegin', `<a class="meterbox" href="/app#account"><span class="ring" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#ffd666,#ffb020);color:#0a1633;font:800 18px var(--body)">∞</span><div><b>Operator</b><small>Unlimited · ${(u.runs || 0).toLocaleString()} analyses this month</small></div></a>`); return; }
     const lim = u.limits.runs || 0, used = u.runs || 0, extra = u.credits?.runs || 0, left = Math.max(0, lim - used) + extra;
     foot.insertAdjacentHTML('beforebegin', `<a class="meterbox" href="/app#account">${K.ring(lim ? Math.max(0, lim - used) / lim : 0, { size: 38, stroke: 4, track: 'rgba(255,255,255,.12)', grad: ['#ffd666', '#ffb020'] })}<div><b>${left.toLocaleString()} analyses left</b><small>${used.toLocaleString()} of ${lim.toLocaleString()} used this month</small></div></a>`);
     K.animate(document.querySelector('.meterbox'));
