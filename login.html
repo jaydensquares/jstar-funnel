@@ -95,7 +95,7 @@
   $('tLogin').onclick = () => { history.replaceState(null, '', '#login'); mode('login'); };
   $('tSignup').onclick = () => { history.replaceState(null, '', '#signup'); mode('signup'); };
   $('pfx').textContent = location.host + '/f/';
-  const PLANS = { starter: ['Starter', 49], pro: ['Pro', 99], team: ['Team', 199] };
+  const PLANS = { starter: ['Starter', 59], pro: ['Pro', 129], team: ['Team', 249] };
   const qs = new URLSearchParams(location.search);
   // Every account needs a plan; there's no free trial. Yearly = 10 months' price (2 months free).
   let plan = PLANS[qs.get('plan')] ? qs.get('plan') : 'pro', interval = qs.get('billing') === 'year' ? 'year' : 'month';

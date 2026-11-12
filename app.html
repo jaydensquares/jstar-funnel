@@ -493,7 +493,7 @@
     $(errEl).textContent = r.j.error || 'Could not open checkout.';
   }
   let ival = 'month';
-  const PLAN_INFO = { starter: ['Starter', 49, ['100 deal analyses / mo, with mortgage & equity', '10 photo estimates / mo', '4,000 list records / mo', 'Custom domain: $19/mo add-on']], pro: ['Pro', 99, ['300 deal analyses / mo, with mortgage & equity', '30 photo estimates / mo', '12,000 list records / mo', 'Custom domain included']], team: ['Team', 199, ['800 deal analyses / mo, with mortgage & equity', '80 photo estimates / mo', '30,000 list records / mo', 'Custom domain included']] };
+  const PLAN_INFO = { starter: ['Starter', 59, ['100 deal analyses / mo, with mortgage & equity', '10 photo estimates / mo', '4,000 list records / mo', '25 skip traces / mo', 'Custom domain: $19/mo add-on']], pro: ['Pro', 129, ['300 deal analyses / mo, with mortgage & equity', '30 photo estimates / mo', '12,000 list records / mo', '100 skip traces / mo', 'Custom domain included']], team: ['Team', 249, ['800 deal analyses / mo, with mortgage & equity', '80 photo estimates / mo', '30,000 list records / mo', '300 skip traces / mo', 'Custom domain included']] };
   function renderPlan() {
     if (!plan) return;
     $('planName').textContent = plan.name;
