@@ -1,6 +1,8 @@
 // Operator deal pipeline: list / get / save / delete (PIN-gated, private Blob storage)
 import { getActor } from '../lib/auth.js';
 import { listDeals, getDeal, saveDeal, deleteDeal } from '../lib/store.js';
+import { getDoc } from '../lib/db.js';
+import { addrKey } from '../lib/skip.js';
 
 export const maxDuration = 30;
 const STATUSES = ['lead', 'offer', 'contract', 'assigned', 'closed', 'dead'];
@@ -45,6 +47,7 @@ export default async function handler(req, res) {
       const prev = b.deal.id ? await getDeal(String(b.deal.id), sc) : null;
       const d = clean({ ...b.deal, createdAt: prev?.createdAt });
       if (prev?.skip) d.skip = prev.skip; // skip trace results are only set by /api/skip
+      else if (!prev) { const k = addrKey(sc, d.address); const c = k && await getDoc(k).catch(() => null); if (c?.skip) d.skip = c.skip; } // traced on Run an address before saving
       if (!d.address?.street) return res.status(400).json({ error: 'Deal needs an address.' });
       if (prev && prev.status !== d.status) d.history.push({ at: Date.now(), text: `Status: ${prev.status} → ${d.status}` });
       if (!prev) d.history.push({ at: Date.now(), text: 'Deal created' });

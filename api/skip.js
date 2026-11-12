@@ -4,7 +4,7 @@ import { getActor } from '../lib/auth.js';
 import { getDoc, putDoc } from '../lib/db.js';
 import { getDeal, saveDeal } from '../lib/store.js';
 import { useQuota, refundQuota, getUsage } from '../lib/usage.js';
-import { traceAddress } from '../lib/skip.js';
+import { traceAddress, addrKey } from '../lib/skip.js';
 
 export const maxDuration = 30;
 const ID = /^[a-z0-9]{6,32}$/;
@@ -30,7 +30,14 @@ export default async function handler(req, res) {
       if (!doc) return res.status(404).json({ error: 'Deal not found.' });
       addr = doc.address || {};
       save = skip => saveDeal({ ...doc, skip, history: [...(doc.history || []), { at: Date.now(), text: skip.hit ? `Skip traced: ${skip.persons.reduce((n, p) => n + p.phones.length, 0)} phones found` : 'Skip traced: no match' }] }, sc);
+    } else if (b.address && typeof b.address === 'object') {
+      // A one-off address from Run an address: cached per account, so tracing it again (or saving it as a deal) is free
+      const a = b.address; addr = { street: a.street, city: a.city, state: a.state, zip: a.zip };
+      const k = addrKey(sc, addr); if (!k) return res.status(400).json({ error: 'Enter the full address.' });
+      doc = (await getDoc(k).catch(() => null)) || {};
+      save = skip => putDoc(k, { skip, address: addr, at: Date.now() }, { keep: 1 });
     } else return res.status(400).json({ error: 'Pick a lead or deal.' });
+    if (b.peek) return res.status(200).json({ skip: doc.skip || null, cached: true });
 
     if (doc.skip && !b.again) return res.status(200).json({ skip: doc.skip, cached: true });
     const over = await useQuota(actor, 'skips', 1);

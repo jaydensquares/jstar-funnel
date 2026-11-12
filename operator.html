@@ -66,6 +66,7 @@
   @media (max-width:360px) { .logo span { display:none; } }
   .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
+.skonly { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:14px; } .skonly span { font-size:13px; color:var(--muted); }
 </style>
 <link rel="stylesheet" href="/ui.css">
 <link rel="stylesheet" href="/kit.css">
@@ -104,6 +105,8 @@
         <div><label class="f" for="state">State</label><select id="state" name="state" required><option value="">—</option></select></div>
         <div><label class="f" for="zip">ZIP</label><input type="text" id="zip" name="zip" inputmode="numeric" maxlength="5" required></div>
       </div>
+      <div class="skonly"><button class="btn ghost" type="button" id="skOnlyBtn">Just get the owner's phone</button><span>Skip trace only, no deal analysis used</span></div>
+      <div id="skOnly" hidden style="margin-top:14px"></div>
     </section>
 
     <section class="card">
@@ -194,6 +197,7 @@
   <!-- Results -->
   <section id="results" hidden>
     <div id="snap"></div>
+    <section class="card" id="skipCard" style="margin-bottom:14px"></section>
     <details class="full" style="margin-bottom:14px"><summary>Text summary</summary><div class="summary" id="summary"></div></details>
     <div class="row" id="pitchBtns" hidden style="margin-bottom:14px">
       <button class="btn ghost" id="cpEmail" type="button">Copy buyer email</button>
@@ -291,10 +295,21 @@
     lastRun = { body, j: r.j }; $('saveDealBtn').disabled = false; $('saveDealBtn').textContent = 'Save to deals';
     $('prop').hidden = true; $('results').hidden = false;
     if (snap) J.mountSnapshot($('snap'));
+    if (J) { const address = { street: body.street, city: body.city, state: body.state, zip: body.zip }; J.skipCard($('skipCard'), { target: { address }, skip: null, pin });
+      fetch('/api/skip', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address, peek: true, pin }) }).then(x => x.json()).then(x => { if (x.skip && lastRun?.body === body) J.skipCard($('skipCard'), { target: { address }, skip: x.skip, pin }); }).catch(() => {}); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
   let pitch = null, lastRun = null;
+  // Skip trace only: owner phones for the address in the form, without running the numbers
+  $('skOnlyBtn').addEventListener('click', async () => {
+    const address = { street: $('street').value.trim(), city: $('city').value.trim(), state: $('state').value.trim(), zip: $('zip').value.trim() };
+    if (!address.street || !/^\d{5}$/.test(address.zip)) { $('err').textContent = 'Enter the street and ZIP first.'; $('street').focus(); return; }
+    $('err').textContent = ''; const box = $('skOnly'); box.hidden = false;
+    const x = await fetch('/api/skip', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address, peek: true, pin }) }).then(r => r.json()).catch(() => ({}));
+    window.JK.skipCard(box, { target: { address }, skip: x.skip || null, pin });
+    if (!x.skip) box.querySelector('[data-sk]')?.click();
+  });
   // Save this run as a deal in the pipeline (Underwriting)
   $('saveDealBtn').addEventListener('click', async () => {
     if (!lastRun) return;
