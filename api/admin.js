@@ -1,7 +1,7 @@
 // Owner dashboard: every account, its plan, usage and leads. PIN only.
 import { pinMatches } from '../lib/pin.js';
-import { getDoc, putDoc, deleteDoc, listDocs, countDocs } from '../lib/db.js';
-import { getUserById, saveUser, resetToken } from '../lib/auth.js';
+import { getDoc, putDoc, deleteDoc, deleteTree, listDocs, countDocs } from '../lib/db.js';
+import { getUserById, saveUser, resetToken, sha } from '../lib/auth.js';
 import { PLANS, DOMAIN_ADDON_PRICE, tierOf } from '../lib/plan.js';
 import { meterKey, allowances } from '../lib/meter.js';
 
@@ -79,6 +79,19 @@ export default async function handler(req, res) {
       // Disabling also signs them out everywhere
       await saveUser({ ...u, disabled: b.action === 'disable', sessVer: (u.sessVer || 0) + (b.action === 'disable' ? 1 : 0) });
       return res.status(200).json({ ok: true });
+    }
+    if (b.action === 'delete') {
+      // Permanent: the account, its leads, deals, buyers and settings. Paying or operator accounts can't be deleted here.
+      if (u.operator) return res.status(400).json({ error: 'Turn off operator first.' });
+      if (u.stripeSubId && tierOf(u) !== 'trial' && !u.plan?.comp) return res.status(400).json({ error: 'They have an active subscription. Cancel it in Stripe first.' });
+      const own = async k => { const ix = await getDoc(k).catch(() => null); if (ix?.uid === u.id) await deleteDoc(k); };
+      await own(`idx/email/${sha(String(u.email || '').toLowerCase())}`);
+      if (u.slug) await own(`idx/slug/${u.slug}`);
+      if (u.domain?.name) { await own(`idx/host/${u.domain.name}`); await own(`idx/host/www.${u.domain.name}`); }
+      if (u.stripeSubId) await own(`idx/stripe-sub/${u.stripeSubId}`);
+      const n = await deleteTree(`t/${u.id}`);
+      await deleteDoc(`users/${u.id}`);
+      return res.status(200).json({ ok: true, removed: n });
     }
     if (b.action === 'resetLink') {
       if (u.disabled) return res.status(400).json({ error: 'Enable the account first.' });
