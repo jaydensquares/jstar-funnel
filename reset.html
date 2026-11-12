@@ -46,7 +46,7 @@
   const $ = id => document.getElementById(id);
   const t = new URLSearchParams(location.search).get('t') || '';
   history.replaceState(null, '', '/reset'); // keep the token out of the address bar and history
-  if (!t) { $('rf').innerHTML = '<p>This link is missing its code. <a href="/login">Request a new reset link</a>.</p>'; return; }
+  if (!t) { location.replace('/login?forgot=1'); return; }
   $('rf').addEventListener('submit', async e => {
     e.preventDefault();
     if ($('p1').value !== $('p2').value) { $('err').textContent = "The two passwords don't match."; return; }
@@ -54,7 +54,7 @@
     const r = await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'reset', token: t, password: $('p1').value }) })
       .then(async x => ({ ok: x.ok, j: await x.json().catch(() => ({})) })).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
     $('btn').disabled = false; $('btn').textContent = 'Save new password';
-    if (!r.ok) { $('err').innerHTML = (r.j.error || 'Could not save.') + ' <a href="/login">Request a new link</a>.'; return; }
+    if (!r.ok) { $('err').innerHTML = (r.j.error || 'Could not save.') + ' <a href="/login?forgot=1">Request a new link</a>.'; return; }
     location.replace('/app');
   });
 })();

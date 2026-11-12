@@ -139,6 +139,7 @@
     .then(async r => ({ ok: r.ok, j: await r.json().catch(() => ({})) })).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
 
   $('forgotLink').onclick = () => { $('login').hidden = true; $('forgot').hidden = false; $('fEmail').value = $('lEmail').value; $('fEmail').focus(); };
+  if (new URLSearchParams(location.search).has('forgot')) setTimeout(() => $('forgotLink').click(), 0);
   $('backLogin').onclick = () => { $('forgot').hidden = true; $('login').hidden = false; };
   $('forgot').addEventListener('submit', async e => {
     e.preventDefault(); $('fErr').textContent = ''; $('fBtn').disabled = true; $('fBtn').textContent = 'Sending…';
