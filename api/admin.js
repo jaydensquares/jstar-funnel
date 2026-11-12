@@ -1,7 +1,8 @@
 // Owner dashboard: every account, its plan, usage and leads. PIN only.
 import { pinMatches } from '../lib/pin.js';
 import { getDoc, putDoc, deleteDoc, deleteTree, listDocs, countDocs } from '../lib/db.js';
-import { getUserById, saveUser, resetToken, sha } from '../lib/auth.js';
+import { getUserById, getUserByEmail, getUserBySlug, saveUser, resetToken, sha, createUser, sessionCookie, OWNER_BIZ } from '../lib/auth.js';
+import crypto from 'node:crypto';
 import { PLANS, DOMAIN_ADDON_PRICE, tierOf } from '../lib/plan.js';
 import { meterKey, allowances } from '../lib/meter.js';
 
@@ -52,6 +53,25 @@ export default async function handler(req, res) {
       const [cur, last] = await Promise.all([getDoc(meterKey(m)).catch(() => null), getDoc(meterKey(prev.toISOString().slice(0, 7).replace('-', ''))).catch(() => null)]);
       const support = (await listDocs('support').catch(() => [])).sort((a, z) => z.at - a.at).slice(0, 10);
       return res.status(200).json({ rows, totals, month: m, data: { cur: cur || {}, last: last || {}, allow: allowances() }, support });
+    }
+
+    if (b.action === 'enterApp') {
+      // Sign the owner into the full app as the operator account (every paid tool, no limits).
+      // If there's no operator account yet, use the account on NOTIFY_EMAIL, or create one.
+      let op = null; const ix = await getDoc('idx/operator').catch(() => null);
+      if (ix?.uid) op = await getUserById(ix.uid);
+      if (!op) {
+        const email = String(process.env.NOTIFY_EMAIL || '').split(/[,\s]+/).find(e => e.includes('@'))?.toLowerCase();
+        if (email) op = await getUserByEmail(email);
+        if (!op) {
+          let slug = 'jstar-acquisitions'; for (let i = 2; await getUserBySlug(slug); i++) slug = `jstar-acquisitions-${i}`;
+          op = await createUser({ name: OWNER_BIZ.signer, email: email || 'owner@getjstarpro.com', password: crypto.randomBytes(24).toString('base64url'), company: OWNER_BIZ.company, slug, phone: OWNER_BIZ.phone });
+        }
+        await putDoc('idx/operator', { uid: op.id, at: Date.now() });
+      }
+      if (!op.operator || op.disabled) op = await saveUser({ ...op, operator: true, disabled: false });
+      res.setHeader('Set-Cookie', sessionCookie(op.id, op.sessVer || 0));
+      return res.status(200).json({ ok: true, url: '/app#leads', email: op.email });
     }
 
     if (!ID.test(String(b.id || ''))) return res.status(400).json({ error: 'Bad account id.' });

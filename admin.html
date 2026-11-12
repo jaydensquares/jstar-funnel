@@ -58,6 +58,7 @@
   @media (max-width:800px) { .admgrid { grid-template-columns:1fr; } }
   .sbtn.opon { background:#2f6fed; color:#fff; border-color:#2f6fed; }
   .pill.opr { background:linear-gradient(90deg,#2f6fed,#7a5af8); color:#fff; }
+.enter { display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-bottom:22px; } .enter > div { flex:1; min-width:240px; } .enter h2 { margin:0 0 4px; } .enter .note { margin:0; }
 </style>
 <link rel="stylesheet" href="/ui.css">
 <meta name="robots" content="noindex">
@@ -77,6 +78,7 @@
   </section>
 
   <div id="dash" hidden>
+    <section class="card enter"><div><h2>Your own JStar Pro</h2><p class="note">Every tool a paid user gets (leads, deals, buyers, skip tracing, run an address, batch, photos, lists, funnel and ads) with no limits. Your own funnel's leads land in this inbox.</p></div><button class="btn" id="enterApp" type="button">Open the full app</button><p class="err" id="enterErr" role="alert"></p></section>
     <h1 style="margin-bottom:14px">Accounts</h1>
     <div class="stat4 eight" id="stats"></div>
     <div class="admgrid">
@@ -111,6 +113,12 @@
   const date = t => t ? new Date(t).toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' }) : '';
   let pin = sessionStorage.getItem('jsPin') || '', rows = [];
 
+  document.getElementById('enterApp').onclick = async e => {
+    e.target.disabled = true; e.target.textContent = 'Opening…';
+    const r = await call({ action: 'enterApp' });
+    if (r.ok && r.j.url) { location.href = r.j.url; return; }
+    e.target.disabled = false; e.target.textContent = 'Open the full app'; document.getElementById('enterErr').textContent = r.j.error || 'Could not open it.';
+  };
   const call = body => fetch('/api/admin', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ pin, ...body }) })
     .then(async r => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }))
     .catch(() => ({ ok:false, j:{ error:'Network error. Try again.' } }));
