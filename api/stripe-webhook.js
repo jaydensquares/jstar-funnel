@@ -7,6 +7,8 @@ import { getDoc, putDoc } from '../lib/db.js';
 import { tierFromLookup, stripe } from '../lib/stripe.js';
 import { PACKS, PLANS, PAID } from '../lib/plan.js';
 import { addCredits } from '../lib/usage.js';
+import { layout, p as P, small, button, rows, callout, esc as E } from '../lib/email.js';
+const APP = 'https://getjstarpro.com/app';
 
 // past_due stays on while Smart Retries work; unpaid / canceled / incomplete turn it off
 const LIVE = ['active', 'trialing', 'past_due'];
@@ -60,7 +62,23 @@ export default async function handler(req, res) {
       }
       if (uid && o.subscription) await putDoc(`idx/stripe-sub/${o.subscription}`.toLowerCase(), { uid, feature, tier });
       if (uid && feature === 'customDomain') await setPlan(uid, { customDomain: true, domainSubId: o.subscription }, { stripeCustomerId: o.customer });
-      if (uid && feature === 'plan' && PAID.includes(tier)) await setPlan(uid, { tier, interval: o.metadata?.interval || 'month' }, { stripeCustomerId: o.customer, stripeSubId: o.subscription, ...(o.discounts?.length || o.total_details?.amount_discount ? { refUsed: true } : {}) });
+      if (uid && feature === 'plan' && PAID.includes(tier)) {
+        await setPlan(uid, { tier, interval: o.metadata?.interval || 'month' }, { stripeCustomerId: o.customer, stripeSubId: o.subscription, ...(o.discounts?.length || o.total_details?.amount_discount ? { refUsed: true } : {}) });
+        // Welcome email, once per account
+        const w = await getUserById(uid);
+        if (w && !w.welcomed) {
+          await saveUser({ ...w, welcomed: Date.now() });
+          const pl = PLANS[tier], L = pl.limits, first = (w.name || '').split(' ')[0] || 'there', funnel = `https://getjstarpro.com/f/${w.slug}`;
+          await sendPlainEmail(w.email, `Welcome to JStar Pro, ${first}`,
+            `Hi ${first},\n\nYou're on JStar Pro ${pl.name}. Your seller funnel is live at ${funnel}.\n\nGet set up in 3 steps:\n1. Add your logo, phone and service area: ${APP}#funnel\n2. Point your ads or mailers at your funnel link.\n3. Run your first address: https://getjstarpro.com/operator\n\nQuestions? https://getjstarpro.com/support\n\nJStar Pro`,
+            layout({ preheader: `Your ${pl.name} plan is active and your seller funnel is live.`, eyebrow: `${pl.name} plan · active`, title: `Welcome to JStar Pro, ${E(first)}`,
+              body: P(`Your plan is active and your seller funnel is already live. Here's how to get your first deal moving.`)
+                + rows([['Your funnel', `<a href="${funnel}" style="color:#2f6fed;text-decoration:none">${E(funnel.replace('https://', ''))}</a>`], ['Deal analyses', `${L.runs.toLocaleString()} / month`], ['Skip traces', `${L.skips} / month`], ['Photo estimates', `${L.photos} / month`]])
+                + P(`<b>1.&nbsp; Brand your funnel.</b> Add your logo, phone number and service area so sellers know who they're talking to.<br><b>2.&nbsp; Send it traffic.</b> Point your ads, mailers or texts at your funnel link. Every lead lands with the math done.<br><b>3.&nbsp; Run your first address.</b> Comps, ARV, repairs, mortgage and your max offer in about 10 seconds.`)
+                + button(`${APP}#leads`, 'Open JStar Pro') + small('Questions or need a hand setting up? Reach us any time at <a href="https://getjstarpro.com/support" style="color:#2f6fed">getjstarpro.com/support</a>.'),
+              footer: 'You received this email because you started a JStar Pro subscription.' })).catch(e => console.error('welcome email', e.message));
+        }
+      }
     }
     if (ev.type === 'customer.subscription.updated' || ev.type === 'customer.subscription.deleted') {
       const ix = await getDoc(`idx/stripe-sub/${o.id}`.toLowerCase());
@@ -90,7 +108,14 @@ export default async function handler(req, res) {
           if (r.stripeCustomerId) await stripe('POST', `customers/${r.stripeCustomerId}/balance_transactions`, { amount: -amt * 100, currency: 'usd', description: `Referral credit: ${u.company || u.name}` }, { idem: `ref-${u.id}` }).catch(e => console.error('ref credit', e.message));
           const fresh = await getUserById(r.id);
           await saveUser({ ...fresh, refPending: r.stripeCustomerId ? (fresh.refPending || 0) : (fresh.refPending || 0) + amt, refStats: { ...(fresh.refStats || {}), paid: (fresh.refStats?.paid || 0) + 1, earned: (fresh.refStats?.earned || 0) + amt } });
-          await sendPlainEmail(r.email, 'You earned 50% off next month on JStar Pro', `${u.company || u.name} just became a paying JStar Pro customer from your referral link. We added $${amt} of credit to your account, which takes 50% off your next bill. Every referral earns another 50% off.\n\nThanks for spreading the word.\n\nJStar Pro`).catch(() => {});
+          const rf = (r.name || '').split(' ')[0] || 'there';
+          await sendPlainEmail(r.email, `You just earned $${amt} off your next JStar Pro bill`, `Hi ${rf},\n\n${u.company || u.name} just became a paying JStar Pro customer through your referral link. We added $${amt} in account credit, which takes 50% off your next bill. Every referral earns another 50% off.\n\nYour referral link: https://getjstarpro.com/?ref=${r.slug}\n\nThank you for spreading the word.\n\nJStar Pro`,
+            layout({ preheader: `${u.company || u.name} joined through your link. $${amt} credit added.`, eyebrow: 'Referral reward', title: `You earned $${amt} off your next bill`,
+              body: P(`Hi ${E(rf)},`) + P(`<b>${E(u.company || u.name)}</b> just became a paying JStar Pro customer through your referral link. Thank you for spreading the word.`)
+                + rows([['Credit added', `<span style="color:#067647">$${amt}.00</span>`], ['Applied to', 'Your next invoice'], ['Total referrals paid', String((fresh.refStats?.paid || 0) + 1)]])
+                + callout(`Every referral earns another 50% off a month. Share your link: <a href="https://getjstarpro.com/?ref=${E(r.slug)}" style="color:#2f6fed">getjstarpro.com/?ref=${E(r.slug)}</a>`, 'ok')
+                + button(`${APP}#account`, 'View your referrals'),
+              footer: 'You received this email because someone signed up with your JStar Pro referral link.' })).catch(() => {});
         }
       }
     }
@@ -101,8 +126,15 @@ export default async function handler(req, res) {
         await saveUser({ ...u, billingIssue: true });
         const amt = '$' + ((o.amount_due || 0) / 100).toFixed(2);
         const link = 'https://getjstarpro.com/app#account';
-        await sendPlainEmail(u.email, 'Your JStar Pro payment didn\'t go through',
-          `Hi ${u.name.split(' ')[0]},\n\nYour card was declined for your JStar Pro payment of ${amt}. We'll try again automatically over the next few days.\n\nTo keep your funnel and tools running, update your card: open ${link} and tap Manage billing.\n\nJStar Pro`).catch(e => console.error('dunning email', e));
+        const df = (u.name || '').split(' ')[0] || 'there';
+        await sendPlainEmail(u.email, 'Action needed: your JStar Pro payment didn\'t go through',
+          `Hi ${df},\n\nWe weren't able to process your JStar Pro payment of ${amt}. We'll retry automatically over the next few days.\n\nTo keep your funnel and tools running without interruption, update your payment method: open ${link} and tap Manage billing.\n\nJStar Pro`,
+          layout({ preheader: `Update your payment method to keep your funnel and tools running.`, eyebrow: 'Billing', title: 'Your payment didn\'t go through',
+            body: P(`Hi ${E(df)},`) + P(`We weren't able to process your latest JStar Pro payment. This usually happens when a card expires or the bank flags the charge.`)
+              + rows([['Amount due', amt], ['Next step', 'Update your payment method']])
+              + callout(`We'll retry automatically over the next few days. To avoid any interruption to your seller funnel and tools, update your card now.`, 'warn')
+              + button(link, 'Update payment method') + small('Open Plan &amp; account and tap <b>Manage billing</b>. It takes less than a minute.'),
+            footer: 'You received this email about the billing on your JStar Pro account.' })).catch(e => console.error('dunning email', e));
       }
     }
   } catch (e) { console.error('stripe webhook', e); return res.status(500).end(); }

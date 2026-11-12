@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import { planStatus, seatsOf, isActive } from '../lib/plan.js';
 import { getUsage } from '../lib/usage.js';
 import { getDoc, putDoc } from '../lib/db.js';
+import { layout, p as P, small, button, rows, callout, esc as E } from '../lib/email.js';
 import { teamOwner, getUserById, createUser, getUserByEmail, getUserBySlug, checkPassword, hashPassword, sessionCookie, clearCookie, currentUser, publicUser, saveUser, RESERVED, resetToken, userFromResetToken, sendPlainEmail } from '../lib/auth.js';
 
 export const maxDuration = 20;
@@ -71,8 +72,12 @@ export default async function handler(req, res) {
       const link = `https://${req.headers['x-forwarded-host'] || req.headers.host}/reset?t=${resetToken(u)}`;
       const first = (u.name || '').split(' ')[0] || 'there';
       await sendPlainEmail(u.email, 'Reset your JStar Pro password',
-        `Hi ${first},\n\nSomeone asked to reset the password for your JStar Pro account. Open this link within the next hour to choose a new one:\n\n${link}\n\nIf you didn't ask for this, ignore this email. Your password won't change.`,
-        `<p>Hi ${first},</p><p>Someone asked to reset the password for your JStar Pro account. Use the button below within the next hour to choose a new one.</p><p><a href="${link}" style="display:inline-block;background:#1a3f8f;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Choose a new password</a></p><p style="color:#666;font-size:13px">If you didn't ask for this, ignore this email. Your password won't change.</p>`
+        `Hi ${first},\n\nWe received a request to reset the password for your JStar Pro account (${u.email}). Use this link within the next hour to choose a new one:\n\n${link}\n\nIf you didn't request this, you can ignore this email. Your password won't change.\n\nJStar Pro`,
+        layout({ preheader: 'Use this secure link within the next hour to choose a new password.', eyebrow: 'Account security', title: 'Reset your password',
+          body: P(`Hi ${E(first)},`) + P(`We received a request to reset the password for your JStar Pro account, <b>${E(u.email)}</b>. Choose a new password with the button below.`)
+            + button(link, 'Choose a new password') + small('For your security, this link expires in 1 hour and can only be used once.')
+            + callout(`Didn't request this? You can safely ignore this email. Your password won't change, and nobody can access your account without it.`, 'info'),
+          footer: 'You received this email because a password reset was requested for your JStar Pro account.' })
       ).catch(e => console.error('reset email', e.message));
       return done();
     }
@@ -105,7 +110,10 @@ export default async function handler(req, res) {
       const to = process.env.SUPPORT_EMAIL || process.env.NOTIFY_EMAIL;
       if (to) await sendPlainEmail(to, `[JStar Pro support] ${topic}: ${name}`,
         `${message}\n\nFrom: ${name} <${email}>${me ? `\nAccount: ${me.company} (${me.plan?.tier || 'no plan'})` : ''}\nTopic: ${topic}\nReply to this email to answer them.`,
-        undefined, email).catch(e => console.error('support email', e.message));
+        layout({ preheader: message.slice(0, 120), eyebrow: 'Support request', title: E(topic),
+          body: rows([['From', E(name)], ['Email', `<a href="mailto:${E(email)}" style="color:#2f6fed;text-decoration:none">${E(email)}</a>`], ['Account', me ? E(`${me.company} · ${me.plan?.tier || 'no plan'}`) : 'Not logged in'], ['Received', new Date().toLocaleString('en-US', { timeZone: 'America/Chicago', dateStyle: 'medium', timeStyle: 'short' }) + ' CT']])
+            + callout(E(message).replace(/\n/g, '<br>'), 'info') + small('Reply to this email to answer them directly.') }),
+        email).catch(e => console.error('support email', e.message));
       return res.status(200).json({ ok: true });
     }
 
@@ -180,9 +188,13 @@ export default async function handler(req, res) {
       const token = crypto.randomBytes(16).toString('hex');
       await putDoc(`invites/${token}`, { owner: u.id, email, at: Date.now() }, { keep: 1 });
       const link = `https://${req.headers['x-forwarded-host'] || req.headers.host}/signup?invite=${token}`;
-      await sendPlainEmail(email, `${u.name} invited you to ${u.company} on JStar Pro`,
-        `${u.name} added you to ${u.company}'s JStar Pro account. Create your login here (the link works for 14 days):\n\n${link}`,
-        `<p>${esc(u.name)} added you to <b>${esc(u.company)}</b>'s JStar Pro account.</p><p><a href="${link}" style="display:inline-block;background:#2f6fed;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none;font-weight:700">Create your login</a></p><p style="color:#666;font-size:13px">The link works for 14 days.</p>`
+      await sendPlainEmail(email, `${u.name} invited you to join ${u.company} on JStar Pro`,
+        `${u.name} invited you to join ${u.company}'s team on JStar Pro, the deal-finding and underwriting platform for real estate wholesalers and investors.\n\nCreate your login here (the link works for 14 days):\n${link}\n\nJStar Pro`,
+        layout({ preheader: `Join ${u.company}'s team on JStar Pro. Your invite link works for 14 days.`, eyebrow: 'Team invitation', title: `Join ${E(u.company)} on JStar Pro`,
+          body: P(`<b>${E(u.name)}</b> invited you to join <b>${E(u.company)}</b>'s team on JStar Pro.`) + P('Once you create your login, you\'ll work from the same lead inbox, deals board, buyers list and tools as the rest of the team.')
+            + button(link, 'Accept invitation') + small('This invitation expires in 14 days. If you weren\'t expecting it, you can ignore this email.'),
+          footer: `You received this email because ${E(u.name)} invited ${E(email)} to a JStar Pro team.` }),
+        u.email
       ).catch(e => console.error('invite email', e.message));
       return res.status(200).json({ link });
     }

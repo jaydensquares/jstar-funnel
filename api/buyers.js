@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import { getActor } from '../lib/auth.js';
 import { getDoc, putDoc, deleteDoc, listDocs, newId } from '../lib/db.js';
 import { getDeal, saveDeal } from '../lib/store.js';
+import { layout, p as P, small, rows as R, callout, button } from '../lib/email.js';
 
 export const maxDuration = 60;
 const ID = /^[a-z0-9]{6,32}$/;
@@ -68,10 +69,12 @@ export default async function handler(req, res) {
       const to = (await listDocs(col(sc))).filter(x => ids.has(x.id) && x.email && !x.unsub);
       if (!to.length) return res.status(400).json({ error: 'Pick at least one buyer with an email.' });
       const key2 = process.env.RESEND_API_KEY; if (!key2) return res.status(503).json({ error: 'Email isn\'t set up yet.' });
-      const a = deal.address || {}, n = deal.numbers || {}, biz = actor.biz || {};
+      const a = deal.address || {}, n = deal.numbers || {}, biz = { ...(actor.biz || {}) };
       const price = num(b.price) || ((n.contractPrice || 0) + (n.assignmentFee || 0)) || null;
       const spread = n.arv && price ? n.arv - price - (n.repairs || 0) : null;
-      const addr = [a.street, a.city, a.state, a.zip].filter(Boolean).join(', ');
+      const addr = [a.street, a.city, [a.state, a.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+      const fmtPh = v => { const d = String(v || '').replace(/\D/g, '').replace(/^1(?=\d{10}$)/, ''); return d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : String(v || ''); };
+      if (biz.phone) biz.phone = fmtPh(biz.phone);
       const subject = str(b.subject, 140) || `Off-market: ${a.street || 'deal'}${a.city ? ', ' + a.city : ''}${price ? ' · ' + $$(price) : ''}`;
       const note = str(b.note, 2000), showing = str(b.showing, 500);
       const fromAddr = (String(process.env.NOTIFY_FROM || '').match(/<([^>]+)>/) || [])[1] || process.env.NOTIFY_FROM || 'onboarding@resend.dev';
@@ -85,10 +88,15 @@ export default async function handler(req, res) {
           from: `${biz.company || 'JStar Pro'} <${fromAddr}>`, to: [x.email], subject, ...(replyTo ? { reply_to: replyTo } : {}),
           headers: { 'List-Unsubscribe': `<${unsub}>` },
           text: `${hi.replace(/&amp;/g, '&')}\n\nNew off-market deal: ${addr}\n\n${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}${note ? '\n\n' + note : ''}\n\nReply to this email or call ${biz.phone || ''} to lock it up. First come, first served.\n\n${biz.company || ''}${mailAddr ? '\n' + mailAddr : ''}\nUnsubscribe: ${unsub}`,
-          html: `<div style="font-family:Arial,sans-serif;max-width:560px;color:#101828"><p>${hi}</p><p style="margin:0 0 6px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#2f6fed">New off-market deal</p><h2 style="margin:0 0 14px;font-size:22px">${esc(addr)}</h2>
-            <table style="border-collapse:collapse;width:100%;font-size:15px">${rows.map(([k, v]) => `<tr><td style="padding:8px 0;border-bottom:1px solid #eef0f3;color:#667085">${esc(k)}</td><td style="padding:8px 0;border-bottom:1px solid #eef0f3;text-align:right;font-weight:700">${esc(v)}</td></tr>`).join('')}</table>
-            ${note ? `<p style="white-space:pre-wrap;line-height:1.55">${esc(note)}</p>` : ''}<p style="line-height:1.55">Reply to this email${biz.phone ? ` or call <b>${esc(biz.phone)}</b>` : ''} to lock it up. First come, first served.</p>
-            <p style="margin-top:28px;font-size:12px;color:#98a2b3;line-height:1.5">${esc(biz.company || '')}${mailAddr ? '<br>' + esc(mailAddr) : ''}<br>You're getting this because you're on our buyers list. <a href="${unsub}" style="color:#98a2b3">Unsubscribe</a></p></div>`,
+          html: layout({ brand: { name: biz.company || 'Off-market deals', sub: biz.phone ? `Call or text ${biz.phone}` : '' }, legal: false,
+            preheader: `${price ? $$(price) + ' · ' : ''}${spread > 0 ? $$(spread) + ' potential spread · ' : ''}${addr}`,
+            eyebrow: 'New off-market deal', title: esc(addr),
+            body: P(hi) + P(`We just locked up an off-market property and you're one of the first buyers we're sending it to.`)
+              + R(rows.map(([k, v]) => [k, esc(v)]))
+              + (note ? callout(esc(note).replace(/\n/g, '<br>'), 'info') : '')
+              + P(`Reply to this email${biz.phone ? ` or call <b>${esc(biz.phone)}</b>` : ''} to lock it up. First come, first served.`)
+              + (replyTo ? button(`mailto:${replyTo}?subject=${encodeURIComponent('Re: ' + subject)}`, "I'm interested") : ''),
+            footer: `${esc(biz.company || '')}${mailAddr ? '<br>' + esc(mailAddr) : ''}<br>You're receiving this because you're on our cash buyers list. <a href="${unsub}" style="color:#98a2b3;text-decoration:underline">Unsubscribe</a>` }),
         };
       };
       let sent = 0, failed = 0;
