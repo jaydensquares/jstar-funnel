@@ -234,6 +234,40 @@
     K.animate(document.querySelector('.meterbox'));
   }
 
+  // Skip trace card: owner phones (ranked, DNC/litigator flagged), emails and mailing address.
+  // opts: { target: { leadId } | { dealId }, skip, pin, onDone(skip, usage) }
+  const fmtPh = d => d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : d;
+  K.skipCard = function (el, opts) {
+    el.classList.add('skcard');
+    const draw = (skip, busy, err) => {
+      const head = `<h2>${svg('phone', 'hic')} Owner contact <span class="tag">skip trace</span></h2>`;
+      if (!skip) { el.innerHTML = `${head}<p class="note">Get the owner's cell numbers, emails and mailing address. Uses 1 skip trace. No match is free.</p>
+        <button class="btn" type="button" data-sk ${busy ? 'disabled' : ''}>${busy ? '<span class="spin"></span> Tracing…' : svg('search') + ' Skip trace owner'}</button>${err ? `<p class="err" role="alert">${esc(err)}</p>` : ''}`; }
+      else if (!skip.hit) { el.innerHTML = `${head}<p class="note">No match for this address, so it didn't use a skip trace. Check the street and ZIP, then try again.</p>
+        <button class="btn ghost" type="button" data-sk data-again ${busy ? 'disabled' : ''}>${busy ? 'Tracing…' : 'Try again'}</button>${err ? `<p class="err" role="alert">${esc(err)}</p>` : ''}`; }
+      else {
+        const anyDnc = skip.persons.some(p => p.phones.some(x => x.dnc)), anyLit = skip.persons.some(p => p.litigator);
+        el.innerHTML = head + skip.persons.map(p => `<div class="skp"><div class="skn"><b>${esc(p.name || 'Owner')}</b>${p.age ? `<small>${p.age}</small>` : ''}${p.owner ? '<span class="skb ok">Owner</span>' : ''}${p.deceased ? '<span class="skb warn">Deceased</span>' : ''}${p.litigator ? '<span class="skb bad">TCPA litigator</span>' : ''}</div>
+          ${p.phones.map((x, i) => `<div class="skph${x.dnc ? ' dnc' : ''}"><div><b>${fmtPh(x.number)}</b><small>${esc([x.type, x.carrier].filter(Boolean).join(' · '))}${i === 0 ? ' · best' : ''}</small></div>${x.dnc ? '<span class="skb bad">DNC</span>' : ''}<a href="tel:${x.number}" title="Call">${svg('phone')}</a><a class="tx" href="sms:${x.number}" title="Text">${svg('msg')}</a></div>`).join('') || '<p class="note">No phones found.</p>'}
+          ${p.emails.map(e => `<a class="skem" href="mailto:${esc(e)}">${esc(e)}</a>`).join('')}
+          ${p.mailing ? `<div class="skm">${svg('pin')}<span>Mails to ${esc(p.mailing)}</span></div>` : ''}</div>`).join('')
+          + (anyDnc || anyLit ? `<p class="note sknote">${anyLit ? '<b>Litigator:</b> this owner has sued over calls or texts before. Don\'t cold call or text them. ' : ''}${anyDnc ? '<b>DNC:</b> the number is on a Do Not Call list. Don\'t cold call or text it unless the owner gave you consent.' : ''}</p>` : '')
+          + `<p class="note skfoot">Traced ${new Date(skip.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · <button type="button" class="link" data-sk data-again>Run again</button> (uses 1 more)</p>${err ? `<p class="err" role="alert">${esc(err)}</p>` : ''}`;
+      }
+      el.querySelectorAll('[data-sk]').forEach(b => b.onclick = () => go(!!b.dataset.again));
+    };
+    const go = async again => {
+      draw(opts.skip, true);
+      const r = await fetch('/api/skip', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...opts.target, again, pin: opts.pin }) })
+        .then(async x => ({ ok: x.ok, j: await x.json().catch(() => ({})) })).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
+      if (!r.ok) { draw(opts.skip, false, r.j.error || 'Could not skip trace.'); return; }
+      opts.skip = r.j.skip; draw(opts.skip);
+      K.toast(r.j.skip.hit ? `Found ${r.j.skip.persons.reduce((n, p) => n + p.phones.length, 0)} phone numbers` : 'No match. That one was free.');
+      opts.onDone?.(r.j.skip, r.j.usage);
+    };
+    draw(opts.skip);
+  };
+
   // ⌘K palette: pages, leads, and "run this address"
   function palette() {
     if (document.querySelector('.ck-back')) return;

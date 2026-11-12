@@ -48,6 +48,7 @@ export default async function handler(req, res) {
         analysis: { summary: lead.summary, mao: br.mao, opening: br.opening, call: br.call, confidence: br.confidence, label: br.label },
         notes: [L.reasonDetail && `Seller: "${L.reasonDetail}"`, `Source: ${lead.source}`].filter(Boolean).join('\n'),
         terms: { optionDays: 10, emDays: 3 },
+        ...(lead.skip ? { skip: lead.skip } : {}),
         history: [{ at: Date.now(), text: `Created from funnel lead (${lead.source})` }],
       }, actor.scope);
       await putDoc(key(b.id), { ...lead, status: 'converted', dealId: deal.id, updatedAt: Date.now() });

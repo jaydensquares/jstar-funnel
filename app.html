@@ -124,6 +124,7 @@
               <div class="err" id="lvErr" role="alert"></div>
             </section>
             <section class="card" id="lvSeller"></section>
+            <section class="card" id="lvSkip"></section>
           </aside>
         </div>
       </div>
@@ -176,7 +177,7 @@
         <p>Your pipeline from lead to offer, contract, assigned and closed, with pending and closed fees. Each deal has an underwriting calculator (buyer price, buyer profit, 70% rule), a numbers sign-off, an 18-point due-diligence checklist, and a purchase agreement and assignment filled in from the deal.</p>
         <span class="uses">Unlimited</span></a>
       <a class="tool" href="/list"><div class="tt"><b>Owner lists</b><span class="open">Open</span></div>
-        <p>Pull property owners in any ZIP code from public records. Filter for absentee and out-of-state owners, years owned and vacant lots, and leave out LLCs. The most motivated owners are sorted to the top, in a CSV ready for your skip-tracing service.</p>
+        <p>Pull property owners in any ZIP code from public records. Filter for absentee and out-of-state owners, years owned and vacant lots, and leave out LLCs. The most motivated owners are sorted to the top, in a CSV. Skip trace the ones you want from any lead or deal.</p>
         <span class="uses">Uses list records (500 per batch scanned)</span></a>
     </section>
 
@@ -305,7 +306,7 @@
   const flash = (btn, txt) => { const o = btn.textContent; btn.textContent = txt; setTimeout(() => btn.textContent = o, 1400); };
 
   let user = null, leads = [], usage = null, plan = null, toured = false;
-  const PACKS = [['runs', '+100 deal analyses', 25], ['photos', '+25 photo estimates', 15], ['lists', '+5,000 list records', 25]];
+  const PACKS = [['runs', '+100 deal analyses', 25], ['photos', '+25 photo estimates', 15], ['lists', '+5,000 list records', 25], ['skips', '+100 skip traces', 25]];
 
   async function boot() {
     const r = await fetch('/api/auth?action=me').catch(() => null);
@@ -409,7 +410,7 @@
   $('copyLink2').onclick = async () => { try { await navigator.clipboard.writeText(funnelUrl()); } catch {} flash($('copyLink2'), 'Copied'); };
   let curLead = null;
   async function openLead(id) {
-    $('leadIndex').hidden = true; $('leadView').hidden = false; $('lvSheet').innerHTML = '<p class="note">Loading…</p>'; $('lvSnap').innerHTML = ''; $('lvAv').innerHTML = ''; $('lvErr').textContent = ''; $('lvNums').innerHTML = ''; $('lvSeller').innerHTML = '';
+    $('leadIndex').hidden = true; $('leadView').hidden = false; $('lvSheet').innerHTML = '<p class="note">Loading…</p>'; $('lvSnap').innerHTML = ''; $('lvAv').innerHTML = ''; $('lvErr').textContent = ''; $('lvNums').innerHTML = ''; $('lvSeller').innerHTML = ''; $('lvSkip').innerHTML = '';
     window.scrollTo({ top: 0 });
     const r = await post('/api/leads', { action: 'get', id });
     if (!r.ok) { $('lvSheet').innerHTML = `<p class="err">${esc(r.j.error || 'Could not load.')}</p>`; return; }
@@ -428,6 +429,7 @@
     const J = window.JK, snap = J ? J.snapshot({ ...b, asking: b.asking }, { title: b.mao ? 'Offer range' : 'Deal', sub: b.call || '' }) : '';
     $('lvSnap').innerHTML = snap; $('lvFull').open = !snap; if (snap) J.mountSnapshot($('lvSnap'));
     $('lvAv').innerHTML = J ? J.avatar($('lvName').textContent, 'lg') : '';
+    if (J) J.skipCard($('lvSkip'), { target: { leadId: curLead.id }, skip: curLead.skip || null, onDone: (sk, u) => { curLead.skip = sk; const i = leads.findIndex(l => l.id === curLead.id); if (i >= 0) leads[i].skip = sk; if (u) { usage = u; renderUsage(); } } });
     $('lvCall2').innerHTML = (J ? J.svg('phone') : '') + ' Call'; $('lvText2').innerHTML = (J ? J.svg('msg') : '') + ' Text';
     $('lvCall2').href = 'tel:' + digits; $('lvText2').href = 'sms:' + digits; $('lvCall2').hidden = $('lvText2').hidden = !digits;
     if (curLead.status === 'new') { post('/api/leads', { action: 'status', id, status: 'contacted' }).then(x => { if (x.ok) { curLead = { ...curLead, status: 'contacted' }; $('lvStatus').value = 'contacted'; const i = leads.findIndex(l => l.id === id); if (i >= 0) leads[i].status = 'contacted'; } }); }
@@ -639,10 +641,10 @@
   // ── Account ──
   function renderUsage() {
     if (!usage) { $('usage').innerHTML = '<p class="note">Loading…</p>'; return; }
-    if (usage.operator) { $('usage').innerHTML = `<div class="urings">${[['runs', 'Deal analyses'], ['photos', 'Photo estimates'], ['listCalls', 'List calls']].map(([k, l]) => `<div><span class="ring" style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#2f6fed,#7a5af8);color:#fff;font:700 22px var(--body)">∞</span><div><b>${(usage[k] || 0).toLocaleString()} used</b><span>${l} · unlimited</span></div></div>`).join('')}</div>`; return; }
+    if (usage.operator) { $('usage').innerHTML = `<div class="urings">${[['runs', 'Deal analyses'], ['photos', 'Photo estimates'], ['listCalls', 'List calls'], ['skips', 'Skip traces']].map(([k, l]) => `<div><span class="ring" style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#2f6fed,#7a5af8);color:#fff;font:700 22px var(--body)">∞</span><div><b>${(usage[k] || 0).toLocaleString()} used</b><span>${l} · unlimited</span></div></div>`).join('')}</div>`; return; }
     const L = usage.limits || {};
-    const J = window.JK, COL = { runs: ['#4a85ff', '#2f6fed'], photos: ['#9b8afb', '#7a5af8'], listCalls: ['#32d583', '#12b76a'] };
-    $('usage').innerHTML = '<div class="urings">' + [['runs', 'Deal analyses', 1], ['photos', 'Photo estimates', 1], ['listCalls', 'List records', 500]].map(([k, l, x]) => {
+    const J = window.JK, COL = { runs: ['#4a85ff', '#2f6fed'], photos: ['#9b8afb', '#7a5af8'], listCalls: ['#32d583', '#12b76a'], skips: ['#ffd666', '#f79009'] };
+    $('usage').innerHTML = '<div class="urings">' + [['runs', 'Deal analyses', 1], ['photos', 'Photo estimates', 1], ['listCalls', 'List records', 500], ['skips', 'Skip traces', 1]].map(([k, l, x]) => {
       const u = (usage[k] || 0) * x, m = (L[k] || 1) * x, c = (usage.credits?.[k] || 0) * x, left = Math.max(0, m - u);
       return `<div>${J ? J.ring(left / m, { size: 58, stroke: 6, grad: COL[k], text: Math.round(left / m * 100) + '%' }) : ''}<div><b>${left.toLocaleString()} left</b><span>${l} · ${Math.min(u, m).toLocaleString()} of ${m.toLocaleString()} used${c ? ` · +${c.toLocaleString()} add-on` : ''}</span></div></div>`;
     }).join('') + '</div>' + '<p class="note">Plan limits reset on the 1st of each month, and unused plan usage doesn\'t roll over. Usage you buy separately as an add-on doesn\'t expire at the end of the month.</p>'

@@ -44,6 +44,7 @@ export default async function handler(req, res) {
       if (!b.deal || typeof b.deal !== 'object') return res.status(400).json({ error: 'No deal.' });
       const prev = b.deal.id ? await getDeal(String(b.deal.id), sc) : null;
       const d = clean({ ...b.deal, createdAt: prev?.createdAt });
+      if (prev?.skip) d.skip = prev.skip; // skip trace results are only set by /api/skip
       if (!d.address?.street) return res.status(400).json({ error: 'Deal needs an address.' });
       if (prev && prev.status !== d.status) d.history.push({ at: Date.now(), text: `Status: ${prev.status} → ${d.status}` });
       if (!prev) d.history.push({ at: Date.now(), text: 'Deal created' });

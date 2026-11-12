@@ -193,6 +193,8 @@
       </div>
     </section>
 
+    <section class="card" id="skipCard" hidden></section>
+
     <section class="card">
       <h2>Underwriting: numbers</h2>
       <div class="grid2">
@@ -483,6 +485,13 @@
     const ready = !!d.id;
     ['psaBtn', 'asgBtn'].forEach(b => { $(b).style.opacity = ready ? 1 : .5; $(b).style.pointerEvents = ready ? '' : 'none'; });
     if (ready) { $('psaBtn').href = `/contract?id=${d.id}&doc=psa`; $('asgBtn').href = `/contract?id=${d.id}&doc=assign`; }
+    $('skipCard').hidden = !d.id || !window.JK;
+    if (d.id && window.JK) JK.skipCard($('skipCard'), { target: { dealId: d.id }, skip: d.skip || null, pin, onDone: sk => {
+      cur.skip = sk; const ph = $('ed').querySelector('[data-f="seller.phone"]'), nm = $('ed').querySelector('[data-f="seller.name"]');
+      const best = sk.hit && sk.persons.flatMap(p => p.phones).find(x => !x.dnc);
+      if (best && ph && !ph.value.trim()) { ph.value = best.number.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3'); dirty = true; JK.toast('Best number added to Seller. Hit Save.'); }
+      if (sk.hit && nm && !nm.value.trim() && sk.persons[0]?.name) { nm.value = sk.persons[0].name; dirty = true; }
+    } });
     updCount(); calc();
   }
   function collect() {

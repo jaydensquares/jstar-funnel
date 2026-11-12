@@ -150,7 +150,8 @@
       return `<div class="drow"><div><b>${name}</b><small>${sub} · last month ${(l[k] || 0).toLocaleString()}</small></div><div class="dnum">${cap ? meter(used, cap) : used.toLocaleString()}</div></div>`; };
     const tok = ((c.anthropicIn || 0) + (c.anthropicOut || 0));
     $('dataUse').innerHTML = line('RentCast', 'rentcast', 'values, rents, list pages') + line('Realie', 'realie', 'mortgage and equity lookups')
-      + line('Anthropic (AI)', 'anthropic', `photo reports · ${tok.toLocaleString()} tokens`);
+      + line('Anthropic (AI)', 'anthropic', `photo reports · ${tok.toLocaleString()} tokens`)
+      + line('Tracerfy', 'tracerfy', `skip trace hits · ${(c.tracerfyCredits || 0).toLocaleString()} credits (about $${((c.tracerfyCredits || 0) * 0.02).toFixed(2)})`);
   }
   function support(list) {
     $('support').innerHTML = list.length ? list.map(m => `<div class="sup"><div><b>${esc(m.name)}</b> <small>${esc(m.topic)} · ${date(m.at)}${m.company ? ' · ' + esc(m.company) : ''}</small></div>
