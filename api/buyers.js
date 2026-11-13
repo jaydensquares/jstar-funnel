@@ -50,7 +50,7 @@ export default async function handler(req, res) {
       const prev = b.buyer?.id && ID.test(b.buyer.id) ? await getDoc(key(b.buyer.id)) : null;
       const d = cleanBuyer(b.buyer || {}, prev || {});
       if (!d.name) return res.status(400).json({ error: 'Add a name.' });
-      if (!d.email && !d.phone) return res.status(400).json({ error: 'Add an email or phone.' });
+      if (!d.email && !d.phone && !b.buyer?.found) return res.status(400).json({ error: 'Add an email or phone.' });
       return res.status(200).json({ buyer: await putDoc(key(d.id), d) });
     }
     if (b.action === 'delete') return res.status(200).json({ ok: ID.test(String(b.id || '')) && await deleteDoc(key(b.id)) });

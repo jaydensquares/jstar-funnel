@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Driving for dollars | JStar Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
+  .dhero { display:grid; gap:10px; }
+  .gps { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; padding:18px; font-size:17px; }
+  .gps svg { width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .or { display:flex; align-items:center; gap:10px; color:var(--muted); font-size:13px; } .or::before, .or::after { content:''; flex:1; height:1px; background:var(--line); }
+  .typed { display:flex; gap:8px; } .typed input { margin:0; flex:1; } .typed .btn { width:auto; }
+  .near { display:grid; gap:8px; } .nh { display:flex; align-items:center; gap:12px; width:100%; text-align:left; padding:12px 14px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--ink); font:inherit; cursor:pointer; }
+  .nh:hover, .nh.on { border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft); } .nh .ft { flex:none; font:700 12px var(--body); color:var(--brand); background:var(--brand-soft); padding:5px 8px; border-radius:8px; }
+  .nh b { display:block; font-size:15px; } .nh small { display:block; color:var(--muted); font-size:12.5px; }
+  .hcard h2 { margin-bottom:4px; } .hmeta { color:var(--muted); font-size:13.5px; margin-bottom:10px; }
+  .htags { display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 4px; } .htags span { font:600 11.5px var(--body); padding:4px 8px; border-radius:6px; background:var(--brand-soft); color:var(--brand); }
+  .kv2 { display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin:12px 0 4px; } .kv2 div { background:var(--line2); border-radius:10px; padding:10px; } .kv2 span { display:block; font-size:11.5px; color:var(--muted); } .kv2 b { font-size:15px; font-variant-numeric:tabular-nums; }
+  .shot { position:relative; border:2px dashed var(--line); border-radius:14px; min-height:160px; display:grid; place-items:center; text-align:center; color:var(--muted); cursor:pointer; overflow:hidden; background:var(--line2); }
+  .shot img { width:100%; max-height:340px; object-fit:cover; display:block; } .shot input { position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .shot .cam { display:grid; gap:6px; justify-items:center; font-weight:600; } .shot .cam svg { width:30px; height:30px; stroke:var(--brand); fill:none; stroke-width:2; }
+  .dtags { display:flex; flex-wrap:wrap; gap:6px; } .dtags button { border:1px solid var(--line); background:var(--card); color:var(--ink2); font:600 13px var(--body); padding:8px 12px; border-radius:999px; cursor:pointer; }
+  .dtags button.on { background:var(--hot); border-color:var(--hot); color:#fff; }
+  .dacts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; } .dacts .btn { width:100%; } .dacts .wide { grid-column:1 / -1; }
+  #dmap { height:300px; border-radius:12px; overflow:hidden; border:1px solid var(--line); z-index:0; }
+  .dlist { margin-top:10px; display:grid; gap:6px; } .dlist div { display:flex; gap:10px; align-items:center; font-size:13.5px; } .dlist img { width:44px; height:34px; object-fit:cover; border-radius:6px; } .dlist small { color:var(--muted); }
+  .cpin { width:26px; height:26px; border-radius:50%; background:var(--c); color:#fff; font:800 12px/22px var(--body); text-align:center; border:2px solid #fff; box-shadow:0 2px 8px rgba(10,22,51,.35); }
+  @media (max-width:640px) { .kv2 { grid-template-columns:repeat(2, 1fr); } }
+</style>
+<link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/kit.css">
+<script src="/kit.js"></script>
+<script src="/acct.js"></script>
+</head>
+<body class="shell">
+<aside class="side"><div class="brandbox"><a class="logo" href="/app">JStar <span>Pro</span></a><div class="ws" id="ws">Owner</div></div>
+<nav class="snav" aria-label="Main"><a class="acct-only" href="/app#leads" data-t="leads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13L21 13v6H3v-6z"/></svg>Leads</a><a href="/underwriting"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V4.5h7V7"/><path d="M3 12.5h18"/></svg>Deals</a><a class="acct-only" href="/app#buyers" data-t="buyers"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5.5 6.5-5.5s5.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5c1.6.8 2.6 2.6 3 5.5"/></svg>Buyers</a><span class="sh">Analyze</span><a href="/operator"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Run an address</a><a href="/batch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Batch</a><a href="/photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo estimate</a><a href="/list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Owner lists</a><a class="on" href="/drive"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14M6 17l1.5-5h9L18 17"/><path d="M7.5 12l1.5-4h6l1.5 4"/><circle cx="8" cy="18.5" r="1.5"/><circle cx="16" cy="18.5" r="1.5"/></svg>Driving for dollars</a><span class="sh acct-only">Funnel</span><a class="acct-only" href="/app#funnel" data-t="funnel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Funnel &amp; business</a><a class="acct-only" href="/app#ads" data-t="ads"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Ad tracking</a><a class="acct-only" href="/app#domain" data-t="domain"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>Domain</a></nav>
+<div class="foot snav"><a class="acct-only" href="/app#account" data-t="account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Plan &amp; account</a></div></aside>
+
+<main class="wrap page">
+  <div class="ph"><div><h1>Driving for dollars</h1><p>Parked in front of a rough house? Find it by GPS, see who owns it, snap a photo and save it, or run the numbers on the spot.</p></div></div>
+  <section id="gate" class="card">
+    <h1>Operator access</h1>
+    <p class="sub">Enter your PIN.</p>
+    <form id="pinForm" autocomplete="off"><label class="f" for="pin">PIN</label><input type="password" id="pin" inputmode="numeric" autocomplete="current-password" required><div class="err" id="pinErr" role="alert"></div><button class="btn" id="pinBtn" type="submit">Unlock</button></form>
+    <p class="sub" style="margin-top:12px">Have an account? <a href="/login">Log in</a></p>
+  </section>
+
+  <div id="app" hidden>
+    <section class="card dhero">
+      <button class="btn gps" type="button" id="gpsBtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8"/></svg>Find the house I'm at</button>
+      <div class="or">or type the address</div>
+      <form class="typed" id="typedForm"><input type="text" id="typed" placeholder="4318 Wakefield Dr, Houston, TX 77018" autocomplete="street-address"><button class="btn ghost" type="submit" id="typedBtn">Look up</button></form>
+      <p class="note" style="margin:0">Each lookup uses 1 of your monthly list records (500 records = 1).</p>
+      <div class="err" id="err" role="alert"></div>
+      <div class="near" id="near"></div>
+    </section>
+
+    <section class="card hcard" id="house" hidden>
+      <h2 id="hAddr"></h2>
+      <div class="hmeta" id="hMeta"></div>
+      <div class="htags" id="hTags"></div>
+      <div class="kv2" id="hKv"></div>
+      <label class="f">Photo</label>
+      <label class="shot" id="shot"><input type="file" id="photo" accept="image/*" capture="environment"><span class="cam"><svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Snap a photo of the house</span></label>
+      <label class="f">What do you see?</label>
+      <div class="dtags" id="dtags"></div>
+      <label class="f" for="note">Notes</label>
+      <textarea id="note" rows="2" placeholder="Tarp on the roof, grass knee high, newspapers on the porch…"></textarea>
+      <div class="dacts">
+        <button class="btn wide" type="button" id="saveBtn">Save to my driving list</button>
+        <a class="btn ghost" id="runBtn" href="#">Run the numbers</a>
+        <button class="btn ghost" type="button" id="skipBtn">Get owner's phone</button>
+      </div>
+      <section class="card" id="skipCard" hidden style="margin:14px 0 0;box-shadow:none;border:1px solid var(--line)"></section>
+    </section>
+
+    <section class="card" id="trip">
+      <h2 style="display:flex;align-items:center;gap:8px">Your driving list <span style="margin-left:auto;font:600 12.5px var(--body);color:var(--muted)" id="tripCount"></span></h2>
+      <div id="dmap"></div>
+      <div class="dlist" id="dlist"></div>
+      <p class="note" style="margin-bottom:0">Saved houses go to <a href="/list">Owner lists</a> under <b>Driving for dollars</b>. Stack it with an absentee list to find the best ones.</p>
+    </section>
+  </div>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const money = v => v ? '$' + Math.round(v).toLocaleString() : '—';
+  let pin = ''; try { pin = sessionStorage.getItem('opPin') || ''; } catch {}
+  const api = body => fetch('/api/list', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, ...body }) }).then(async r => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) })).catch(() => ({ ok: false, j: { error: 'No connection. Try again when you have signal.' } }));
+  const TAGS = ['Vacant', 'Overgrown yard', 'Boarded up', 'Roof damage', 'Mail piling up', 'Code violation', 'Fire damage', 'Junk in yard', 'Needs paint', 'For rent sign'];
+  let cur = null, here = null, chosen = new Set(), photoData = null, tripRecs = [];
+  $('dtags').innerHTML = TAGS.map(t => `<button type="button" data-t="${t}">${t}</button>`).join('');
+  $('dtags').querySelectorAll('button').forEach(b => b.onclick = () => { b.classList.toggle('on'); chosen[b.classList.contains('on') ? 'add' : 'delete'](b.dataset.t); });
+
+  const unlock = () => { $('gate').hidden = true; $('app').hidden = false; loadTrip(); };
+  $('pinForm').addEventListener('submit', async e => {
+    e.preventDefault(); pin = $('pin').value.trim(); $('pinErr').textContent = ''; $('pinBtn').disabled = true;
+    const r = await fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, checkOnly: true }) }).catch(() => null);
+    $('pinBtn').disabled = false; if (!r || !r.ok) { $('pinErr').textContent = 'Wrong PIN.'; return; }
+    try { sessionStorage.setItem('opPin', pin); } catch {} unlock();
+  });
+
+  function showNear(recs) {
+    $('near').innerHTML = recs.length > 1 ? '<p class="note" style="margin:6px 0 0">Which one is it?</p>' + recs.map((r, i) => `<button type="button" class="nh" data-i="${i}">${r.ft != null ? `<span class="ft">${r.ft < 1000 ? r.ft + ' ft' : (r.ft / 5280).toFixed(1) + ' mi'}</span>` : ''}<span><b>${esc(r.addr)}</b><small>${esc(r.owner || 'Owner unknown')}${r.absentee ? ' · absentee' : ''}${r.yrs != null ? ' · owned ' + Math.floor(r.yrs) + ' yrs' : ''}</small></span></button>`).join('') : '';
+    $('near').querySelectorAll('.nh').forEach(b => b.onclick = () => { $('near').querySelectorAll('.nh').forEach(x => x.classList.toggle('on', x === b)); pick(recs[+b.dataset.i]); });
+    if (recs.length) { $('near').querySelector('.nh')?.classList.add('on'); pick(recs[0]); }
+  }
+  function pick(r) {
+    cur = r; chosen.clear(); photoData = null; $('note').value = ''; $('skipCard').hidden = true;
+    $('dtags').querySelectorAll('button').forEach(b => b.classList.remove('on'));
+    $('shot').querySelector('img')?.remove(); $('shot').querySelector('.cam').hidden = false;
+    $('house').hidden = false; $('hAddr').textContent = r.addr;
+    $('hMeta').innerHTML = `${esc([r.city, r.st, r.zip].filter(Boolean).join(', '))}<br>Owner: <b>${esc(r.owner || 'Unknown')}</b>${r.owner2 ? ' &amp; ' + esc(r.owner2) : ''}${r.mail ? `<br>Mails to ${esc([r.mail, r.mcity, r.mst].filter(Boolean).join(', '))}` : ''}`;
+    $('hTags').innerHTML = (r.tags || []).map(t => `<span>${esc(t)}</span>`).join('');
+    $('hKv').innerHTML = [['Beds / baths', r.bd != null ? `${r.bd} / ${r.ba ?? '—'}` : '—'], ['Sqft', r.sqft ? r.sqft.toLocaleString() : '—'], ['Built', r.yb || '—'], ['Last sold', r.sale ? `${new Date(r.sale + 'T12:00').getFullYear()} · ${money(r.salePrice)}` : 'No record']].map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('');
+    const full = [r.addr, r.city, [r.st, r.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+    $('runBtn').href = '/operator?a=' + encodeURIComponent(full);
+    $('saveBtn').disabled = false; $('saveBtn').textContent = tripRecs.some(x => x.k === r.k) ? 'Update in my driving list' : 'Save to my driving list';
+    setTimeout(() => $('house').scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  }
+
+  $('gpsBtn').onclick = () => {
+    $('err').textContent = ''; if (!navigator.geolocation) { $('err').textContent = 'Your browser can\'t share location. Type the address instead.'; return; }
+    $('gpsBtn').disabled = true; $('gpsBtn').lastChild.textContent = 'Finding you…';
+    navigator.geolocation.getCurrentPosition(async pos => {
+      here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      $('gpsBtn').lastChild.textContent = 'Finding the house…';
+      const r = await api({ action: 'near', lat: here.lat, lng: here.lng });
+      $('gpsBtn').disabled = false; $('gpsBtn').lastChild.textContent = 'Find the house I\'m at';
+      if (!r.ok) { $('err').textContent = r.j.error || 'Couldn\'t find houses here.'; return; }
+      if (!r.j.records.length) { $('err').textContent = 'No houses on record right here. Type the address instead.'; return; }
+      showNear(r.j.records);
+    }, e => { $('gpsBtn').disabled = false; $('gpsBtn').lastChild.textContent = 'Find the house I\'m at'; $('err').textContent = e.code === 1 ? 'Location is blocked. Allow location for this site in your browser settings, or type the address.' : 'Couldn\'t get your location. Type the address instead.'; }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 });
+  };
+  $('typedForm').onsubmit = async e => {
+    e.preventDefault(); const a = $('typed').value.trim(); if (a.length < 8) { $('err').textContent = 'Type the full address with city, state and ZIP.'; return; }
+    $('err').textContent = ''; $('typedBtn').disabled = true; $('typedBtn').textContent = 'Looking…';
+    const r = await api({ action: 'lookup', address: a }); $('typedBtn').disabled = false; $('typedBtn').textContent = 'Look up';
+    if (!r.ok) { $('err').textContent = r.j.error || 'Couldn\'t look that up.'; return; }
+    showNear(r.j.records);
+  };
+
+  // Photo: shrink on the phone before saving (about 1000px, JPEG)
+  $('photo').onchange = () => {
+    const f = $('photo').files[0]; if (!f) return;
+    const img = new Image(); img.onload = () => {
+      const s = Math.min(1, 1000 / Math.max(img.width, img.height)), c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); photoData = c.toDataURL('image/jpeg', 0.7);
+      $('shot').querySelector('img')?.remove(); const el = document.createElement('img'); el.src = photoData; $('shot').prepend(el); $('shot').querySelector('.cam').hidden = true; URL.revokeObjectURL(img.src);
+    }; img.src = URL.createObjectURL(f);
+  };
+
+  $('saveBtn').onclick = async () => {
+    if (!cur) return; $('saveBtn').disabled = true; $('saveBtn').textContent = 'Saving…';
+    const r = await api({ action: 'drive', record: cur, tags: [...chosen], note: $('note').value, photo: photoData, lat: here?.lat, lng: here?.lng });
+    if (!r.ok) { $('saveBtn').disabled = false; $('saveBtn').textContent = 'Save to my driving list'; window.JK?.toast(r.j.error || 'Could not save'); return; }
+    $('saveBtn').textContent = 'Saved'; window.JK?.toast('Saved to your driving list'); loadTrip();
+  };
+  $('skipBtn').onclick = () => {
+    if (!cur || !window.JK) return; $('skipCard').hidden = false;
+    window.JK.skipCard($('skipCard'), { target: { address: { street: cur.addr, city: cur.city, state: cur.st, zip: cur.zip } }, skip: null, pin });
+    $('skipCard').querySelector('[data-sk]')?.click(); $('skipCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  // Driving list + map
+  let map = null, layer = null;
+  async function loadTrip() {
+    const l = await api({ action: 'lists' }); const meta = l.ok ? l.j.lists.find(x => x.source === 'drive') : null;
+    tripRecs = []; if (meta) { const g = await api({ action: 'get', id: meta.id }); if (g.ok) tripRecs = g.j.list.records || []; }
+    $('tripCount').textContent = tripRecs.length ? `${tripRecs.length} house${tripRecs.length === 1 ? '' : 's'}` : '';
+    $('dlist').innerHTML = tripRecs.slice(0, 8).map(r => `<div>${r.photo ? `<img src="${r.photo}" alt="">` : ''}<span><b>${esc(r.addr)}</b> <small>${esc((r.dtags || []).join(', ') || 'No notes')} · ${new Date(r.drivenAt || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</small></span></div>`).join('') || '<p class="note">No houses saved yet. Find one above and tap Save.</p>';
+    const pts = tripRecs.filter(r => r.lat != null);
+    if (!pts.length) { $('dmap').hidden = true; return; } $('dmap').hidden = false;
+    const L = await new Promise(ok => { if (window.L) return ok(window.L); const c = document.createElement('link'); c.rel = 'stylesheet'; c.href = '/vendor/leaflet/leaflet.css'; document.head.appendChild(c); const s = document.createElement('script'); s.src = '/vendor/leaflet/leaflet.js'; s.onload = () => ok(window.L); s.onerror = () => ok(null); document.head.appendChild(s); });
+    if (!L) { $('dmap').hidden = true; return; }
+    if (!map) { const dark = matchMedia('(prefers-color-scheme: dark)').matches; map = L.map('dmap', { scrollWheelZoom: false }); L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map); }
+    if (layer) layer.remove(); layer = L.layerGroup().addTo(map);
+    pts.forEach((r, i) => L.marker([r.lat, r.lng], { icon: L.divIcon({ className: '', html: `<div class="cpin" style="--c:${(r.dtags || []).length >= 2 ? '#d92d20' : '#2f6fed'}">${i + 1}</div>`, iconSize: [26, 26], iconAnchor: [13, 13] }) }).addTo(layer)
+      .bindPopup(`${r.photo ? `<img src="${r.photo}" style="width:180px;border-radius:8px;display:block;margin-bottom:6px">` : ''}<b>${esc(r.addr)}</b><br>${esc(r.owner || '')}<br><small>${esc((r.dtags || []).join(', '))}</small>`));
+    map.fitBounds(pts.map(r => [r.lat, r.lng]), { padding: [30, 30], maxZoom: 17 });
+  }
+
+  if (pin) unlock(); else acctUnlock(unlock);
+})();
+</script>
+</body>
+</html>

@@ -233,7 +233,7 @@
   const PAGES = [
     ['Leads', '/app#leads', 'inbox', 'Your funnel leads'], ['Deals', '/underwriting', 'deal', 'Pipeline, underwriting, contracts'], ['Buyers', '/app#buyers', 'user', 'Your cash buyers list'],
     ['Run an address', '/operator', 'search', 'Comps, ARV, repairs, offer, mortgage'], ['Batch', '/batch', 'list', 'Up to 10 addresses at once'],
-    ['Photo estimate', '/photos', 'camera', 'Repair budget from photos'], ['Owner lists', '/list', 'pin', 'Pull owners by ZIP'],
+    ['Photo estimate', '/photos', 'camera', 'Repair budget from photos'], ['Owner lists', '/list', 'pin', 'Pull, save and stack owner lists'], ['Driving for dollars', '/drive', 'camera', 'Snap a house, see the owner, run the numbers'],
     ['Funnel & business', '/app#funnel', 'funnel', 'Your funnel link and details'], ['Plan & account', '/app#account', 'user', 'Billing, usage, password'],
   ];
   let me = null, leadCache = null;
@@ -244,6 +244,9 @@
     const side = document.querySelector('.side'), main = document.querySelector('main.page');
     if (!side || !main) return;
     const bb = side.querySelector('.brandbox');
+    // Phones: the nav is a sideways strip, so bring the current page into view
+    const navTo = () => { const nav = side.querySelector('nav.snav'), on = nav?.querySelector('a.on'); if (nav && on && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = Math.max(0, on.getBoundingClientRect().left - nav.getBoundingClientRect().left + nav.scrollLeft - 24); };
+    requestAnimationFrame(navTo); document.fonts?.ready.then(() => setTimeout(navTo, 50)); window.addEventListener('load', () => setTimeout(navTo, 50), { once: true });
     if (bb && !bb.querySelector('.mark')) {
       bb.insertAdjacentHTML('afterbegin', '<span class="mark"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z"/></svg></span>');
       const logo = bb.querySelector('.logo'), ws = bb.querySelector('.ws'); const box = document.createElement('div'); box.className = 'bt'; bb.appendChild(box); if (logo) box.appendChild(logo); if (ws) box.appendChild(ws);

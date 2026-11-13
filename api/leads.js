@@ -37,6 +37,18 @@ export default async function handler(req, res) {
       if (d && !/^\d{4}-\d{2}-\d{2}$/.test(d)) return res.status(400).json({ error: 'Bad date.' });
       return res.status(200).json({ lead: await putDoc(key(b.id), { ...lead, followUpAt: d || null, updatedAt: Date.now() }) });
     }
+    if (b.action === 'log') {
+      // Call / text activity on a lead. Moves New → Contacted and can set the next follow-up.
+      const OUT = ['no_answer', 'voicemail', 'interested', 'not_now', 'not_interested', 'wrong_number', 'texted'];
+      if (!OUT.includes(b.outcome)) return res.status(400).json({ error: 'Pick how it went.' });
+      const ev = { at: Date.now(), kind: b.outcome === 'texted' ? 'text' : 'call', outcome: b.outcome, note: String(b.note || '').trim().slice(0, 500), tpl: String(b.tpl || '').slice(0, 40) || undefined };
+      const d = String(b.followUp || '');
+      const next = { ...lead, activity: [ev, ...(lead.activity || [])].slice(0, 100), lastContactAt: ev.at, updatedAt: Date.now() };
+      if (/^\d{4}-\d{2}-\d{2}$/.test(d)) next.followUpAt = d;
+      if (next.status === 'new') next.status = 'contacted';
+      if (['not_interested', 'wrong_number'].includes(b.outcome) && b.markDead) { next.status = 'dead'; next.followUpAt = null; }
+      return res.status(200).json({ lead: await putDoc(key(b.id), next) });
+    }
     if (b.action === 'convert') {
       if (lead.dealId) return res.status(200).json({ dealId: lead.dealId });
       const L = lead.lead || {}, br = lead.brief || {};

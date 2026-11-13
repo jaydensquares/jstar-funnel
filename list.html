@@ -9,6 +9,23 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
+  .ltabs { display:inline-flex; gap:4px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:4px; margin-bottom:16px; flex-wrap:wrap; }
+  .ltabs button { border:0; background:none; font:600 14px var(--body); color:var(--muted); padding:8px 14px; border-radius:8px; cursor:pointer; }
+  .ltabs button.on { background:var(--brand); color:#fff; }
+  details.more summary { cursor:pointer; list-style:none; } details.more summary::-webkit-details-marker { display:none; } details.more summary .opt { color:var(--muted); font-size:13px; margin-left:6px; }
+  details.more summary::after { content:'+'; float:right; font-size:22px; color:var(--muted); line-height:1; } details.more[open] summary::after { content:'–'; }
+  .ractions { display:flex; gap:10px; flex-wrap:wrap; margin:12px 0; } .ractions input { flex:1; min-width:200px; margin:0; }
+  .tagbar { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; } .tagbar button { border:1px solid var(--line); background:var(--card); color:var(--ink2); font:600 12.5px var(--body); padding:6px 10px; border-radius:999px; cursor:pointer; } .tagbar button.on { background:var(--ink); color:var(--card); border-color:var(--ink); }
+  .tw { overflow-x:auto; } #rtab td small { display:block; color:var(--muted); font-size:12px; margin-top:2px; } #rtab td { vertical-align:top; }
+  .tg { display:inline-block; font:600 11px var(--body); padding:3px 7px; border-radius:6px; background:var(--brand-soft); color:var(--brand); margin:0 4px 4px 0; white-space:nowrap; }
+  .dph { display:block; width:72px; height:54px; object-fit:cover; border-radius:6px; margin-top:4px; }
+  .hits { display:inline-grid; place-items:center; min-width:28px; height:28px; border-radius:8px; background:var(--line2); color:var(--ink); } .hits.h2 { background:var(--warn-bg); color:var(--warn); } .hits.h3, .hits.h4 { background:var(--hot-bg); color:var(--hot); }
+  .lcard { display:flex; align-items:center; gap:14px; margin-bottom:10px; } .lm { flex:1; min-width:0; } .lm b { display:block; } .lm small { color:var(--muted); font-size:13px; }
+  .li { width:42px; height:42px; border-radius:12px; display:grid; place-items:center; background:var(--brand-soft); color:var(--brand); flex:none; } .li.drive { background:var(--ok-bg); color:var(--ok); } .li.stack { background:var(--warn-bg); color:var(--warn); }
+  .li svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .btn.sm { padding:8px 12px; font-size:13px; width:auto; } .btn.del { color:var(--hot); }
+  .spick { display:grid; gap:6px; margin-bottom:12px; } .spick .opt { color:var(--muted); font-size:13px; }
+  @media (max-width:640px) { .lcard { flex-wrap:wrap; } .lcard .lm { flex-basis:calc(100% - 60px); } }
 </style>
 <link rel="stylesheet" href="/ui.css">
 <link rel="stylesheet" href="/kit.css">
@@ -17,11 +34,11 @@
 </head>
 <body class="shell">
 <aside class="side"><div class="brandbox"><a class="logo" href="/app">JStar <span>Pro</span></a><div class="ws" id="ws">Owner</div></div>
-<nav class="snav" aria-label="Main"><a class="acct-only" href="/app#leads" data-t="leads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13L21 13v6H3v-6z"/></svg>Leads</a><a href="/underwriting"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V4.5h7V7"/><path d="M3 12.5h18"/></svg>Deals</a><a class="acct-only" href="/app#buyers" data-t="buyers"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5.5 6.5-5.5s5.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5c1.6.8 2.6 2.6 3 5.5"/></svg>Buyers</a><span class="sh">Analyze</span><a href="/operator"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Run an address</a><a href="/batch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Batch</a><a href="/photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo estimate</a><a class="on" href="/list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Owner lists</a><span class="sh acct-only">Funnel</span><a class="acct-only" href="/app#funnel" data-t="funnel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Funnel &amp; business</a><a class="acct-only" href="/app#ads" data-t="ads"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Ad tracking</a><a class="acct-only" href="/app#domain" data-t="domain"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>Domain</a></nav>
+<nav class="snav" aria-label="Main"><a class="acct-only" href="/app#leads" data-t="leads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13L21 13v6H3v-6z"/></svg>Leads</a><a href="/underwriting"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V4.5h7V7"/><path d="M3 12.5h18"/></svg>Deals</a><a class="acct-only" href="/app#buyers" data-t="buyers"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5.5 6.5-5.5s5.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5c1.6.8 2.6 2.6 3 5.5"/></svg>Buyers</a><span class="sh">Analyze</span><a href="/operator"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Run an address</a><a href="/batch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Batch</a><a href="/photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo estimate</a><a class="on" href="/list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Owner lists</a><a href="/drive"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14M6 17l1.5-5h9L18 17"/><path d="M7.5 12l1.5-4h6l1.5 4"/><circle cx="8" cy="18.5" r="1.5"/><circle cx="16" cy="18.5" r="1.5"/></svg>Driving for dollars</a><span class="sh acct-only">Funnel</span><a class="acct-only" href="/app#funnel" data-t="funnel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Funnel &amp; business</a><a class="acct-only" href="/app#ads" data-t="ads"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Ad tracking</a><a class="acct-only" href="/app#domain" data-t="domain"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>Domain</a></nav>
 <div class="foot snav"><a class="acct-only" href="/app#account" data-t="account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Plan &amp; account</a></div></aside>
 
 <main class="wrap page">
-  <div class="ph"><div><h1>Owner lists</h1><p>Pull owners in a ZIP from public records, sorted by how likely they are to sell. Exports as CSV for skip tracing.</p></div></div>
+  <div class="ph"><div><h1>Owner lists</h1><p>Pull owners in a ZIP from public records, save your lists, and stack them to find owners who show up on several.</p></div></div>
   <section id="gate" class="card">
     <h1>Operator access</h1>
     <p class="sub">Enter your PIN to pull a list.</p>
@@ -34,12 +51,16 @@
   <p class="sub" style="margin-top:12px">Have an account? <a href="/login">Log in</a></p>
 </section>
 
+  <div class="ltabs" id="ltabs" hidden role="tablist"><button type="button" data-t="pull" class="on">Pull a list</button><button type="button" data-t="mine">My lists <span id="myCount"></span></button><button type="button" data-t="stack">Stack lists</button></div>
+
   <form id="listForm" hidden autocomplete="off">
     <section class="card">
-      <h2>Search</h2>
-      <label class="f" for="zip">ZIP code</label>
-      <input type="text" id="zip" name="zip" inputmode="numeric" maxlength="5" required placeholder="77018">
-
+      <h2>Where</h2>
+      <div class="row">
+        <div><label class="f" for="zip">ZIP code</label><input type="text" id="zip" name="zip" inputmode="numeric" maxlength="5" required placeholder="77018"></div>
+        <div><label class="f" for="maxCalls">Records to scan</label>
+          <select id="maxCalls"><option value="1">500 records</option><option value="2">1,000 records</option><option value="4" selected>2,000 records</option><option value="10">5,000 records</option></select></div>
+      </div>
       <label class="f">Property types</label>
       <div class="chips">
         <label class="chip"><input type="checkbox" name="types" value="sfr" checked><span>Houses / townhomes</span></label>
@@ -47,44 +68,97 @@
         <label class="chip"><input type="checkbox" name="types" value="multi"><span>Multi-family</span></label>
         <label class="chip"><input type="checkbox" name="types" value="mobile"><span>Mobile homes</span></label>
       </div>
-
-      <label class="f">Filters</label>
-      <label class="check"><input type="checkbox" id="absentee" checked> Absentee owners only <span class="opt" style="color:var(--muted)">(owner doesn't live there)</span></label>
-      <label class="check"><input type="checkbox" id="skipCompanies" checked> Skip LLCs &amp; companies <span class="opt" style="color:var(--muted)">(keeps trusts &amp; estates)</span></label>
-
+    </section>
+    <section class="card">
+      <h2>Owner</h2>
+      <div class="chips">
+        <label class="chip"><input type="checkbox" id="absentee" checked><span>Absentee</span></label>
+        <label class="chip"><input type="checkbox" id="outOfState"><span>Out of state</span></label>
+        <label class="chip"><input type="checkbox" id="estate"><span>Estate / heirs</span></label>
+        <label class="chip"><input type="checkbox" id="trust"><span>Trust</span></label>
+        <label class="chip"><input type="checkbox" id="noSale"><span>No sale on record</span></label>
+      </div>
+      <label class="f" for="companies">Companies and LLCs</label>
+      <select id="companies"><option value="skip" selected>Leave them out (keeps trusts and estates)</option><option value="include">Include them</option><option value="only">Only companies and LLCs</option></select>
       <div class="row">
         <div><label class="f" for="minYears">Owned at least</label>
-          <select id="minYears"><option value="0">Any</option><option value="5">5 yrs</option><option value="10" selected>10 yrs</option><option value="15">15 yrs</option><option value="20">20 yrs</option></select></div>
-        <div><label class="f" for="maxCalls">Records to scan</label>
-          <select id="maxCalls"><option value="1">500 records</option><option value="2">1,000 records</option><option value="4" selected>2,000 records</option><option value="10">5,000 records</option></select></div>
+          <select id="minYears"><option value="0">Any</option><option value="5">5 yrs</option><option value="10" selected>10 yrs</option><option value="15">15 yrs</option><option value="20">20 yrs</option><option value="30">30 yrs</option></select></div>
+        <div><label class="f" for="maxYears">Owned at most</label>
+          <select id="maxYears"><option value="0" selected>Any</option><option value="1">1 yr</option><option value="2">2 yrs</option><option value="5">5 yrs</option></select></div>
       </div>
-      <p class="note">Records scanned count toward your monthly list records, in blocks of 500.</p>
+    </section>
+    <details class="card more" id="moreF">
+      <summary><h2 style="display:inline">Property filters</h2> <span class="opt">beds, size, age, value, lot</span></summary>
+      <div class="row">
+        <div><label class="f" for="minBeds">Beds at least</label><select id="minBeds"><option value="">Any</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+        <div><label class="f" for="builtBefore">Built before</label><select id="builtBefore"><option value="">Any</option><option>1950</option><option>1960</option><option>1970</option><option>1980</option><option>2000</option></select></div>
+      </div>
+      <div class="row">
+        <div><label class="f" for="minSqft">Sqft from</label><input type="text" id="minSqft" inputmode="numeric" placeholder="Any"></div>
+        <div><label class="f" for="maxSqft">Sqft to</label><input type="text" id="maxSqft" inputmode="numeric" placeholder="Any"></div>
+      </div>
+      <div class="row">
+        <div><label class="f" for="minAssessed">Tax value from</label><input type="text" id="minAssessed" inputmode="numeric" placeholder="Any" data-money></div>
+        <div><label class="f" for="maxAssessed">Tax value to</label><input type="text" id="maxAssessed" inputmode="numeric" placeholder="Any" data-money></div>
+      </div>
+      <div class="row">
+        <div><label class="f" for="minLot">Lot at least (acres)</label><input type="text" id="minLot" inputmode="decimal" placeholder="Any"></div>
+        <div></div>
+      </div>
+    </details>
+    <section class="card">
+      <p class="note" style="margin-top:0">Records scanned count toward your monthly list records, in blocks of 500.</p>
       <div class="err" id="err" role="alert"></div>
       <button class="btn" id="runBtn" type="submit">Pull list</button>
     </section>
   </form>
 
   <div id="steps" hidden></div>
+
   <section id="results" hidden>
     <div class="stat rise" id="lstats">
-      <div class="c2g"><span class="ki c2" data-ic="user"></span><b id="kept">0</b><span>owners kept</span></div>
-      <div class="c0g"><span class="ki c0" data-ic="search"></span><b id="scanned">0</b><span>records scanned</span></div>
-      <div class="c3g"><span class="ki c3" data-ic="list"></span><b id="calls">0</b><span>records counted</span></div>
+      <div class="c2g"><span class="ki c2" data-ic="user"></span><b id="kept">0</b><span id="keptL">owners kept</span></div>
+      <div class="c0g"><span class="ki c0" data-ic="search"></span><b id="scanned">0</b><span id="scannedL">records scanned</span></div>
+      <div class="c3g"><span class="ki c3" data-ic="list"></span><b id="calls">0</b><span id="callsL">records counted</span></div>
     </div>
     <p class="note" id="more"></p>
-    <a class="btn" id="dl" style="display:block;text-align:center;text-decoration:none">Download CSV</a>
-    <p class="note" style="margin-top:12px">Sorted by most motivation signals first (absentee, out-of-state, owned 20+ yrs, estate/heirs, vacant lot). Upload it to your skip-tracing service, and scrub the phone numbers against the Do Not Call list before you call.</p>
-    <button class="btn ghost" id="againBtn" type="button" style="margin-top:6px">Pull another</button>
+    <div class="ractions">
+      <input type="text" id="saveName" placeholder="Name this list" aria-label="List name">
+      <button class="btn" id="saveBtn" type="button">Save list</button>
+      <button class="btn ghost" id="dl" type="button">Download CSV</button>
+    </div>
+    <div class="tagbar" id="tagbar"></div>
+    <div class="tw card" style="padding:0"><table class="dt" id="rtab"><thead></thead><tbody></tbody></table></div>
+    <p class="note" id="shown"></p>
+    <p class="note">Sorted by most motivation signals first. Scrub phone numbers against the Do Not Call list before you call.</p>
+    <button class="btn ghost" id="againBtn" type="button" style="margin-top:6px">Back</button>
+  </section>
+
+  <section id="mine" hidden>
+    <div id="mineList"></div>
+  </section>
+
+  <section id="stack" hidden>
+    <section class="card">
+      <h2>Stack lists</h2>
+      <p class="note" style="margin-top:0">Pick two or more saved lists. Owners who show up on several lists (say absentee, owned 20+ years and on your driving list) are usually the most motivated, so they go to the top.</p>
+      <div id="stackPick" class="spick"></div>
+      <label class="f" for="stackMin">Show owners on at least</label>
+      <select id="stackMin"><option value="2" selected>2 lists</option><option value="3">3 lists</option><option value="1">1 list (merge everything)</option></select>
+      <div class="err" id="stackErr" role="alert"></div>
+      <button class="btn" id="stackBtn" type="button">Stack lists</button>
+    </section>
   </section>
 </main>
-
 <script>
 (() => {
   const $ = id => document.getElementById(id);
+  const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const money = v => v ? '$' + Math.round(v).toLocaleString() : '';
   let pin = '';
   try { pin = sessionStorage.getItem('opPin') || ''; } catch {}
-  const unlock = () => { $('gate').hidden = true; $('listForm').hidden = false; };
-
+  const api = body => fetch('/api/list', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, ...body }) }).then(async r => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) })).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
+  const unlock = () => { $('gate').hidden = true; $('ltabs').hidden = false; show('pull'); loadMine(); };
   $('pinForm').addEventListener('submit', async e => {
     e.preventDefault();
     pin = $('pin').value.trim(); $('pinErr').textContent = ''; $('pinBtn').disabled = true;
@@ -94,9 +168,70 @@
     try { sessionStorage.setItem('opPin', pin); } catch {}
     unlock();
   });
-  if (pin) unlock(); else acctUnlock(unlock);
+  document.querySelectorAll('[data-money]').forEach(i => i.addEventListener('input', () => { const d = i.value.replace(/\D/g, ''); i.value = d ? '$' + Number(d).toLocaleString() : ''; }));
 
-  let url = null;
+  // Tabs
+  let tab = 'pull';
+  function show(t) {
+    tab = t; document.querySelectorAll('#ltabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+    $('listForm').hidden = t !== 'pull'; $('results').hidden = true; $('mine').hidden = t !== 'mine'; $('stack').hidden = t !== 'stack';
+    if (t === 'mine') renderMine(); if (t === 'stack') renderPick();
+  }
+  document.querySelectorAll('#ltabs button').forEach(b => b.onclick = () => show(b.dataset.t));
+
+  // Results table
+  let cur = { records: [], name: '', zip: '', source: 'pull', filters: null, stacked: false };
+  let tagFilter = '';
+  const cols = () => [['Owner', r => `<b>${esc(r.owner)}</b>${r.owner2 ? `<small>${esc(r.owner2)}</small>` : ''}<small>${esc([r.mail, r.mcity, r.mst].filter(Boolean).join(', '))}</small>`],
+    ['Property', r => `<b>${esc(r.addr)}</b><small>${esc([r.type, r.bd != null ? r.bd + ' bd' : '', r.sqft ? r.sqft.toLocaleString() + ' sf' : '', r.yb ? 'built ' + r.yb : ''].filter(Boolean).join(' · '))}</small>`],
+    ['Owned', r => r.yrs != null ? `${Math.floor(r.yrs)} yrs<small>${r.salePrice ? money(r.salePrice) : ''}</small>` : '<small>No sale</small>', 'r'],
+    ['Tax value', r => money(r.assessed), 'r'],
+    ...(cur.stacked ? [['Lists', r => `<b class="hits h${Math.min(r.hits, 4)}">${r.hits}</b><small>${esc((r.lists || []).join(', '))}</small>`, 'r']] : []),
+    ['Signals', r => (r.tags || []).map(t => `<span class="tg">${esc(t)}</span>`).join('') + (r.photo ? `<img class="dph" src="${r.photo}" alt="">` : '') + (r.note ? `<small>${esc(r.note)}</small>` : '')]];
+  function renderTable() {
+    const rows = cur.records.filter(r => !tagFilter || (r.tags || []).includes(tagFilter));
+    const c = cols();
+    $('rtab').tHead.innerHTML = '<tr>' + c.map(x => `<th class="${x[2] || ''}">${x[0]}</th>`).join('') + '</tr>';
+    $('rtab').tBodies[0].innerHTML = rows.slice(0, 300).map(r => '<tr>' + c.map(x => `<td class="${x[2] || ''}">${x[1](r)}</td>`).join('') + '</tr>').join('') || `<tr><td colspan="${c.length}" style="text-align:center;padding:30px;color:var(--muted)">No owners match. Loosen a filter and pull again.</td></tr>`;
+    $('shown').textContent = rows.length > 300 ? `Showing the top 300 of ${rows.length.toLocaleString()}. The CSV has all of them.` : '';
+    const counts = {}; cur.records.forEach(r => (r.tags || []).forEach(t => { counts[t] = (counts[t] || 0) + 1; }));
+    $('tagbar').innerHTML = Object.keys(counts).length ? `<button type="button" class="${tagFilter ? '' : 'on'}" data-tag="">All ${cur.records.length.toLocaleString()}</button>` + Object.entries(counts).sort((a, z) => z[1] - a[1]).map(([t, n]) => `<button type="button" class="${tagFilter === t ? 'on' : ''}" data-tag="${esc(t)}">${esc(t)} ${n.toLocaleString()}</button>`).join('') : '';
+    $('tagbar').querySelectorAll('button').forEach(b => b.onclick = () => { tagFilter = b.dataset.tag; renderTable(); });
+  }
+  function showResults({ records, title, stats, more, name, saved }) {
+    cur.records = records; tagFilter = '';
+    $('listForm').hidden = true; $('mine').hidden = true; $('stack').hidden = true; $('results').hidden = false;
+    $('kept').textContent = stats[0][0].toLocaleString(); $('keptL').textContent = stats[0][1];
+    $('scanned').textContent = stats[1][0].toLocaleString(); $('scannedL').textContent = stats[1][1];
+    $('calls').textContent = stats[2][0].toLocaleString(); $('callsL').textContent = stats[2][1];
+    $('more').textContent = more || '';
+    $('saveName').value = name || ''; $('saveBtn').textContent = saved ? 'Save a copy' : 'Save list'; $('saveBtn').disabled = false;
+    renderTable(); window.scrollTo({ top: 0 });
+    const J = window.JK; if (J) { document.querySelectorAll('#lstats .ki').forEach(k => { k.innerHTML = J.svg(k.dataset.ic); }); ['kept', 'scanned', 'calls'].forEach(id => { $(id).dataset.count = $(id).textContent.replace(/[^\d]/g, ''); }); J.animate($('lstats')); }
+  }
+  $('againBtn').addEventListener('click', () => show(tab));
+
+  // CSV
+  const csvCell = v => { const s = v == null ? '' : String(v); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  $('dl').addEventListener('click', () => {
+    const head = ['First Name', 'Last Name', 'Owner Full Name', 'Owner 2', 'Property Address', 'Property City', 'Property State', 'Property Zip', 'Mailing Address', 'Mailing City', 'Mailing State', 'Mailing Zip', 'Tags', ...(cur.stacked ? ['Lists', 'List Names'] : []), 'Property Type', 'Beds', 'Baths', 'Sqft', 'Lot Acres', 'Year Built', 'Last Sale Date', 'Last Sale Price', 'Years Owned', 'Assessed Value', 'Notes'];
+    const rows = cur.records.filter(r => !tagFilter || (r.tags || []).includes(tagFilter)).map(r => [r.first, r.last, r.owner, r.owner2, r.addr, r.city, r.st, r.zip, r.mail, r.mcity, r.mst, r.mzip, (r.tags || []).join('; '), ...(cur.stacked ? [r.hits, (r.lists || []).join('; ')] : []), r.type, r.bd, r.ba, r.sqft, r.lot, r.yb, r.sale, r.salePrice, r.yrs != null ? Math.floor(r.yrs) : '', r.assessed, r.note].map(csvCell).join(','));
+    const blob = new Blob([[head.join(','), ...rows].join('\n')], { type: 'text/csv' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `jstar-${(cur.name || cur.zip || 'list').replace(/[^\w-]+/g, '-').toLowerCase()}.csv`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  });
+
+  // Save
+  $('saveBtn').addEventListener('click', async () => {
+    const name = $('saveName').value.trim() || cur.name || `${cur.zip || 'List'} ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    $('saveBtn').disabled = true; $('saveBtn').textContent = 'Saving…';
+    const recs = cur.records.map(r => { const { hits, lists, ...x } = r; return cur.stacked ? { ...x, tags: [...new Set([...(x.tags || []), `On ${hits} lists`])] } : x; });
+    const r = await api({ action: 'save', name, zip: cur.zip, source: cur.stacked ? 'stack' : cur.source, filters: cur.filters, records: recs });
+    if (!r.ok) { $('saveBtn').disabled = false; $('saveBtn').textContent = 'Save list'; window.JK?.toast(r.j.error || 'Could not save.'); return; }
+    $('saveBtn').textContent = 'Saved'; cur.name = name; window.JK?.toast(`Saved "${name}" to My lists`); loadMine();
+  });
+
+  // Pull
+  const n = id => $(id).value.replace(/[^\d.]/g, '');
   $('listForm').addEventListener('submit', async e => {
     e.preventDefault();
     const zip = $('zip').value.trim();
@@ -104,26 +239,54 @@
     const types = [...document.querySelectorAll('input[name=types]:checked')].map(i => i.value);
     if (!types.length) { $('err').textContent = 'Pick at least one property type.'; return; }
     $('err').textContent = ''; $('runBtn').disabled = true; $('runBtn').textContent = 'Pulling records…';
-    const prog = window.JK?.steps($('steps'), 'Pulling owners in ' + zip, 'Scanning public records. Bigger lists take longer.', ['Scanning property records', 'Finding absentee and out-of-state owners', 'Leaving out companies and LLCs', 'Sorting by motivation'], 1600);
-    const body = { pin, zip, types, absentee: $('absentee').checked, skipCompanies: $('skipCompanies').checked, minYears: $('minYears').value, maxCalls: $('maxCalls').value };
-    const r = await fetch('/api/list', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(() => null);
-    if (prog) { if (r?.ok) { prog.done(); await new Promise(x => setTimeout(x, 400)); } prog.stop(); }
+    const prog = window.JK?.steps($('steps'), 'Pulling owners in ' + zip, 'Scanning public records. Bigger lists take longer.', ['Scanning property records', 'Applying your filters', 'Finding absentee and long-time owners', 'Sorting by motivation'], 1600);
+    const co = $('companies').value;
+    const body = { zip, types, absentee: $('absentee').checked, outOfState: $('outOfState').checked, estate: $('estate').checked, trust: $('trust').checked, noSale: $('noSale').checked,
+      skipCompanies: co === 'skip', onlyCompanies: co === 'only', minYears: $('minYears').value, maxYears: $('maxYears').value, maxCalls: $('maxCalls').value,
+      minBeds: $('minBeds').value, builtBefore: $('builtBefore').value, minSqft: n('minSqft'), maxSqft: n('maxSqft'), minAssessed: n('minAssessed'), maxAssessed: n('maxAssessed'), minLot: n('minLot') };
+    const r = await api(body);
+    if (prog) { if (r.ok) { prog.done(); await new Promise(x => setTimeout(x, 400)); } prog.stop(); }
     $('runBtn').disabled = false; $('runBtn').textContent = 'Pull list';
-    if (!r) { $('err').textContent = 'Network error. Try again.'; return; }
-    if (r.status === 401) { if (acctExpired()) return; try { sessionStorage.removeItem('opPin'); } catch {} $('listForm').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'PIN expired. Enter it again.'; return; }
-    if (!r.ok) { const j = await r.json().catch(() => ({})); $('err').textContent = j.error || 'Something went wrong.'; return; }
-    const blob = await r.blob();
-    if (url) URL.revokeObjectURL(url);
-    url = URL.createObjectURL(blob);
-    $('dl').href = url; $('dl').download = `jstar-${zip}-list.csv`;
-    $('kept').textContent = Number(r.headers.get('X-Kept') || 0).toLocaleString();
-    $('scanned').textContent = Number(r.headers.get('X-Scanned') || 0).toLocaleString();
-    $('calls').textContent = (Number(r.headers.get('X-Calls') || 0) * 500).toLocaleString();
-    $('more').textContent = r.headers.get('X-More') === '1' ? 'There are more records in this ZIP. Raise "Records to scan" to get the rest.' : '';
-    $('listForm').hidden = true; $('results').hidden = false; window.scrollTo({ top: 0 });
-    const J = window.JK; if (J) { document.querySelectorAll('#lstats .ki').forEach(k => { k.innerHTML = J.svg(k.dataset.ic); }); ['kept', 'scanned', 'calls'].forEach(id => { $(id).dataset.count = $(id).textContent.replace(/[^\d]/g, ''); }); J.animate($('lstats')); $('dl').classList.add('sun'); }
+    if (r.status === 401) { if (acctExpired()) return; try { sessionStorage.removeItem('opPin'); } catch {} $('listForm').hidden = true; $('ltabs').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'PIN expired. Enter it again.'; return; }
+    if (!r.ok) { $('err').textContent = r.j.error || 'Something went wrong.'; return; }
+    cur = { records: r.j.records, name: '', zip, source: 'pull', filters: r.j.filters, stacked: false };
+    const auto = [zip, $('absentee').checked ? 'absentee' : '', $('outOfState').checked ? 'out of state' : '', $('estate').checked ? 'estates' : '', +$('minYears').value ? $('minYears').value + '+ yrs' : ''].filter(Boolean).join(' · ');
+    showResults({ records: r.j.records, stats: [[r.j.kept, 'owners kept'], [r.j.scanned, 'records scanned'], [r.j.calls * 500, 'records counted']], more: r.j.more ? 'There are more records in this ZIP. Raise "Records to scan" to get the rest.' : '', name: auto });
   });
-  $('againBtn').addEventListener('click', () => { $('results').hidden = true; $('listForm').hidden = false; });
+
+  // My lists
+  let mine = [];
+  async function loadMine() { const r = await api({ action: 'lists' }); mine = r.ok ? r.j.lists : []; $('myCount').textContent = mine.length ? `(${mine.length})` : ''; if (tab === 'mine') renderMine(); if (tab === 'stack') renderPick(); }
+  const SRC = { pull: 'Owner list', drive: 'Driving for dollars', stack: 'Stacked list' };
+  function renderMine() {
+    $('mineList').innerHTML = mine.length ? mine.map(l => `<div class="lcard card" data-id="${l.id}"><div class="li ${l.source}">${window.JK ? window.JK.svg(l.source === 'drive' ? 'pin' : l.source === 'stack' ? 'list' : 'user') : ''}</div><div class="lm"><b>${esc(l.name)}</b><small>${esc(SRC[l.source] || 'List')} · ${l.count.toLocaleString()} owners · ${new Date(l.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</small></div>
+      <button class="btn ghost sm" type="button" data-open>Open</button><button class="btn ghost sm del" type="button" data-del aria-label="Delete list">Delete</button></div>`).join('')
+      : `<section class="card empty"><h2>No saved lists yet</h2><p class="note">Pull a list and tap <b>Save list</b>. Houses you save while <a href="/drive">driving for dollars</a> land here too.</p></section>`;
+    $('mineList').querySelectorAll('.lcard').forEach(c => {
+      c.querySelector('[data-open]').onclick = async () => { const r = await api({ action: 'get', id: c.dataset.id }); if (!r.ok) return window.JK?.toast(r.j.error); const l = r.j.list;
+        cur = { records: l.records, name: l.name, zip: l.zip, source: l.source, filters: l.filters, stacked: false };
+        const tagged = l.records.filter(x => (x.tags || []).length >= 3).length;
+        showResults({ records: l.records, stats: [[l.records.length, 'owners'], [tagged, 'with 3+ signals'], [l.records.filter(x => x.absentee).length, 'absentee']], name: l.name, saved: true }); };
+      const del = c.querySelector('[data-del]'); del.onclick = async () => { if (del.dataset.sure !== '1') { del.dataset.sure = '1'; del.textContent = 'Tap again to delete'; setTimeout(() => { del.dataset.sure = ''; del.textContent = 'Delete'; }, 3500); return; }
+        await api({ action: 'delete', id: c.dataset.id }); loadMine(); };
+    });
+  }
+  function renderPick() {
+    $('stackPick').innerHTML = mine.length >= 2 ? mine.map(l => `<label class="check"><input type="checkbox" value="${l.id}"> <b>${esc(l.name)}</b> <span class="opt">${l.count.toLocaleString()} owners</span></label>`).join('') : '<p class="note">Save at least two lists first. Try one absentee list, one 20+ years list and your driving list.</p>';
+    $('stackBtn').disabled = mine.length < 2;
+  }
+  $('stackBtn').addEventListener('click', async () => {
+    const ids = [...$('stackPick').querySelectorAll('input:checked')].map(i => i.value);
+    if (ids.length < 2) { $('stackErr').textContent = 'Pick at least 2 lists.'; return; }
+    $('stackErr').textContent = ''; $('stackBtn').disabled = true; $('stackBtn').textContent = 'Stacking…';
+    const r = await api({ action: 'stack', ids, min: $('stackMin').value });
+    $('stackBtn').disabled = false; $('stackBtn').textContent = 'Stack lists';
+    if (!r.ok) { $('stackErr').textContent = r.j.error || 'Could not stack.'; return; }
+    cur = { records: r.j.records, name: 'Stacked: ' + r.j.lists.map(l => l.name).join(' + ').slice(0, 50), zip: '', source: 'stack', filters: null, stacked: true };
+    showResults({ records: r.j.records, stats: [[r.j.records.length, 'owners on ' + $('stackMin').value + '+ lists'], [r.j.total, 'unique owners total'], [r.j.lists.length, 'lists stacked']], name: cur.name });
+  });
+
+  if (pin) unlock(); else acctUnlock(unlock);
 })();
 </script>
 </body>

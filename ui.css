@@ -157,8 +157,9 @@ body.acct .side .owner-only { display:none !important; }
   .side .ws { padding:0; }
   .snav { flex-direction:row; flex-basis:100%; margin:0 -12px; padding:0 8px 8px; overflow-x:auto; scrollbar-width:none; gap:2px; }
   .snav::-webkit-scrollbar { display:none; }
+  nav.snav::after { content:""; flex:none; width:16px; }
   .snav a { flex:none; padding:7px 10px; white-space:nowrap; }
-  .snav a svg, .snav .sh { display:none !important; }
+  .snav a svg, .snav .sh, body.acct .snav .sh.acct-only { display:none !important; }
   .side .foot { display:flex; flex-direction:row; flex-basis:100%; margin:-6px -12px 0; padding:0 8px 8px; overflow-x:auto; scrollbar-width:none; }
   .page { padding:20px 16px 56px; }
   .ph { flex-direction:column; align-items:stretch; gap:12px; margin-bottom:16px; }
