@@ -67,6 +67,18 @@
   .nav { overflow-x:auto; scrollbar-width:none; } .nav::-webkit-scrollbar { display:none; }
   .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
 .skonly { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:14px; } .skonly span { font-size:13px; color:var(--muted); }
+.rlist { display:grid; gap:8px; }
+.ritem { display:flex; align-items:center; gap:12px; width:100%; text-align:left; padding:11px 14px; border:1px solid var(--line); border-radius:12px; background:var(--card); color:var(--ink); cursor:pointer; font:inherit; transition:border-color .15s, transform .15s, box-shadow .15s; }
+.ritem:hover { border-color:var(--brand); box-shadow:0 6px 18px rgba(47,111,237,.12); transform:translateY(-1px); }
+.ritem.busy { opacity:.55; pointer-events:none; }
+.ricon { width:34px; height:34px; border-radius:10px; display:grid; place-items:center; background:var(--brand-soft); color:var(--brand); flex:none; }
+.ricon svg { width:17px; height:17px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.rmain { flex:1; min-width:0; } .rmain b { display:block; font-size:14.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .rmain small { display:block; font-size:12.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.rnum { text-align:right; flex:none; } .rnum b { display:block; font-size:14px; font-variant-numeric:tabular-nums; } .rnum small { font-size:11.5px; color:var(--muted); }
+.rtag { flex:none; font:800 10.5px/1 var(--body); letter-spacing:.05em; padding:5px 8px; border-radius:6px; background:var(--line2); color:var(--muted); }
+.rtag.hot { background:var(--hot-bg); color:var(--hot); } .rtag.warm { background:var(--warn-bg); color:var(--warn); } .rtag.cold { background:var(--brand-soft); color:var(--brand); }
+.savednote { display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:space-between; padding:12px 16px; margin-bottom:14px; border-radius:12px; background:var(--brand-soft); color:var(--ink); font-size:13.5px; }
+@media (max-width:560px) { .rnum { display:none; } }
 </style>
 <link rel="stylesheet" href="/ui.css">
 <link rel="stylesheet" href="/kit.css">
@@ -95,6 +107,10 @@
 
   <!-- Property form -->
   <form id="prop" hidden autocomplete="off">
+    <section class="card" id="recentCard" hidden>
+      <h2 style="display:flex;align-items:center;gap:8px">Recently searched <span style="margin-left:auto;font:600 12px var(--body);color:var(--muted)">Reopening one is free</span></h2>
+      <div id="recentList" class="rlist"></div>
+    </section>
     <section class="card">
       <h2>Address</h2>
       <label class="f" for="street">Street</label>
@@ -196,6 +212,7 @@
   <div id="steps" hidden></div>
   <!-- Results -->
   <section id="results" hidden>
+    <div id="savedNote" class="savednote" hidden></div>
     <div id="snap"></div>
     <section class="card" id="skipCard" style="margin-bottom:14px"></section>
     <details class="full" style="margin-bottom:14px"><summary>Text summary</summary><div class="summary" id="summary"></div></details>
@@ -224,7 +241,8 @@
   const post = body => fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, pin }) })
     .then(async r => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) }));
 
-  const unlock = () => { $('gate').hidden = true; $('prop').hidden = false; $('street').focus(); };
+  const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const unlock = () => { $('gate').hidden = true; $('prop').hidden = false; $('street').focus(); loadRecent(); };
 
   $('pinForm').addEventListener('submit', async e => {
     e.preventDefault();
@@ -287,6 +305,14 @@
     if (r.status === 401) { if (acctExpired()) return; try { sessionStorage.removeItem('opPin'); } catch {} $('prop').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'PIN expired or changed. Enter it again.'; return; }
     if (!r.ok) { $('err').textContent = r.j.error || 'Something went wrong.'; return; }
 
+    showResult(body, r.j); loadRecent();
+  });
+
+  function showResult(body, j, savedAt) {
+    const J = window.JK, r = { j };
+    $('savedNote').hidden = !savedAt;
+    if (savedAt) $('savedNote').innerHTML = `<span>Saved result from ${new Date(savedAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}. Nothing was used to open it.</span><button class="btn ghost" type="button" id="rerunBtn">Run again for fresh numbers</button>`;
+    if (savedAt) $('rerunBtn').onclick = () => { $('results').hidden = true; $('prop').hidden = false; $('prop').requestSubmit(); };
     $('summary').textContent = r.j.summary;
     const snap = J ? J.snapshot(r.j.brief, { title: r.j.brief?.mao ? 'Offer range' : 'Deal', sub: r.j.brief?.call || '' }) : '';
     $('snap').innerHTML = snap;
@@ -298,7 +324,29 @@
     if (J) { const address = { street: body.street, city: body.city, state: body.state, zip: body.zip }; J.skipCard($('skipCard'), { target: { address }, skip: null, pin });
       fetch('/api/skip', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address, peek: true, pin }) }).then(x => x.json()).then(x => { if (x.skip && lastRun?.body === body) J.skipCard($('skipCard'), { target: { address }, skip: x.skip, pin }); }).catch(() => {}); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  }
+
+  // Recently searched (last 10 runs on this account)
+  const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 ? 'just now' : m < 60 ? m + 'm ago' : m < 1440 ? Math.round(m / 60) + 'h ago' : Math.round(m / 1440) + 'd ago'; };
+  const kk = v => v == null ? '' : '$' + (v >= 1e6 ? (v / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M' : Math.round(v / 1000) + 'k');
+  async function loadRecent() {
+    const x = await post({ recent: 'list' }).catch(() => null);
+    const list = x?.ok ? x.j.recent || [] : [];
+    $('recentCard').hidden = !list.length;
+    $('recentList').innerHTML = list.map(r => `<button type="button" class="ritem" data-id="${r.id}"><span class="ricon">${window.JK ? window.JK.svg('pin') : ''}</span><span class="rmain"><b>${esc(r.address.split(',')[0])}</b><small>${esc(r.address.split(',').slice(1).join(',').trim())} · ${ago(r.at)}</small></span>
+      <span class="rnum">${r.mao ? `<b>${kk(r.opening || r.mao)}–${kk(r.mao)}</b><small>offer range</small>` : r.value ? `<b>${kk(r.value)}</b><small>ARV</small>` : ''}</span>${r.label ? `<span class="rtag ${r.label.toLowerCase()}">${esc(r.label)}</span>` : ''}</button>`).join('');
+    $('recentList').querySelectorAll('.ritem').forEach(b => b.onclick = () => openRecent(b.dataset.id, b));
+  }
+  async function openRecent(id, btn) {
+    btn.classList.add('busy');
+    const x = await post({ recent: 'get', id }).catch(() => null); btn.classList.remove('busy');
+    if (!x?.ok) { $('err').textContent = x?.j?.error || 'Could not open that search.'; return; }
+    const b = x.j.body || {};
+    for (const [k, v] of Object.entries(b)) { const el = $('prop').elements[k]; if (!el || typeof v === 'object') continue; if (el instanceof RadioNodeList) { [...el].forEach(i => { i.checked = i.value === v; }); } else if (el.type === 'checkbox') el.checked = !!v; else el.value = v; }
+    for (const name of ['issues', 'landIssues']) $('prop').querySelectorAll(`input[name=${name}]`).forEach(i => { i.checked = (b[name] || []).includes(i.value); });
+    try { syncTenant(); syncType(); } catch {}
+    showResult(b, x.j, x.j.savedAt);
+  }
 
   let pitch = null, lastRun = null;
   // Skip trace only: owner phones for the address in the form, without running the numbers
@@ -339,7 +387,7 @@
   $('editBtn').addEventListener('click', () => { $('results').hidden = true; $('prop').hidden = false; window.scrollTo({ top: 0 }); });
   $('newBtn').addEventListener('click', () => {
     $('prop').reset(); $('reps').innerHTML = ''; syncTenant(); syncType();
-    $('results').hidden = true; $('prop').hidden = false; window.scrollTo({ top: 0 }); $('street').focus();
+    $('results').hidden = true; $('prop').hidden = false; window.scrollTo({ top: 0 }); $('street').focus(); loadRecent();
   });
 
   // Prefill from the Photos page (AI condition + repair lines)

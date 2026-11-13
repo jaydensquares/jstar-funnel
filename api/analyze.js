@@ -1,6 +1,7 @@
 // Operator endpoint: PIN-protected. Runs the same deal analysis as the seller form,
 // but takes property details only (no seller contact info) and returns the deal sheet.
 import { getActor } from '../lib/auth.js';
+import { getDoc, putDoc, deleteDoc, listDocs, newId } from '../lib/db.js';
 import { useQuota } from '../lib/usage.js';
 import { brief } from '../lib/brief.js';
 import { analyzeLead } from '../lib/pipeline.js';
@@ -30,6 +31,17 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: b.pin ? 'Wrong PIN.' : 'Log in again.' });
   }
   if (b.checkOnly) return res.status(200).json({ ok: true });
+  // Recently searched: the last 10 addresses this account ran, reopenable without using another analysis
+  const RK = `t/${actor.scope || 'owner'}/recent`;
+  if (b.recent === 'list') {
+    const docs = (await listDocs(RK).catch(() => [])).sort((x, y) => y.at - x.at).slice(0, 10);
+    return res.status(200).json({ recent: docs.map(d => ({ id: d.id, at: d.at, address: d.address, label: d.out?.brief?.label || null, opening: d.out?.brief?.opening ?? null, mao: d.out?.brief?.mao ?? null, value: d.out?.brief?.value ?? null })) });
+  }
+  if (b.recent === 'get') {
+    if (!/^[a-z0-9]{6,32}$/.test(String(b.id || ''))) return res.status(400).json({ error: 'Bad id.' });
+    const d = await getDoc(`${RK}/${b.id}`).catch(() => null);
+    return d ? res.status(200).json({ body: d.body, ...d.out, savedAt: d.at }) : res.status(404).json({ error: 'That search expired. Run it again.' });
+  }
   const over = await useQuota(actor, 'runs');
   if (over) return res.status(429).json({ error: over });
 
@@ -78,7 +90,16 @@ export default async function handler(req, res) {
     r.forEach(x => x.status === 'rejected' && console.error('operator notify', x.reason));
   }
 
-  return res.status(200).json({ ok: true, html: dealSheetHtml(payload), summary: smsText(payload), brief: brief(payload), pitch: investorPitch(payload) });
+  const out = { html: dealSheetHtml(payload), summary: smsText(payload), brief: brief(payload), pitch: investorPitch(payload) };
+  try {
+    const key = lead.address.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const old = (await listDocs(RK).catch(() => [])).sort((x, y) => y.at - x.at);
+    const keepBody = Object.fromEntries(Object.entries(b).filter(([k]) => !['pin', 'notify', 'recent', 'id'].includes(k)));
+    const id = newId(); await putDoc(`${RK}/${id}`, { id, at: Date.now(), key, address: lead.address, body: keepBody, out });
+    const drop = old.filter((d, i) => d.key === key || i >= 9);
+    await Promise.all(drop.map(d => deleteDoc(`${RK}/${d.id}`).catch(() => {})));
+  } catch (e) { console.error('recent save', e.message); }
+  return res.status(200).json({ ok: true, ...out });
 }
 
 // Compact numbers for the batch table
