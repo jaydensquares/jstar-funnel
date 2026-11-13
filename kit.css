@@ -347,3 +347,23 @@ details.full[open] > summary { margin-bottom:12px; }
 .skfoot { font-size:12.5px; margin-bottom:0; color:var(--muted); }
 .spin { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.4); border-top-color:#fff; border-radius:50%; animation:skspin .7s linear infinite; vertical-align:-2px; }
 @keyframes skspin { to { transform:rotate(360deg); } }
+
+/* Comps map + list */
+.compsb .cmap { height:340px; border-radius:12px; overflow:hidden; border:1px solid var(--line); margin-bottom:10px; z-index:0; }
+.cleg { display:flex; gap:16px; font-size:12.5px; color:var(--muted); margin-bottom:12px; } .cleg i { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; vertical-align:-1px; }
+.cpin { width:26px; height:26px; border-radius:50%; background:var(--c); color:#fff; font:800 12px/22px var(--body); text-align:center; border:2px solid #fff; box-shadow:0 2px 8px rgba(10,22,51,.35); }
+.cpin.big { width:34px; height:34px; line-height:30px; font-size:16px; color:#0a1633; }
+.cpop { font-family:var(--body); min-width:200px; } .cpop b { font-size:14px; } .cpop .pp { font-size:18px; font-weight:800; margin:4px 0 2px; } .cpop .pp span { font-size:12px; color:#667085; font-weight:600; }
+.cpop .ps { font-size:12px; color:#667085; } .cpop .pl { display:flex; gap:12px; margin-top:8px; } .cpop .pl a { font-weight:700; color:#2f6fed; text-decoration:none; }
+.ctw { overflow-x:auto; }
+.ctab { width:100%; border-collapse:collapse; font-size:13.5px; }
+.ctab tr { border-top:1px solid var(--line); cursor:pointer; } .ctab tr:first-child { border-top:0; } .ctab tr:hover { background:var(--line2); }
+.ctab td { padding:10px 8px; vertical-align:middle; color:var(--ink); } .ctab td small { display:block; color:var(--muted); font-size:12px; margin-top:2px; }
+.ctab td.num { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.ctab td.lnk { text-align:right; white-space:nowrap; } .ctab td.lnk a { display:inline-block; margin-left:10px; font-weight:700; font-size:12.5px; color:var(--brand); text-decoration:none; }
+.cdot { display:inline-grid; place-items:center; width:24px; height:24px; border-radius:50%; background:#12b76a; color:#fff; font-size:11.5px; font-weight:800; } .cdot.act { background:#f79009; }
+.cst { font-size:11px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; color:var(--ok); } .cst.act { color:var(--warn); }
+@media (max-width:640px) { .compsb .cmap { height:260px; }
+  .ctab tr { display:grid; grid-template-columns:30px 1fr auto; column-gap:10px; padding:12px 2px; } .ctab td { padding:0; }
+  .ctab td:nth-child(4) { grid-column:2 / 4; text-align:left; margin-top:6px; display:flex; gap:8px; align-items:baseline; } .ctab td:nth-child(4) small { display:inline; margin:0; }
+  .ctab td.lnk { grid-column:2 / 4; text-align:left; margin-top:6px; } .ctab td.lnk a { margin:0 16px 0 0; } }

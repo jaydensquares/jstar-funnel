@@ -154,7 +154,42 @@
     }
     if (b.comps?.length && b.sqft) side.push(`<section class="snapcard"><h2>${svg('pin', 'hic')} Comps <span class="tag">${b.comps.length} nearby · hover a dot</span></h2>${K.compsChart(b)}</section>`);
     if (side.length) out.push(`<div style="display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr))">${side.join('')}</div>`);
+    if (b.comps?.length) out.push(K.compsBoard(b));
     return `<div class="snap rise">${out.join('')}</div>`;
+  };
+
+  // Comps map + list with Zillow and Street View links
+  const zLink = a => `https://www.zillow.com/homes/${encodeURIComponent(String(a).replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '-'))}_rb/`;
+  const svLink = c => c.lat != null ? `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${c.lat},${c.lng}` : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.fa || c.a)}`;
+  K.compsBoard = b => {
+    const cs = b.comps, pts = cs.filter(c => c.lat != null && c.lng != null);
+    const mapData = pts.length ? esc(JSON.stringify({ s: b.loc, addr: b.addr, value: b.value, c: pts.map(c => ({ lat: c.lat, lng: c.lng, a: c.a, price: c.price, sqft: c.sqft, ppsf: c.ppsf || (c.price && c.sqft ? Math.round(c.price / c.sqft) : null), sold: c.sold, bd: c.bd, ba: c.ba, mi: c.mi, z: zLink(c.fa || c.a), sv: svLink(c) })) })) : '';
+    const rows = cs.map((c, i) => `<tr><td><span class="cdot${c.sold ? '' : ' act'}">${i + 1}</span></td><td><b>${esc(c.a)}</b><small>${[c.bd != null ? c.bd + ' bd' : '', c.ba != null ? c.ba + ' ba' : '', c.sqft ? c.sqft.toLocaleString() + ' sf' : '', c.yr ? 'built ' + c.yr : ''].filter(Boolean).join(' · ')}</small></td>
+      <td class="num"><b>${$$(c.price)}</b><small>${c.ppsf || (c.price && c.sqft) ? '$' + (c.ppsf || Math.round(c.price / c.sqft)) + '/sf' : ''}</small></td><td class="num"><span class="cst${c.sold ? '' : ' act'}">${c.sold ? 'Sold' : 'Listed'}</span><small>${[c.mi != null ? c.mi + ' mi' : '', c.dt ? new Date(c.dt + 'T12:00').toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : ''].filter(Boolean).join(' · ')}</small></td>
+      <td class="lnk"><a href="${zLink(c.fa || c.a)}" target="_blank" rel="noopener">Zillow</a><a href="${svLink(c)}" target="_blank" rel="noopener">Street View</a></td></tr>`).join('');
+    return `<section class="snapcard compsb"><h2>${svg('pin', 'hic')} Comps map <span class="tag">${cs.length} comps · tap a pin or a row</span></h2>
+      ${mapData ? `<div class="cmap" data-cmap="${mapData}"></div><div class="cleg"><span><i style="background:#ffc93c"></i>This house</span><span><i style="background:#12b76a"></i>Sold</span><span><i style="background:#f79009"></i>Listed</span></div>` : ''}
+      <div class="ctw"><table class="ctab"><tbody>${rows}</tbody></table></div></section>`;
+  };
+  let leafletP = null;
+  const leaflet = () => leafletP ||= new Promise((ok, no) => {
+    const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/vendor/leaflet/leaflet.css'; document.head.appendChild(l);
+    const sc = document.createElement('script'); sc.src = '/vendor/leaflet/leaflet.js'; sc.onload = () => ok(window.L); sc.onerror = no; document.head.appendChild(sc);
+  });
+  K.mountCompsMap = async el => {
+    if (!el || el._m) return; const d = JSON.parse(el.dataset.cmap); el._m = 1;
+    const L = await leaflet().catch(() => null); if (!L) { el.remove(); return; }
+    const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+    const map = L.map(el, { scrollWheelZoom: false, attributionControl: true, zoomControl: true });
+    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
+    const pin = (col, label, big) => L.divIcon({ className: '', html: `<div class="cpin${big ? ' big' : ''}" style="--c:${col}">${label}</div>`, iconSize: big ? [34, 34] : [26, 26], iconAnchor: big ? [17, 17] : [13, 13] });
+    const all = [];
+    d.c.forEach((c, i) => { all.push([c.lat, c.lng]);
+      L.marker([c.lat, c.lng], { icon: pin(c.sold ? '#12b76a' : '#f79009', i + 1) }).addTo(map).bindPopup(`<div class="cpop"><b>${esc(c.a)}</b><div class="pp">${$$(c.price)}${c.ppsf ? ` <span>$${c.ppsf}/sf</span>` : ''}</div><div class="ps">${[c.bd != null ? c.bd + ' bd' : '', c.ba != null ? c.ba + ' ba' : '', c.sqft ? c.sqft.toLocaleString() + ' sf' : '', c.mi != null ? c.mi + ' mi away' : ''].filter(Boolean).join(' · ')} · ${c.sold ? 'Sold' : 'Listed'}</div><div class="pl"><a href="${c.z}" target="_blank" rel="noopener">Zillow &rarr;</a><a href="${c.sv}" target="_blank" rel="noopener">Street View &rarr;</a></div></div>`); });
+    if (d.s) { all.push([d.s.lat, d.s.lng]); L.marker([d.s.lat, d.s.lng], { icon: pin('#ffc93c', '&#9733;', true), zIndexOffset: 1000 }).addTo(map).bindPopup(`<div class="cpop"><b>This house</b><div class="ps">${esc(d.addr || '')}</div>${d.value ? `<div class="pp">ARV ${$$(d.value)}</div>` : ''}</div>`); }
+    map.fitBounds(all, { padding: [30, 30], maxZoom: 16 });
+    const rows = el.parentNode.querySelectorAll('.ctab tr'); const ms = []; map.eachLayer(l => { if (l instanceof L.Marker) ms.push(l); });
+    rows.forEach((r, i) => r.addEventListener('click', e => { if (e.target.closest('a')) return; const m = ms[i]; if (m) { map.setView(m.getLatLng(), Math.max(map.getZoom(), 16), { animate: true }); m.openPopup(); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }));
   };
 
   K.compsChart = b => {
@@ -177,6 +212,7 @@
   K.mountSnapshot = root => {
     if (!root) return;
     K.animate(root);
+    root.querySelectorAll('[data-cmap]').forEach(el => K.mountCompsMap(el));
     root.querySelectorAll('[data-ladder]').forEach(card => {
       const d = JSON.parse(card.dataset.ladder), r = card.querySelector('input[type=range]');
       const upd = () => {

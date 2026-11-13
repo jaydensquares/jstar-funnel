@@ -419,7 +419,8 @@
     $('lvLabel').textContent = b.label ? b.label[0] + b.label.slice(1).toLowerCase() : ''; $('lvLabel').className = 'pill ' + (b.label || '');
     $('lvMeta').textContent = `${L.street || ''}, ${L.city || ''} ${L.state || ''} ${L.zip || ''} · ${curLead.source || 'Direct'} · ${ago(curLead.createdAt)}`;
     $('lvNums').innerHTML = [['Opening offer', $$(b.opening)], ['Max offer', $$(b.mao)], ['ARV', $$(b.value)], ['Repairs', $$(b.repairs)], ['Asking', $$(b.asking)]].map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('');
-    const sx = [['Phone', L.phone], ['Email', L.email], ['Timeline', L.timeline], ['Reason', L.reason], ['Occupancy', L.occupancy], ['Mortgage', L.mortgage]].filter(x => x[1]);
+    const fph = v => { const d = String(v || '').replace(/\D/g, '').replace(/^1(?=\d{10}$)/, ''); return d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : v; };
+    const sx = [['Phone', fph(L.phone)], ['Email', L.email], ['Timeline', L.timeline], ['Reason', L.reason], ['Occupancy', L.occupancy], ['Mortgage', L.mortgage]].filter(x => x[1]);
     $('lvSeller').innerHTML = `<h2>Seller</h2>` + (sx.length ? `<div class="kv">${sx.map(([k, v]) => `<div><span>${k}</span><b>${esc(v)}</b></div>`).join('')}</div>` : '<p class="note" style="margin:0">No extra details.</p>');
     const digits = String(L.phone || '').replace(/\D/g, '');
     $('lvCall').href = 'tel:' + digits; $('lvText').href = 'sms:' + digits;
