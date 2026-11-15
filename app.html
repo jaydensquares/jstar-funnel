@@ -53,6 +53,8 @@
   .lvgrid { display:grid; gap:20px; grid-template-columns:minmax(0,1fr) 300px; align-items:start; }
   .lvside { position:sticky; top:24px; }
   .lvside .card { padding:18px; }
+  .affvid { display:grid; grid-template-columns:260px 1fr; gap:24px; align-items:start; } .affvid video { width:100%; aspect-ratio:9/16; border-radius:14px; background:#0a1633; display:block; }
+  @media (max-width:760px) { .affvid { grid-template-columns:1fr; } .affvid video { max-width:320px; margin:0 auto; } }
   .kv { display:grid; gap:0; }
   .kv div { display:flex; justify-content:space-between; gap:12px; padding:7px 0; border-bottom:1px solid var(--line2); font-size:14px; }
   .kv div:last-child { border-bottom:0; }
@@ -293,6 +295,20 @@
     <!-- AFFILIATE -->
     <section data-p="affiliate" hidden>
       <div class="ph"><div><h1>Affiliate program</h1><p>Earn <b>30% of every payment</b> for the first 12 months on every wholesaler you send to JStar Pro. Paid out in cash.</p></div></div>
+      <section class="card affvid">
+        <video src="/media/affiliate.mp4" poster="/media/affiliate.jpg" controls playsinline preload="none"></video>
+        <div>
+          <h2>How it works, in 30 seconds</h2>
+          <p class="note">Share your link. Every wholesaler who signs up through it and pays earns you 30% of what they pay, every month, for their first 12 months.</p>
+          <div class="kv" style="margin-top:10px">
+            <div><span>10 customers on Pro ($129)</span><b>$387/mo</b></div>
+            <div><span>25 customers</span><b>$968/mo</b></div>
+            <div><span>50 customers</span><b>$1,935/mo</b></div>
+          </div>
+          <p class="note" style="margin-top:8px">Examples, not a guarantee. You can repost this video too; just add your link and say you earn a commission.</p>
+          <a class="btn ghost" href="/media/affiliate.mp4" download="JStar-Pro-Affiliate.mp4" style="margin-top:6px;width:auto;display:inline-block">Download the video</a>
+        </div>
+      </section>
       <div id="affJoin" hidden>
         <section class="card">
           <h2>How it works</h2>
