@@ -86,6 +86,9 @@
         <p class="note">Calls JStar Pro made to your data providers, all accounts combined. Repeat addresses come from the 30-day cache and don't count. Set your plan sizes in Vercel with RENTCAST_MONTHLY_CALLS and REALIE_MONTHLY_CALLS.</p></section>
       <section class="card"><h2>Support messages</h2><div id="support"></div></section>
     </div>
+    <section class="card" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><h2>Affiliates</h2><span class="note" id="affSums"></span></div>
+      <p class="note">Pay each affiliate the "Ready" amount by their method, then hit Mark paid. Commissions sit 30 days (refund window) before they're ready. If a customer is refunded, void that line first.</p>
+      <div id="affs"></div></section>
     <div class="tools">
       <input type="text" id="q" placeholder="Search name, email, company or domain" aria-label="Search accounts">
       <button class="sbtn" id="refresh" type="button">Refresh</button>
@@ -172,10 +175,32 @@
     $('refresh').disabled = false;
     if (r.status === 401) { sessionStorage.removeItem('jsPin'); $('dash').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'Wrong PIN.'; return false; }
     if (!r.ok) { $('err').textContent = r.j.error || 'Could not load.'; return true; }
-    rows = r.j.rows; stats(r.j.totals); render(); dataUse(r.j.data); support(r.j.support || []);
+    rows = r.j.rows; stats(r.j.totals); render(); dataUse(r.j.data); support(r.j.support || []); loadAffs();
     $('asof').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
     return true;
   }
+  const usd = n => '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  async function loadAffs() {
+    const r = await call({ action: 'affiliates' }); if (!r.ok) return;
+    const L = r.j.affiliates, S = r.j.sums;
+    $('affSums').textContent = `Ready to pay ${usd(S.payable)} · pending ${usd(S.pending)} · paid ${usd(S.paid)}`;
+    $('affs').innerHTML = L.length ? `<div class="tbl"><table><thead><tr><th>Affiliate</th><th>Link</th><th>Clicks / signups / paying</th><th>Pending</th><th>Ready</th><th>Paid</th><th>Pay to</th><th></th></tr></thead><tbody>${L.map(a => `<tr data-aff="${esc(a.uid)}" class="${a.status === 'banned' ? 'off' : ''}">
+      <td><b>${esc(a.name)}</b><small>${esc(a.email)}</small></td><td>?via=${esc(a.code)}</td><td>${a.clicks} / ${a.signups} / ${a.paying}</td>
+      <td>${usd(a.totals.pending)}</td><td><b>${usd(a.totals.payable)}</b></td><td>${usd(a.totals.paid)}</td>
+      <td>${esc(a.payout.method || '')} · ${esc(a.payout.handle || '')}${a.payout.name ? `<small>${esc(a.payout.name)}</small>` : ''}</td>
+      <td><div class="act">${a.totals.payable > 0 ? '<button class="sbtn" data-aact="affPaid" type="button">Mark paid</button>' : ''}<button class="sbtn ${a.status === 'banned' ? '' : 'warn'}" data-aact="${a.status === 'banned' ? 'affUnban' : 'affBan'}" type="button">${a.status === 'banned' ? 'Unban' : 'Ban'}</button></div>
+      ${a.ledger.filter(l => l.state === 'pending' || l.state === 'payable').slice(0, 6).map(l => `<small>${esc(l.who)} ${usd(l.amount)} <button class="link" data-void="${esc(l.id)}" type="button">void</button></small>`).join('')}</td></tr>`).join('')}</tbody></table></div>` : '<p class="note">No affiliates yet. Anyone with a login can join at /app#affiliate.</p>';
+  }
+  $('affs').addEventListener('click', async e => {
+    const tr = e.target.closest('tr[data-aff]'); if (!tr) return;
+    const b = e.target.closest('[data-aact],[data-void]'); if (!b) return;
+    let body = { id: tr.dataset.aff, action: b.dataset.aact || 'affVoid', line: b.dataset.void };
+    if (body.action === 'affPaid') { const ref = prompt('Payout sent? Add a note or transaction ID (optional):', ''); if (ref === null) return; body.ref = ref; }
+    if (body.action === 'affVoid' && !confirm('Void this commission (customer refunded)?')) return;
+    b.disabled = true; const r = await call(body); b.disabled = false;
+    if (!r.ok) { $('err').textContent = r.j.error || 'Could not do that.'; return; }
+    loadAffs();
+  });
   async function unlock() {
     $('pinBtn').disabled = true;
     if (await load()) { sessionStorage.setItem('jsPin', pin); $('gate').hidden = true; $('dash').hidden = false; }

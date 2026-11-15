@@ -7,6 +7,7 @@ import { getDoc, putDoc } from '../lib/db.js';
 import { tierFromLookup, stripe } from '../lib/stripe.js';
 import { PACKS, PLANS, PAID } from '../lib/plan.js';
 import { addCredits } from '../lib/usage.js';
+import { recordCommission, AFF } from '../lib/affiliate.js';
 import { layout, p as P, small, button, rows, callout, esc as E } from '../lib/email.js';
 const APP = 'https://getjstarpro.com/app';
 
@@ -116,6 +117,23 @@ export default async function handler(req, res) {
                 + callout(`Every referral earns another 50% off a month. Share your link: <a href="https://getjstarpro.com/?ref=${E(r.slug)}" style="color:#2f6fed">getjstarpro.com/?ref=${E(r.slug)}</a>`, 'ok')
                 + button(`${APP}#account`, 'View your referrals'),
               footer: 'You received this email because someone signed up with your JStar Pro referral link.' })).catch(() => {});
+        }
+      }
+    }
+    // Affiliate commission on every paid invoice for the customer's first 12 months
+    if (ev.type === 'invoice.paid' && (o.amount_paid || 0) > 0) {
+      const uid = await uidFor(o); const u = uid && await getUserById(uid);
+      if (u?.affiliateId) {
+        const r = await recordCommission(u, o).catch(e => { console.error('aff commission', e.message); return null; });
+        if (r?.first) await saveUser({ ...(await getUserById(u.id)), affFirstPaidAt: Date.now() }).catch(() => {});
+        if (r) {
+          const af = r.affiliate, fn = (af.name || '').split(' ')[0] || 'there', amt = r.line.amount.toFixed(2);
+          await sendPlainEmail(af.email, `You earned $${amt} in commission`, `Hi ${fn},\n\n${r.line.who} just paid $${r.line.paid.toFixed(2)} for JStar Pro. Your ${AFF.rate * 100}% commission is $${amt}. It becomes payable after the ${AFF.holdDays}-day refund window.\n\nSee your earnings: ${APP}#affiliate\n\nJStar Pro`,
+            layout({ preheader: `${r.line.who} paid. Your commission: $${amt}.`, eyebrow: 'Affiliate commission', title: `You earned $${amt}`,
+              body: P(`Hi ${E(fn)},`) + P(`<b>${E(r.line.who)}</b> just ${r.first ? 'became a paying JStar Pro customer through your link' : 'paid for another month of JStar Pro'}.`)
+                + rows([['They paid', `$${r.line.paid.toFixed(2)}`], ['Your commission', `<span style="color:#067647">$${amt}</span>`], ['Payable', `After ${AFF.holdDays} days`]])
+                + button(`${APP}#affiliate`, 'See your earnings'),
+              footer: 'You received this because you are a JStar Pro affiliate.' })).catch(() => {});
         }
       }
     }

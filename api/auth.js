@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import { planStatus, seatsOf, isActive } from '../lib/plan.js';
 import { getUsage } from '../lib/usage.js';
 import { getDoc, putDoc } from '../lib/db.js';
+import { affByCode, saveAff } from '../lib/affiliate.js';
 import { layout, p as P, small, button, rows, callout, esc as E } from '../lib/email.js';
 import { teamOwner, getUserById, createUser, getUserByEmail, getUserBySlug, checkPassword, hashPassword, sessionCookie, clearCookie, currentUser, publicUser, saveUser, RESERVED, resetToken, userFromResetToken, sendPlainEmail } from '../lib/auth.js';
 
@@ -50,8 +51,12 @@ export default async function handler(req, res) {
       const u0 = await createUser({ name, email, password, company, slug, phone });
       // Referral: ?ref=<username> of an account with a plan
       const ref = /^[a-z0-9-]{3,30}$/.test(str(b.ref, 30).toLowerCase()) ? await getUserBySlug(str(b.ref, 30).toLowerCase()).catch(() => null) : null;
-      const okRef = ref && ref.id !== u0.id && isActive(ref);
-      const u = await saveUser({ ...u0, terms: { version: '2026-11-11', at: Date.now() }, ...(okRef ? { referredBy: ref.id } : {}) });
+      // Affiliate: ?via=<code> (cash commission to the affiliate). It takes the place of a customer referral.
+      const aff = b.via ? await affByCode(str(b.via, 24)).catch(() => null) : null;
+      const okAff = aff && aff.uid !== u0.id;
+      const okRef = !okAff && ref && ref.id !== u0.id && isActive(ref);
+      const u = await saveUser({ ...u0, terms: { version: '2026-11-11', at: Date.now() }, ...(okRef ? { referredBy: ref.id } : {}), ...(okAff ? { affiliateId: aff.uid, affAt: Date.now() } : {}) });
+      if (okAff) await saveAff({ ...aff, signups: (aff.signups || 0) + 1 }).catch(() => {});
       if (okRef) { const r = await getUserById(ref.id); if (r) await saveUser({ ...r, refStats: { ...(r.refStats || {}), signups: (r.refStats?.signups || 0) + 1 } }).catch(() => {}); }
       res.setHeader('Set-Cookie', sessionCookie(u.id, 0));
       return res.status(200).json({ user: publicUser(u), plan: planStatus(u) });

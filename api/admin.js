@@ -5,6 +5,7 @@ import { getUserById, getUserByEmail, getUserBySlug, saveUser, resetToken, sha, 
 import crypto from 'node:crypto';
 import { PLANS, DOMAIN_ADDON_PRICE, tierOf } from '../lib/plan.js';
 import { meterKey, allowances } from '../lib/meter.js';
+import { getAff, saveAff, totals, payOut, publicAff } from '../lib/affiliate.js';
 
 export const maxDuration = 60;
 const ID = /^[a-z0-9]{6,32}$/;
@@ -55,6 +56,27 @@ export default async function handler(req, res) {
       return res.status(200).json({ rows, totals, month: m, data: { cur: cur || {}, last: last || {}, allow: allowances() }, support });
     }
 
+    // Affiliates: who's owed what, mark payouts sent, void a refunded line, ban
+    if (b.action === 'affiliates') {
+      const all = await listDocs('aff').catch(() => []);
+      const list = all.map(a => ({ uid: a.uid, name: a.name, email: a.email, company: a.company, ...publicAff(a), payouts: (a.payouts || []).slice(0, 5) }))
+        .sort((x, y) => y.totals.payable - x.totals.payable || y.totals.lifetime - x.totals.lifetime);
+      const sum = k => Math.round(list.reduce((s, a) => s + a.totals[k], 0) * 100) / 100;
+      return res.status(200).json({ affiliates: list, sums: { pending: sum('pending'), payable: sum('payable'), paid: sum('paid') } });
+    }
+    if (b.action === 'affPaid' || b.action === 'affVoid' || b.action === 'affBan' || b.action === 'affUnban') {
+      const a = ID.test(String(b.id || '')) ? await getAff(b.id) : null;
+      if (!a) return res.status(404).json({ error: 'Affiliate not found.' });
+      if (b.action === 'affPaid') {
+        const r = payOut(a, { ref: String(b.ref || '').slice(0, 80) });
+        if (!r.amount) return res.status(400).json({ error: 'Nothing is ready to pay yet.' });
+        await saveAff(r.a); return res.status(200).json({ ok: true, amount: r.amount });
+      }
+      if (b.action === 'affVoid') {
+        await saveAff({ ...a, ledger: (a.ledger || []).map(l => l.id === b.line && l.status !== 'paid' ? { ...l, status: 'void' } : l) }); return res.status(200).json({ ok: true });
+      }
+      await saveAff({ ...a, status: b.action === 'affBan' ? 'banned' : 'active' }); return res.status(200).json({ ok: true });
+    }
     if (b.action === 'enterApp') {
       // Sign the owner into the full app as the operator account (every paid tool, no limits).
       // If there's no operator account yet, use the account on NOTIFY_EMAIL, or create one.

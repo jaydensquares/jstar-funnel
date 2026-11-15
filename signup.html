@@ -102,6 +102,11 @@
   // Referral: ?ref=<username>, remembered from the sales page too
   let ref = (qs.get('ref') || '').toLowerCase(); try { if (ref) localStorage.setItem('jsRef', ref); else ref = localStorage.getItem('jsRef') || ''; } catch {}
   if (!/^[a-z0-9-]{3,30}$/.test(ref)) ref = '';
+  // Affiliate links: getjstarpro.com/?via=<code> is remembered for 60 days and counted once per browser
+  try { const v = (new URLSearchParams(location.search).get('via') || '').toLowerCase();
+    if (/^[a-z0-9-]{3,24}$/.test(v)) { localStorage.setItem('jsVia', JSON.stringify({ c: v, at: Date.now() }));
+      if (localStorage.getItem('jsViaSeen') !== v) { localStorage.setItem('jsViaSeen', v); fetch('/api/affiliate', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'click', code: v }) }).catch(() => {}); } } } catch {}
+  let via = ''; try { const x = JSON.parse(localStorage.getItem('jsVia') || 'null'); if (x && Date.now() - x.at < 60 * 864e5) via = x.c; } catch {}
   const drawPlan = () => {
     const [n, p] = PLANS[plan];
     $('planPick').innerHTML = `<div class="ppick"><div class="seg2"><button type="button" data-i="month" class="${interval === 'month' ? 'on' : ''}">Monthly</button><button type="button" data-i="year" class="${interval === 'year' ? 'on' : ''}">Yearly <em>2 months free</em></button></div>
@@ -167,7 +172,7 @@
     }
     if (!created) {
       $('sBtn').textContent = 'Creating your account…';
-      const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value, agree: $('sAgree').checked, ref });
+      const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value, agree: $('sAgree').checked, ref, via });
       if (!r.ok) { $('sBtn').disabled = false; $('sBtn').textContent = 'Create account and continue to payment'; $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
       created = true;
       $('signup').querySelectorAll('input').forEach(i => { i.disabled = true; });
