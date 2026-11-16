@@ -298,9 +298,9 @@
         <video src="/media/affiliate-vsl.mp4" poster="/media/affiliate-vsl.jpg" controls playsinline preload="none"></video>
         <div class="affvid-foot">
           <div class="kv">
-            <div><span>10 customers on Pro ($129)</span><b>$387/mo</b></div>
-            <div><span>25 customers</span><b>$968/mo</b></div>
-            <div><span>50 customers</span><b>$1,935/mo</b></div>
+            <div><span>10 customers on Pro ($149)</span><b>$447/mo</b></div>
+            <div><span>25 customers</span><b>$1,118/mo</b></div>
+            <div><span>50 customers</span><b>$2,235/mo</b></div>
           </div>
           <p class="note" style="margin-top:8px">Examples, not a guarantee. Want something to post? Grab the <a href="/media/affiliate.mp4" download="JStar-Pro-Affiliate-Short.mp4">30-second vertical version</a> for Reels and TikTok; add your link and say you earn a commission.</p>
         </div>
@@ -667,7 +667,7 @@
     $(errEl).textContent = r.j.error || 'Could not open checkout.';
   }
   let ival = 'month';
-  const PLAN_INFO = { starter: ['Starter', 59, ['100 deal analyses / mo, with mortgage & equity', '10 photo estimates / mo', '4,000 list records / mo', '25 skip traces / mo', 'Custom domain: $19/mo add-on']], pro: ['Pro', 129, ['300 deal analyses / mo, with mortgage & equity', '30 photo estimates / mo', '12,000 list records / mo', '100 skip traces / mo', 'Custom domain included']], team: ['Team', 249, ['800 deal analyses / mo, with mortgage & equity', '80 photo estimates / mo', '30,000 list records / mo', '300 skip traces / mo', 'Custom domain included']] };
+  const PLAN_INFO = { starter: ['Starter', 89, ['100 deal analyses / mo, with mortgage & equity', '10 photo estimates / mo', '4,000 list records / mo', '25 skip traces / mo', 'Custom domain: $19/mo add-on']], pro: ['Pro', 149, ['300 deal analyses / mo, with mortgage & equity', '30 photo estimates / mo', '12,000 list records / mo', '100 skip traces / mo', 'Custom domain included']], team: ['Team', 299, ['800 deal analyses / mo, with mortgage & equity', '80 photo estimates / mo', '30,000 list records / mo', '300 skip traces / mo', 'Custom domain included']] };
   function renderPlan() {
     if (!plan) return;
     $('planName').textContent = plan.name;
@@ -834,7 +834,7 @@
     const a = r.j.aff; $('affJoin').hidden = !!a; $('affDash').hidden = !a;
     if (!a) {
       if (!$('afCode').value) $('afCode').value = r.j.suggested || '';
-      $('afMath').innerHTML = 'Example: send 10 wholesalers on the $129 Pro plan and you earn <b>$387 a month</b> for a year. That\'s <b>$4,644</b>.';
+      $('afMath').innerHTML = 'Example: send 10 wholesalers on the $149 Pro plan and you earn <b>$447 a month</b> for a year. That\'s <b>$5,364</b>.';
       if (!$('afName').value) $('afName').value = user.name || '';
       return;
     }
@@ -848,7 +848,7 @@
     const link = $('afLink').value;
     const kit = [
       `I run every deal through JStar Pro now: comps, ARV, repairs and my max offer in about 10 seconds, plus skip tracing and my own seller funnel. One login instead of 7. ${link}`,
-      `Stop paying for a list tool, a skip tracer, a funnel and a comp tool separately. JStar Pro does all of it from $59/mo. ${link}`,
+      `Stop paying for a list tool, a skip tracer, a funnel and a comp tool separately. JStar Pro does all of it from $89/mo. ${link}`,
       `New wholesalers: the fastest way to stop guessing your offers. Type the address, get comps, ARV, repairs and your MAO. ${link}`,
     ];
     $('afKit').innerHTML = kit.map((k, i) => `<div class="copyrow" style="margin-top:${i ? 10 : 0}px"><textarea readonly rows="3" style="flex:1;min-width:0">${esc(k)}</textarea><button class="btn ghost" type="button" data-kit="${i}">Copy</button></div>`).join('');
