@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Affiliates | JStar Pro</title>
+<meta name="description" content="Earn 30% of every payment for 12 months on every wholesaler you send to JStar Pro. Free to join, paid in cash.">
+<meta property="og:title" content="JStar Pro affiliates: earn 30% for 12 months">
+<meta property="og:description" content="Share your link. Earn 30% of every payment your customers make for their first 12 months. Paid in cash.">
+<meta property="og:image" content="/media/affiliate-vsl.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#ffffff; --bg2:#f2f6ff; --ink:#0f1a33; --ink2:#36425c; --muted:#66728a; --line:#e2e8f5;
+    --navy:#0a1633; --on-navy:#f5f8ff; --on-navy2:#aebddc; --gold:#ffc93c; --sun:#ffc93c; --mint:#2fd38a; --coral:#ff6b5a;
+    --brand:#2f6fed; --brand-ink:#fff; --brand-soft:#eaf1ff; --ok:#12a150;
+    --display:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif; --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg:#0e1116; --bg2:#151a22; --ink:#f3f4f6; --ink2:#d1d5db; --muted:#9ca3af; --line:#273042;
+    --brand:#5b8def; --brand-soft:#17223a; --ok:#86efac; color-scheme:dark; } }
+  /* Brighter, friendlier accents */
+  .hero { background:radial-gradient(900px 520px at 85% 15%, rgba(47,111,237,.38), transparent 60%), radial-gradient(700px 420px at 0% 100%, rgba(47,211,138,.14), transparent 60%), var(--navy) !important; }
+  .hero h1 em { font-style:normal; color:var(--sun); }
+  .hero .ctas .btn:not(.alt) { background:var(--sun); border-color:var(--sun); color:var(--navy); }
+  .hero .ctas .btn:not(.alt):hover { filter:brightness(1.05); }
+  .vsl .pb { background:var(--sun) !important; box-shadow:0 0 0 8px rgba(255,201,60,.22); }
+  .top .btn { background:var(--sun) !important; border-color:var(--sun) !important; color:var(--navy) !important; }
+  .cmp .us { background:var(--brand-soft); }
+  .cmp tfoot .us, .cmp tfoot .us b { background:var(--brand) !important; }
+  .steps li.on .i { color:var(--brand); }
+  .steps li.on button .t { box-shadow:inset 0 -6px 0 rgba(255,201,60,.55); }
+  .phone { box-shadow:0 30px 60px rgba(47,111,237,.28), 0 0 0 1px rgba(15,26,51,.08); }
+  .phone .prog i { background:var(--sun); }
+  .result { background:linear-gradient(160deg, #0f2150, var(--navy)) !important; }
+  .result .save b { color:var(--sun) !important; }
+  .plan.pick { background:linear-gradient(165deg, #3d7bff, var(--brand) 55%, #1f56d6) !important; color:#fff; box-shadow:0 24px 50px rgba(47,111,237,.35) !important; position:relative; z-index:1; border-radius:14px; margin:-10px 0; padding-top:38px; padding-bottom:38px; }
+  .plan.pick .for, .plan.pick .pr span { color:#dbe6ff !important; }
+  .plan.pick li { border-color:rgba(255,255,255,.18) !important; } .plan.pick li span { color:#e6eeff !important; } .plan.pick li b { color:#fff !important; }
+  .plan.pick .btn { background:var(--sun) !important; border-color:var(--sun) !important; color:var(--navy) !important; }
+  .plan.pick .nm::after { content:'Recommended'; font:700 12px var(--body); letter-spacing:.04em; background:var(--sun); color:var(--navy); padding:4px 10px; border-radius:999px; }
+  .plan.pick + .plan { border-left:0 !important; }
+  @media (max-width:899px) { .plan.pick { margin:0; border-radius:0; } .plan.pick + .plan { border-top:0 !important; } }
+  .plans { border-color:#d6e2fb !important; }
+  .bill { display:inline-grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:24px; background:#fff; border:1px solid #d6e2fb; border-radius:12px; padding:4px; }
+  .bill button { border:0; background:none; font:600 15px var(--body); color:var(--muted); padding:9px 18px; border-radius:9px; cursor:pointer; }
+  .bill button.on { background:var(--brand); color:#fff; }
+  .bill em { font-style:normal; font-size:12px; font-weight:700; background:var(--sun); color:var(--navy); padding:2px 7px; border-radius:999px; margin-left:4px; }
+  .plans { margin-top:20px !important; }
+  .pr .yr { display:block; font-family:var(--body); font-size:13.5px; font-weight:600; color:#067647; letter-spacing:0; margin-top:4px; }
+  .plan.pick .pr .yr { color:#ffe08a; }
+  .agency { display:grid; grid-template-columns:auto 1fr auto; gap:24px; align-items:center; margin-top:16px; padding:22px 26px; border-radius:14px; background:linear-gradient(120deg,#0a1633,#13306f); color:#fff; }
+  .agency b { display:block; font-size:20px; } .agency span { font-size:13.5px; color:#ffc93c; font-weight:600; } .agency p { margin:0; color:#c6d3f2; font-size:15px; line-height:1.5; }
+  @media (max-width:760px) { .agency { grid-template-columns:1fr; gap:10px; } }
+  .cta2 { background:var(--brand) !important; }
+  .cta2 p { color:#dbe6ff !important; }
+  .cta2 .btn.alt { border-color:rgba(255,255,255,.5) !important; color:#fff !important; }
+  .btn.gold { background:var(--sun) !important; border-color:var(--sun) !important; color:var(--navy) !important; }
+  .faq summary::after { color:var(--brand) !important; }
+  .tool input[type=checkbox] { accent-color:var(--brand); }
+  mark { background:linear-gradient(transparent 58%, rgba(255,201,60,.75) 58%, rgba(255,201,60,.75) 92%, transparent 92%); color:inherit; padding:0 .06em; }
+  .steps .i { display:inline-grid; place-items:center; width:30px !important; height:30px; border-radius:50%; background:var(--line); color:var(--muted); }
+  .steps li.on .i { background:var(--brand); color:#fff !important; }
+  .cmp th.us { background:var(--sun) !important; color:var(--navy) !important; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:17px; line-height:1.55; -webkit-font-smoothing:antialiased; }
+  a { color:inherit; }
+  img, video { display:block; max-width:100%; }
+  .w { max-width:1120px; margin:0 auto; padding-left:max(20px, env(safe-area-inset-left, 0px)); padding-right:max(20px, env(safe-area-inset-right, 0px)); }
+  h1, h2, h3 { font-family:var(--display); letter-spacing:-.015em; line-height:1.1; margin:0; }
+  .btn { display:inline-block; text-decoration:none; font-weight:700; font-size:15px; border-radius:8px; padding:12px 20px; background:var(--brand); color:var(--brand-ink); border:1px solid var(--brand); cursor:pointer; font-family:var(--body); }
+  .btn:hover { filter:brightness(1.08); }
+  .btn.alt { background:transparent; color:inherit; border-color:currentColor; opacity:.9; }
+  .kicker { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:var(--brand); margin:0 0 14px; }
+
+  /* Header */
+  .top { position:sticky; top:0; z-index:20; background:var(--navy); color:var(--on-navy); border-bottom:1px solid #1d2c4d; }
+  .top .w { display:flex; align-items:center; justify-content:space-between; height:62px; gap:16px; }
+  .brand { font-family:var(--display); font-weight:800; font-size:19px; text-decoration:none; }
+  .brand span { color:var(--gold); }
+  .top nav { display:flex; align-items:center; gap:22px; font-size:15px; font-weight:600; }
+  .top nav a { text-decoration:none; color:var(--on-navy2); } .top nav a:hover { color:#fff; }
+  .top .btn { padding:8px 14px; font-size:14px; color:#fff; background:var(--brand); border-color:var(--brand); }
+  @media (max-width:720px) { .top nav .hide-sm { display:none; } .top nav { gap:14px; } }
+
+  /* Hero */
+  .hero { background:var(--navy); color:var(--on-navy); padding:64px 0 72px; }
+  .hero .w { display:grid; gap:44px; grid-template-columns:1fr; align-items:center; }
+  @media (min-width:980px) { .hero .w { grid-template-columns:.9fr 1.1fr; } .hero { padding:88px 0 96px; } }
+  .hero .kicker { color:var(--gold); }
+  .hero h1 { font-size:clamp(34px, 4.6vw, 54px); font-weight:700; }
+  .hero p.lead { font-size:19px; color:var(--on-navy2); margin:20px 0 28px; max-width:32em; }
+  .hero .ctas { display:flex; gap:10px; flex-wrap:wrap; }
+  .hero .btn.alt { color:var(--on-navy); border-color:#3a4d75; }
+  .hero .fine { font-size:14px; color:var(--on-navy2); margin-top:14px; }
+  .vsl { position:relative; border-radius:14px; overflow:hidden; background:#000; box-shadow:0 30px 70px rgba(0,0,0,.45), 0 0 0 1px #24365c; aspect-ratio:16/9; }
+  .vsl video, .vsl img { width:100%; height:100%; object-fit:cover; }
+  .vsl button.play { position:absolute; inset:0; border:0; background:linear-gradient(180deg, rgba(11,23,48,0) 40%, rgba(11,23,48,.75)); cursor:pointer; display:flex; align-items:flex-end; justify-content:space-between; padding:22px 24px; color:#fff; font:inherit; text-align:left; }
+  .vsl .pb { width:64px; height:64px; border-radius:50%; background:var(--gold); display:grid; place-items:center; flex:none; transition:transform .15s; }
+  .vsl button.play:hover .pb { transform:scale(1.06); }
+  .vsl .pb svg { width:22px; height:22px; margin-left:4px; fill:var(--navy); }
+  .vsl .cap b { display:block; font-family:var(--display); font-size:20px; } .vsl .cap span { font-size:14px; color:#cfd7e6; }
+
+  /* Sections */
+  section.s { padding:88px 0; }
+  section.s.alt { background:var(--bg2); }
+  .s h2 { font-size:clamp(28px, 3.6vw, 40px); font-weight:600; max-width:20em; }
+  .s .intro { color:var(--ink2); font-size:18px; max-width:40em; margin:16px 0 0; }
+
+  /* Problem */
+  .stack { margin-top:40px; display:grid; gap:0; grid-template-columns:1fr; border-top:1px solid var(--line); }
+  @media (min-width:860px) { .stack { grid-template-columns:1fr 1fr; column-gap:56px; } }
+  .stack div { display:grid; grid-template-columns:1fr auto; gap:6px 16px; padding:18px 0; border-bottom:1px solid var(--line); }
+  .stack b { font-size:17px; } .stack em { font-style:normal; font-weight:700; font-variant-numeric:tabular-nums; text-align:right; }
+  .stack span { grid-column:1 / -1; color:var(--muted); font-size:15px; }
+
+  /* Comparison table */
+  .cmpw { margin-top:40px; overflow-x:auto; border:1px solid var(--line); border-radius:10px; }
+  .cmp { width:100%; border-collapse:collapse; font-size:15px; min-width:720px; }
+  .cmp th { text-align:left; font-size:13px; font-weight:600; color:var(--muted); padding:12px 18px; background:var(--bg2); border-bottom:1px solid var(--line); }
+  .cmp td { padding:15px 18px; border-bottom:1px solid var(--line); color:var(--ink2); vertical-align:top; }
+  .cmp td b { color:var(--ink); }
+  .cmp .r { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+  .cmp .us { background:var(--brand-soft); color:var(--ink); font-weight:600; width:26%; }
+  .cmp th.us { color:var(--brand); }
+  .cmp tfoot td { border-bottom:0; background:var(--bg2); }
+  .cmp tfoot .us, .cmp tfoot .us b { background:var(--brand); color:#fff; }
+  @media (max-width:700px) {
+    .cmpw { border:0; border-radius:0; overflow:visible; }
+    .cmp { min-width:0; font-size:15px; }
+    .cmp thead { display:none; }
+    .cmp, .cmp tbody, .cmp tfoot, .cmp tr, .cmp td { display:block; }
+    .cmp tr { border:1px solid var(--line); border-radius:10px; margin-bottom:10px; overflow:hidden; }
+    .cmp td { border:0; padding:4px 16px; text-align:left !important; white-space:normal !important; }
+    .cmp td:first-child { padding-top:14px; }
+    .cmp td:nth-child(2)::before { content:"Most use: "; color:var(--muted); }
+    .cmp td:nth-child(3)::before { content:"Cost: "; color:var(--muted); }
+    .cmp td.us { width:auto; margin-top:10px; padding:10px 16px 12px; }
+    .cmp td.us::before { content:"JStar Pro: "; color:var(--brand); }
+    .cmp tfoot td:first-child { display:none; }
+    .cmp tfoot td:nth-child(2)::before { content:"Usual stack: "; color:var(--muted); }
+    .cmp tfoot td.r { padding-top:14px; }
+    .cmp tfoot td.us::before { color:#fff; opacity:.75; }
+    .vsl .cap { display:none; }
+    .vsl button.play { justify-content:flex-end; }
+    .phone { width:250px; }
+  }
+
+  /* Product tour: step list beside the clip */
+  .tour { margin-top:44px; display:grid; gap:48px; grid-template-columns:1fr; align-items:start; }
+  @media (min-width:960px) { .tour { grid-template-columns:minmax(0,1fr) 360px; gap:80px; } }
+  .steps { list-style:none; margin:0; padding:0; border-top:1px solid var(--line); }
+  .steps > li { border-bottom:1px solid var(--line); }
+  .steps button { width:100%; display:flex; gap:16px; align-items:baseline; background:none; border:0; padding:18px 0; cursor:pointer; text-align:left; font:600 18px var(--body); color:var(--muted); }
+  .steps button:hover { color:var(--ink); }
+  .steps .i { font:600 13px var(--body); color:var(--muted); font-variant-numeric:tabular-nums; width:22px; flex:none; }
+  .steps li.on button { color:var(--ink); }
+  .steps li.on .i { color:var(--brand); }
+  .steps .body { display:none; padding:0 0 22px 38px; }
+  .steps li.on .body { display:block; animation:fd .3s ease; }
+  .steps h3 { font-size:24px; font-weight:700; margin:0 0 10px; }
+  .steps p { color:var(--ink2); margin:0 0 12px; max-width:36em; }
+  .steps .body ul { margin:0; padding:0 0 0 18px; color:var(--ink2); font-size:15.5px; max-width:36em; }
+  .steps .body li { padding:3px 0; } .steps .body li b { color:var(--ink); font-weight:600; }
+  .stage { position:sticky; top:96px; }
+  .phone { width:320px; max-width:82vw; margin:0 auto; aspect-ratio:390/844; border-radius:36px; background:#0b0f17; padding:9px; box-shadow:0 24px 48px rgba(17,24,39,.18); position:relative; }
+  .phone video, .phone img { width:100%; height:100%; object-fit:cover; object-position:top; border-radius:28px; background:#fff; }
+  .phone .prog { position:absolute; left:28px; right:28px; bottom:-16px; height:3px; background:var(--line); border-radius:2px; overflow:hidden; }
+  .phone .prog i { display:block; height:100%; width:0; background:var(--brand); }
+  @media (max-width:959px) { .stage { position:static; order:-1; } }
+  .fade { animation:fd .35s ease; } @keyframes fd { from { opacity:.2; transform:translateY(6px); } to { opacity:1; transform:none; } }
+
+  /* Calculator */
+  .calc { margin-top:40px; display:grid; gap:28px; grid-template-columns:1fr; }
+  @media (min-width:900px) { .calc { grid-template-columns:1.25fr .75fr; gap:48px; align-items:start; } }
+  .tools { border-top:1px solid var(--line); }
+  .tool { display:grid; grid-template-columns:24px 1fr 120px; gap:14px; align-items:center; padding:14px 0; border-bottom:1px solid var(--line); }
+  .tool input[type=checkbox] { width:20px; height:20px; accent-color:var(--brand); }
+  .tool label b { display:block; font-size:16px; } .tool label span { font-size:14px; color:var(--muted); }
+  .tool .amt { display:flex; align-items:center; border:1px solid var(--line); border-radius:8px; background:var(--bg); padding:0 10px; }
+  .tool .amt span { color:var(--muted); font-size:15px; } .tool .amt input { width:100%; border:0; background:transparent; color:var(--ink); font:600 16px var(--body); padding:10px 4px; text-align:right; font-variant-numeric:tabular-nums; }
+  .tool .amt input:focus { outline:none; } .tool .amt:focus-within { border-color:var(--brand); }
+  .tool.off label, .tool.off .amt { opacity:.45; }
+  .result { position:sticky; top:84px; background:var(--navy); color:var(--on-navy); border-radius:14px; padding:26px; }
+  .result .row { display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid #22345a; font-variant-numeric:tabular-nums; }
+  .result .row b { font-size:18px; } .result select { background:#13244a; color:#fff; border:1px solid #2a3b60; border-radius:6px; font:600 14px var(--body); padding:4px 6px; }
+  .result .save { margin-top:18px; } .result .save small { display:block; color:var(--on-navy2); font-size:14px; }
+  .result .save b { display:block; font-family:var(--display); font-size:44px; letter-spacing:-.02em; color:var(--gold); line-height:1.1; margin-top:4px; }
+  .result .note { font-size:13.5px; color:var(--on-navy2); margin:16px 0 0; }
+  .result .btn { width:100%; text-align:center; margin-top:18px; }
+  .keep { margin-top:20px; font-size:15px; color:var(--ink2); }
+
+  /* Pricing */
+  .plans { display:grid; gap:0; margin-top:40px; grid-template-columns:1fr; border:1px solid var(--line); border-radius:10px; overflow:hidden; background:var(--bg); }
+  @media (min-width:900px) { .plans { grid-template-columns:repeat(3,1fr); } .plan + .plan { border-left:1px solid var(--line); } }
+  @media (max-width:899px) { .plan + .plan { border-top:1px solid var(--line); } }
+  .plan { padding:28px 26px; display:flex; flex-direction:column; background:var(--bg); }
+  .plan.pick { box-shadow:inset 0 3px 0 var(--brand); }
+  .plan .nm { font-family:var(--display); font-weight:800; font-size:20px; display:flex; justify-content:space-between; align-items:center; }
+  .plan .nm small { font-family:var(--body); font-size:12px; font-weight:700; color:var(--brand); text-transform:uppercase; letter-spacing:.06em; }
+  .plan .for { color:var(--muted); font-size:15px; margin:4px 0 18px; min-height:3.2em; }
+  .plan .pr { font-family:var(--display); font-weight:800; font-size:42px; letter-spacing:-.03em; }
+  .plan .pr span { font-family:var(--body); font-size:15px; font-weight:500; color:var(--muted); letter-spacing:0; }
+  .plan ul { list-style:none; padding:0; margin:20px 0 24px; font-size:15px; flex:1; }
+  .plan li { padding:7px 0; border-top:1px solid var(--line); display:flex; justify-content:space-between; gap:10px; }
+  .plan li b { font-variant-numeric:tabular-nums; } .plan li.x { color:var(--muted); }
+  .plan .btn { text-align:center; } .plan .btn.alt { color:var(--ink); border-color:var(--line); }
+  .addon { margin-top:16px; font-size:15px; color:var(--ink2); }
+
+  /* FAQ */
+  .faqgrid { display:grid; gap:32px; grid-template-columns:1fr; }
+  @media (min-width:900px) { .faqgrid { grid-template-columns:340px 1fr; gap:64px; } }
+  .faq { border-top:1px solid var(--line); }
+  .faq details { border-bottom:1px solid var(--line); padding:18px 0; }
+  .faq summary { cursor:pointer; font-weight:700; font-size:17px; list-style:none; display:flex; justify-content:space-between; gap:16px; }
+  .faq summary::-webkit-details-marker { display:none; }
+  .faq summary::after { content:"+"; color:var(--muted); font-weight:500; font-size:22px; line-height:1; }
+  .faq details[open] summary::after { content:"−"; }
+  .faq p { margin:10px 0 0; color:var(--ink2); font-size:16px; }
+
+  .cta2 { padding:72px 0; background:var(--navy); color:var(--on-navy); }
+  .cta2 .w { display:flex; justify-content:space-between; align-items:center; gap:32px; flex-wrap:wrap; }
+  .cta2 h2 { font-size:clamp(28px, 3.4vw, 38px); }
+  .cta2 p { color:var(--on-navy2); margin:10px 0 0; max-width:34em; }
+  .cta2 .ctas { display:flex; gap:10px; flex-wrap:wrap; }
+  .cta2 .btn.alt { color:var(--on-navy); border-color:#3a4d75; }
+  .btn.gold { background:var(--gold); border-color:var(--gold); color:var(--navy); }
+  .split { max-width:760px; }
+  footer { padding:28px 0 48px; color:var(--muted); font-size:14px; }
+  footer .w { display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  footer a { text-decoration:none; } footer a:hover { color:var(--ink); }
+  @media (prefers-reduced-motion: reduce) { .fade { animation:none; } }
+</style>
+<style>
+.steps4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:28px}
+.steps4 div{padding:24px;border:1px solid var(--line,#e4e7ec);border-radius:12px;background:var(--card,#fff)}
+.steps4 b{display:block;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold,#a77d1c);margin-bottom:8px}
+.steps4 h3{font-size:19px;margin:0 0 6px}.steps4 p{margin:0;font-size:15px;color:var(--mut,#475467)}
+.who{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.who span{padding:10px 16px;border-radius:999px;border:1px solid var(--line,#e4e7ec);background:var(--card,#fff);font-weight:600;font-size:15px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}@media (max-width:860px){.two{grid-template-columns:1fr;gap:32px}}
+.cmp td.g{color:#067647;font-weight:700}
+@media (max-width:860px){.steps4{grid-template-columns:1fr 1fr}}@media (max-width:520px){.steps4{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="top"><div class="w">
+  <a class="brand" href="/software">JStar <span>Pro</span></a>
+  <nav><a class="hide-sm" href="/software">Product</a><a class="hide-sm" href="/software#pricing">Pricing</a><a href="/affiliates" aria-current="page">Affiliates</a><a href="/login">Log in</a><a class="btn" href="/signup?next=/app%23affiliate">Get your link</a></nav>
+</div></header>
+
+<main>
+  <section class="hero"><div class="w">
+    <div>
+      <h1>Wholesalers already listen to you. <em>Get paid when they sign up.</em></h1>
+      <p class="lead">Share your JStar Pro link. Every wholesaler who signs up through it and pays earns you 30% of every payment they make for their first 12 months. Paid in cash, no cap on how many you send.</p>
+      <div class="ctas"><a class="btn" href="/signup?next=/app%23affiliate">Get your link</a><a class="btn alt" href="/login?next=/app%23affiliate">I already have an account</a></div>
+      <p class="fine">Free to join. Takes about a minute.</p>
+    </div>
+    <div class="vsl" id="vsl">
+      <img src="/media/affiliate-vsl.jpg" alt="" width="1280" height="720">
+      <button class="play" type="button" id="vslPlay" aria-label="Play the affiliate program video">
+        <span class="cap"><b>How the affiliate program works</b><span>Sound on. 72 seconds.</span></span>
+        <span class="pb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l15 8-15 8z"/></svg></span>
+      </button>
+    </div>
+  </div></section>
+
+  <section class="s"><div class="w">
+    <h2>How it works</h2>
+    <div class="steps4">
+      <div><b>Step 1</b><h3>Get your link</h3><p>Create a free login, pick your code and choose how you want to get paid.</p></div>
+      <div><b>Step 2</b><h3>Share it</h3><p>YouTube, TikTok, Instagram, your coaching group or your buyers list. Captions are ready to copy.</p></div>
+      <div><b>Step 3</b><h3>They sign up</h3><p>Anyone who signs up within 60 days of clicking your link counts as yours.</p></div>
+      <div><b>Step 4</b><h3>You get paid</h3><p>30% of every payment for 12 months, sent on the 1st and 15th once you have $50 ready.</p></div>
+    </div>
+  </div></section>
+
+  <section class="s alt"><div class="w">
+    <h2>What it can add up to</h2>
+    <p class="intro">30% of the $129 Pro plan is $38.70 a month, per customer. Examples, not a guarantee: what you earn depends on who signs up and what they pay.</p>
+    <div class="cmpw"><table class="cmp">
+      <thead><tr><th>Customers you send</th><th class="r">Per month</th><th class="r">First 12 months</th></tr></thead>
+      <tbody>
+        <tr><td><b>10</b></td><td class="r g">$387</td><td class="r">$4,644</td></tr>
+        <tr><td><b>25</b></td><td class="r g">$968</td><td class="r">$11,610</td></tr>
+        <tr><td><b>50</b></td><td class="r g">$1,935</td><td class="r">$23,220</td></tr>
+        <tr><td><b>100</b></td><td class="r g">$3,870</td><td class="r">$46,440</td></tr>
+      </tbody>
+    </table></div>
+  </div></section>
+
+  <section class="s"><div class="w">
+    <div class="two">
+      <div>
+        <h2>Made for people wholesalers <mark>listen to</mark></h2>
+        <p class="intro">If you teach, post about or work with wholesalers, you're already recommending tools. This one pays you.</p>
+        <div class="who"><span>YouTubers and TikTok creators</span><span>Wholesaling coaches and mentors</span><span>Mastermind and group owners</span><span>Dispo, title and lending pros</span><span>Wholesalers with a network</span></div>
+      </div>
+      <div>
+        <h2>Easy to recommend</h2>
+        <p class="intro">Every wholesaling tool in one login: seller funnel, comps and max offer in about 10 seconds, skip tracing, owner lists, deal board, contracts and cash buyers. Plans start at $59 a month, so it's an easy yes for anyone you send.</p>
+        <div class="ctas"><a class="btn alt" href="/software">See the product</a></div>
+      </div>
+    </div>
+  </div></section>
+
+  <section class="s alt" id="faq"><div class="w">
+    <div class="faqgrid"><div><h2>Questions</h2><p class="intro" style="font-size:16px">The short version of the <a href="/legal/affiliate">Affiliate Terms</a>.</p></div>
+    <div class="faq">
+      <details><summary>Do I need to pay for JStar Pro to join?</summary><p>No. All you need is a free JStar Pro login. Sign up, open the Earn 30% tab and get your link.</p></details>
+      <details><summary>How much do I earn?</summary><p>30% of every subscription payment a customer you send makes, for their first 12 months. On the $129 Pro plan that's $38.70 a month per customer. There's no cap on how many customers you send.</p></details>
+      <details><summary>How long does my link track?</summary><p>60 days. If someone clicks your link and signs up within 60 days, they're yours. If they click another affiliate's link after yours, the last click counts.</p></details>
+      <details><summary>When and how do I get paid?</summary><p>Each commission is held for 30 days in case of a refund, then it's ready. Payouts go out on the 1st and 15th once you have $50 or more, by PayPal, Zelle, Venmo or Cash App.</p></details>
+      <details><summary>Can I see my stats?</summary><p>Yes. Your dashboard shows link clicks, signups, paying customers and every commission, with what's pending, ready and paid.</p></details>
+      <details><summary>Do I have to say I'm an affiliate?</summary><p>Yes. The FTC requires a clear disclosure when you earn a commission, like "#ad" or "I earn a commission if you sign up." No income claims, no spam, and no bidding on "JStar Pro" in search ads.</p></details>
+      <details><summary>Do taxes apply?</summary><p>You're responsible for your own taxes. If you earn $600 or more in a year, we'll ask for a W-9 before paying more.</p></details>
+    </div></div>
+  </div></section>
+
+  <section class="s"><div class="w" style="text-align:center">
+    <h2>Get your link in 60 seconds</h2>
+    <p class="intro" style="margin-left:auto;margin-right:auto;text-align:center">Free to join. 30% of every payment, for 12 months.</p>
+    <div class="ctas" style="justify-content:center"><a class="btn" href="/signup?next=/app%23affiliate">Get your link</a></div>
+  </div></section>
+</main>
+
+<footer><div class="w">
+  <span>&copy; <span id="yr"></span> JStar Pro</span>
+  <span><a href="/login">Log in</a> &nbsp;·&nbsp; <a href="/software#pricing">Pricing</a> &nbsp;·&nbsp; <a href="#faq">FAQ</a> &nbsp;·&nbsp; <a href="/support">Support</a> &nbsp;·&nbsp; <a href="/affiliates">Affiliates</a> &nbsp;·&nbsp; <a href="/legal/terms">Terms</a> &nbsp;·&nbsp; <a href="/legal/privacy">Privacy</a></span>
+</div></footer>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  $('yr').textContent = new Date().getFullYear();
+  $('vslPlay').addEventListener('click', () => {
+    $('vsl').innerHTML = '<video poster="/media/affiliate-vsl.jpg" controls autoplay playsinline><source src="/media/affiliate-vsl.mp4" type="video/mp4"></video>';
+  });
+})();
+</script>
+</body>
+</html>
