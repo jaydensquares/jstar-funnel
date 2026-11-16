@@ -352,4 +352,6 @@
     }).catch(() => {});
   };
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', start) : start();
+  // JStar AI assistant on every app page
+  if (!document.querySelector('script[src^="/agent-ui.js"]')) { const sc = document.createElement('script'); sc.src = '/agent-ui.js?v=1'; sc.defer = true; document.head.appendChild(sc); }
 })();

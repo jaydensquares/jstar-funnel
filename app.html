@@ -469,6 +469,7 @@
   window.addEventListener('hashchange', tab);
 
   // ── Leads ──
+  window.addEventListener('jstar:changed', () => loadLeads());
   async function loadLeads() {
     const r = await post('/api/leads', { action: 'list' });
     if (!r.ok) { $('leadList').innerHTML = `<p class="err">${esc(r.j.error || 'Could not load leads.')}</p>`; return; }
@@ -909,10 +910,10 @@
   // ── Account ──
   function renderUsage() {
     if (!usage) { $('usage').innerHTML = '<p class="note">Loading…</p>'; return; }
-    if (usage.operator) { $('usage').innerHTML = `<div class="urings">${[['runs', 'Deal analyses'], ['photos', 'Photo estimates'], ['listCalls', 'List calls'], ['skips', 'Skip traces']].map(([k, l]) => `<div><span class="ring" style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#2f6fed,#7a5af8);color:#fff;font:700 22px var(--body)">∞</span><div><b>${(usage[k] || 0).toLocaleString()} used</b><span>${l} · unlimited</span></div></div>`).join('')}</div>`; return; }
+    if (usage.operator) { $('usage').innerHTML = `<div class="urings">${[['runs', 'Deal analyses'], ['photos', 'Photo estimates'], ['listCalls', 'List calls'], ['skips', 'Skip traces'], ['agent', 'JStar AI messages']].map(([k, l]) => `<div><span class="ring" style="width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#2f6fed,#7a5af8);color:#fff;font:700 22px var(--body)">∞</span><div><b>${(usage[k] || 0).toLocaleString()} used</b><span>${l} · unlimited</span></div></div>`).join('')}</div>`; return; }
     const L = usage.limits || {};
-    const J = window.JK, COL = { runs: ['#4a85ff', '#2f6fed'], photos: ['#9b8afb', '#7a5af8'], listCalls: ['#32d583', '#12b76a'], skips: ['#ffd666', '#f79009'] };
-    $('usage').innerHTML = '<div class="urings">' + [['runs', 'Deal analyses', 1], ['photos', 'Photo estimates', 1], ['listCalls', 'List records', 500], ['skips', 'Skip traces', 1]].map(([k, l, x]) => {
+    const J = window.JK, COL = { runs: ['#4a85ff', '#2f6fed'], photos: ['#9b8afb', '#7a5af8'], listCalls: ['#32d583', '#12b76a'], skips: ['#ffd666', '#f79009'], agent: ['#6ea1ff', '#7a5af8'] };
+    $('usage').innerHTML = '<div class="urings">' + [['runs', 'Deal analyses', 1], ['photos', 'Photo estimates', 1], ['listCalls', 'List records', 500], ['skips', 'Skip traces', 1], ['agent', 'JStar AI messages', 1]].map(([k, l, x]) => {
       const u = (usage[k] || 0) * x, m = (L[k] || 1) * x, c = (usage.credits?.[k] || 0) * x, left = Math.max(0, m - u);
       return `<div>${J ? J.ring(left / m, { size: 58, stroke: 6, grad: COL[k], text: Math.round(left / m * 100) + '%' }) : ''}<div><b>${left.toLocaleString()} left</b><span>${l} · ${Math.min(u, m).toLocaleString()} of ${m.toLocaleString()} used${c ? ` · +${c.toLocaleString()} add-on` : ''}</span></div></div>`;
     }).join('') + '</div>' + '<p class="note">Plan limits reset on the 1st of each month, and unused plan usage doesn\'t roll over. Usage you buy separately as an add-on doesn\'t expire at the end of the month.</p>'
