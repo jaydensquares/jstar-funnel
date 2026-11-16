@@ -180,7 +180,7 @@
     if (!pts.length) { $('dmap').hidden = true; return; } $('dmap').hidden = false;
     const L = await new Promise(ok => { if (window.L) return ok(window.L); const c = document.createElement('link'); c.rel = 'stylesheet'; c.href = '/vendor/leaflet/leaflet.css'; document.head.appendChild(c); const s = document.createElement('script'); s.src = '/vendor/leaflet/leaflet.js'; s.onload = () => ok(window.L); s.onerror = () => ok(null); document.head.appendChild(s); });
     if (!L) { $('dmap').hidden = true; return; }
-    if (!map) { const dark = matchMedia('(prefers-color-scheme: dark)').matches; map = L.map('dmap', { scrollWheelZoom: false }); L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map); }
+    if (!map) { map = L.map('dmap', { scrollWheelZoom: false }); JK.tiles(L, map); }
     if (layer) layer.remove(); layer = L.layerGroup().addTo(map);
     pts.forEach((r, i) => L.marker([r.lat, r.lng], { icon: L.divIcon({ className: '', html: `<div class="cpin" style="--c:${(r.dtags || []).length >= 2 ? '#d92d20' : '#2f6fed'}">${i + 1}</div>`, iconSize: [26, 26], iconAnchor: [13, 13] }) }).addTo(layer)
       .bindPopup(`${r.photo ? `<img src="${r.photo}" style="width:180px;border-radius:8px;display:block;margin-bottom:6px">` : ''}<b>${esc(r.addr)}</b><br>${esc(r.owner || '')}<br><small>${esc((r.dtags || []).join(', '))}</small>`));

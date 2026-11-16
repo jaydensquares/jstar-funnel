@@ -176,12 +176,17 @@
     const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = '/vendor/leaflet/leaflet.css'; document.head.appendChild(l);
     const sc = document.createElement('script'); sc.src = '/vendor/leaflet/leaflet.js'; sc.onload = () => ok(window.L); sc.onerror = no; document.head.appendChild(sc);
   });
+  // Street map tiles: OpenStreetMap (no key needed). Dark mode inverts the tiles so the map matches the theme.
+  K.tiles = (L, map) => {
+    const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+    if (dark) map.getContainer().classList.add('jk-darkmap');
+    return L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' }).addTo(map);
+  };
   K.mountCompsMap = async el => {
     if (!el || el._m) return; const d = JSON.parse(el.dataset.cmap); el._m = 1;
     const L = await leaflet().catch(() => null); if (!L) { el.remove(); return; }
-    const dark = matchMedia('(prefers-color-scheme: dark)').matches;
     const map = L.map(el, { scrollWheelZoom: false, attributionControl: true, zoomControl: true });
-    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png`, { maxZoom: 19, attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
+    K.tiles(L, map);
     const pin = (col, label, big) => L.divIcon({ className: '', html: `<div class="cpin${big ? ' big' : ''}" style="--c:${col}">${label}</div>`, iconSize: big ? [34, 34] : [26, 26], iconAnchor: big ? [17, 17] : [13, 13] });
     const all = [];
     d.c.forEach((c, i) => { all.push([c.lat, c.lng]);
