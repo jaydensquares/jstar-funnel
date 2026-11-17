@@ -210,6 +210,8 @@
 
   /* FAQ */
   .faqgrid { display:grid; gap:32px; grid-template-columns:1fr; }
+  .askcall { margin-top:24px; display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:20px; border:1px solid var(--line); border-radius:12px; background:var(--card); }
+  .askcall span { color:var(--muted); font-size:15px; line-height:1.5; } .askcall .btn { margin-top:6px; }
   @media (min-width:900px) { .faqgrid { grid-template-columns:340px 1fr; gap:64px; } }
   .faq { border-top:1px solid var(--line); }
   .faq details { border-bottom:1px solid var(--line); padding:18px 0; }
@@ -359,7 +361,8 @@
   </div></section>
 
   <section class="s" id="faq"><div class="w">
-    <div class="faqgrid"><div><h2>Before you sign up</h2><p class="intro" style="font-size:16px">Where the numbers come from, what it won't do, and how billing works.</p></div>
+    <div class="faqgrid"><div><h2>Before you sign up</h2><p class="intro" style="font-size:16px">Where the numbers come from, what it won't do, and how billing works.</p>
+      <div class="askcall"><b>Still have questions?</b><span>Talk to the founder for 15 minutes. We'll walk through your market and the plan that fits.</span><a class="btn" href="/support?topic=call">Hop on a call</a></div></div>
     <div class="faq">
       <details><summary>Where do the numbers come from?</summary><p>Property details and recent sales come from public records and listing data covering the U.S. After-repair value is based on the closest recent sales by distance, size, age and date. Repair estimates use cost per square foot by condition, adjusted for the age of the house and any problems the seller reports. Every number is an estimate, so check comps and walk the property before you sign.</p></details>
       <details><summary>Can I see what the seller owes?</summary><p>Yes. Every analysis pulls the recorded mortgages on the property: lender, original amount, rate and recording date, plus any liens, pre-foreclosure filings and auction dates. You get an estimated balance and equity, and a warning when the payoff is above your max offer. Balances are estimates from public records, so confirm the payoff with the seller before you sign.</p></details>

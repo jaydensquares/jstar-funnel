@@ -22,6 +22,7 @@
   <input type="email" id="email" autocomplete="email" maxlength="120" required>
   <label class="f" for="topic">Topic</label>
   <select id="topic">
+    <option>Book a call</option>
     <option>Agency plan: book a call</option>
     <option>Question about the software</option>
     <option>Billing or my plan</option>
@@ -44,11 +45,16 @@
 (() => {
   const $ = id => document.getElementById(id);
   $('yr').textContent = new Date().getFullYear();
-  const setTopic = () => { const ag = /^Agency/.test($('topic').value); $('phoneRow').hidden = !ag; $('msg').placeholder = ag ? 'Team size, how many deals you analyze a month, markets, and the best times to call.' : ''; };
-  if (new URLSearchParams(location.search).get('topic') === 'agency') {
-    $('topic').selectedIndex = 0; document.querySelector('h1').textContent = 'Book an Agency call';
+  const setTopic = () => { const v = $('topic').value, ag = /^Agency/.test(v), call = /^Book a call/.test(v); $('phoneRow').hidden = !(ag || call); $('phone').required = ag || call; $('msg').required = !call; $('msg').placeholder = ag ? 'Team size, how many deals you analyze a month, markets, and the best times to call.' : call ? 'What do you want to know? Add the best days and times to call (Central time).' : ''; };
+  const qt = new URLSearchParams(location.search).get('topic');
+  if (qt === 'call') {
+    $('topic').selectedIndex = 0; document.querySelector('h1').textContent = 'Hop on a call';
+    document.querySelector('.lg-date').textContent = 'Leave your number and a good time. The founder will call you, usually within one business day, to answer your questions and help you pick a plan.';
+    $('go').textContent = 'Request a call';
+  } else if (qt === 'agency') {
+    $('topic').selectedIndex = 1; document.querySelector('h1').textContent = 'Book an Agency call';
     document.querySelector('.lg-date').textContent = 'Agency is custom pricing for brokerages and acquisition teams: higher volume, up to 5 team logins and setup help. Tell us about your team and we\'ll set up a call, usually within one business day.';
-  } else $('topic').selectedIndex = 1;
+  } else $('topic').selectedIndex = 2;
   $('topic').onchange = setTopic; setTopic();
   fetch('/api/auth?action=me', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : null).then(j => {
     if (j?.user) { if (!$('name').value) $('name').value = j.user.name || ''; if (!$('email').value) $('email').value = j.user.email || ''; }
@@ -60,7 +66,7 @@
       const j = await r.json().catch(() => ({}));
       if (!r.ok) throw new Error(j.error || 'Could not send. Try again.');
       $('sup').hidden = true; $('done').hidden = false;
-    } catch (err) { $('err').textContent = err.message; $('go').disabled = false; $('go').textContent = 'Send message'; }
+    } catch (err) { $('err').textContent = err.message; $('go').disabled = false; $('go').textContent = qt === 'call' ? 'Request a call' : 'Send message'; }
   });
 })();
 </script>
