@@ -122,6 +122,32 @@ export default async function handler(req, res) {
       return res.status(200).json({ ok: true });
     }
 
+    if (b.action === 'offer') {
+      // Sales-page popup: name, email and phone for 25% off the first month. The discount is matched by email at checkout.
+      if (b.web) return res.status(200).json({ ok: true }); // honeypot
+      const name = str(b.name, 80), email = str(b.email, 120).toLowerCase(), phone = str(b.phone, 30);
+      if (!name || !EMAIL.test(email)) return res.status(400).json({ error: 'Enter your name and a valid email.' });
+      if (phone.replace(/\D/g, '').length < 10) return res.status(400).json({ error: 'Enter a phone number with area code.' });
+      if (!b.agree) return res.status(400).json({ error: 'Check the box so we can contact you.' });
+      const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'x';
+      const rk = `rl/offer/${crypto.createHash('sha256').update(ip).digest('hex').slice(0, 24)}`;
+      const rl = await getDoc(rk).catch(() => null), hour = Math.floor(Date.now() / 36e5);
+      const n = rl?.hour === hour ? rl.n : 0;
+      if (n >= 5) return res.status(429).json({ error: 'Too many tries. Try again in an hour.' });
+      await putDoc(rk, { hour, n: n + 1 }, { keep: 1 }).catch(() => {});
+      const key = `offer/${crypto.createHash('sha256').update(email).digest('hex').slice(0, 32)}`;
+      const had = await getDoc(key).catch(() => null);
+      await putDoc(key, { name, email, phone, at: had?.at || Date.now(), consentAt: Date.now(), via: str(b.via, 24) || null }, { keep: 1 });
+      const to = process.env.SUPPORT_EMAIL || process.env.NOTIFY_EMAIL;
+      if (to && !had) await sendPlainEmail(to, `[JStar Pro lead] 25% off popup: ${name}`,
+        `New lead from the sales-page popup.\n\nName: ${name}\nPhone: ${phone}\nEmail: ${email}\n\nThey agreed to be called or texted. They get 25% off their first month when they sign up with this email.`,
+        layout({ preheader: `${name} · ${phone}`, eyebrow: 'New lead', title: '25% off popup',
+          body: rows([['Name', E(name)], ['Phone', `<a href="tel:${E(phone.replace(/[^\d+]/g, ''))}" style="color:#2f6fed;text-decoration:none">${E(phone)}</a>`], ['Email', `<a href="mailto:${E(email)}" style="color:#2f6fed;text-decoration:none">${E(email)}</a>`], ['Received', new Date().toLocaleString('en-US', { timeZone: 'America/Chicago', dateStyle: 'medium', timeStyle: 'short' }) + ' CT']])
+            + callout('They agreed to be called or texted. Call while it\'s fresh. Their 25% off applies on its own when they sign up with this email and pick a monthly plan.', 'info') }),
+        email).catch(e => console.error('offer email', e.message));
+      return res.status(200).json({ ok: true });
+    }
+
     if (b.action === 'inviteInfo') {
       const inv = /^[a-f0-9]{32}$/.test(String(b.token || '')) ? await getDoc(`invites/${b.token}`).catch(() => null) : null;
       if (!inv || inv.used || Date.now() - inv.at > 14 * 864e5) return res.status(404).json({ error: 'This invite has expired or was already used. Ask for a new one.' });

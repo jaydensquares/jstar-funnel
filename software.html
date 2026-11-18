@@ -74,6 +74,23 @@
   .btn.alt { background:transparent; color:inherit; border-color:currentColor; opacity:.9; }
   .kicker { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:var(--brand); margin:0 0 14px; }
 
+  /* 25% off popup */
+  .offer[hidden] { display:none; }
+  .offer { position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:20px; background:rgba(6,12,28,.62); }
+  .offer .box { position:relative; width:100%; max-width:440px; max-height:calc(100vh - 40px); overflow:auto; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:12px; padding:28px 24px 22px; box-shadow:0 24px 60px rgba(0,0,0,.35); }
+  .offer h2 { font-size:28px; } .offer h2 b { color:var(--brand); }
+  .offer p { margin:8px 0 16px; color:var(--muted); font-size:15px; }
+  .offer label.f { display:block; font-size:13px; font-weight:700; margin:12px 0 4px; }
+  .offer input[type=text], .offer input[type=tel] { width:100%; font:16px var(--body); padding:11px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg2); color:var(--ink); }
+  .offer input:focus-visible, .offer button:focus-visible { outline:2px solid var(--brand); outline-offset:2px; }
+  .offer .agree { display:flex; gap:10px; align-items:flex-start; margin:14px 0 4px; font-size:12.5px; line-height:1.45; color:var(--muted); }
+  .offer .agree input { width:18px; height:18px; margin-top:1px; flex:none; accent-color:var(--brand); }
+  .offer .btn { width:100%; margin-top:14px; font-size:16px; }
+  .offer .x { position:absolute; top:8px; right:8px; width:40px; height:40px; border:0; background:transparent; color:var(--muted); font-size:24px; line-height:1; cursor:pointer; border-radius:8px; }
+  .offer .err { color:#e5484d; font-size:14px; margin:10px 0 0; min-height:0; }
+  .offer .no { display:block; margin:12px auto 0; background:none; border:0; color:var(--muted); font:13px var(--body); text-decoration:underline; cursor:pointer; }
+  .offer .hp { position:absolute; left:-9999px; }
+
   /* Header */
   .top { position:sticky; top:0; z-index:20; background:var(--navy); color:var(--on-navy); border-bottom:1px solid #1d2c4d; }
   .top .w { display:flex; align-items:center; justify-content:space-between; height:62px; gap:16px; }
@@ -210,7 +227,7 @@
 
   /* FAQ */
   .faqgrid { display:grid; gap:32px; grid-template-columns:1fr; }
-  .askcall { margin-top:24px; display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:20px; border:1px solid var(--line); border-radius:12px; background:var(--card); }
+  .askcall { margin-top:24px; display:flex; flex-direction:column; align-items:flex-start; gap:8px; padding:20px; border:1px solid var(--line); border-radius:12px; background:var(--bg2); }
   .askcall span { color:var(--muted); font-size:15px; line-height:1.5; } .askcall .btn { margin-top:6px; }
   @media (min-width:900px) { .faqgrid { grid-template-columns:340px 1fr; gap:64px; } }
   .faq { border-top:1px solid var(--line); }
@@ -388,10 +405,65 @@
   <span><a href="/login">Log in</a> &nbsp;·&nbsp; <a href="#pricing">Pricing</a> &nbsp;·&nbsp; <a href="#faq">FAQ</a> &nbsp;·&nbsp; <a href="/support">Support</a> &nbsp;·&nbsp; <a href="/affiliates">Affiliates: earn 30%</a> &nbsp;·&nbsp; <a href="/legal/terms">Terms</a> &nbsp;·&nbsp; <a href="/legal/privacy">Privacy</a></span>
 </div></footer>
 
+<div class="offer" id="offer" hidden role="dialog" aria-modal="true" aria-labelledby="offerH">
+  <div class="box">
+    <button type="button" class="x" id="offerX" aria-label="Close">&times;</button>
+    <form id="offerForm" novalidate>
+      <h2 id="offerH">Get <b>25% off</b> your first month</h2>
+      <p>Tell us where to send it. The discount is tied to your email and applies on its own at checkout on any monthly plan.</p>
+      <label class="f" for="ofName">Your name</label><input type="text" id="ofName" autocomplete="name" required>
+      <label class="f" for="ofEmail">Email</label><input type="text" id="ofEmail" inputmode="email" autocomplete="email" required>
+      <label class="f" for="ofPhone">Phone</label><input type="tel" id="ofPhone" autocomplete="tel" inputmode="tel" required>
+      <input type="text" class="hp" id="ofWeb" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <label class="agree"><input type="checkbox" id="ofAgree"><span>I agree that JStar Pro may call or text me at this number about my account and this offer, including with automated technology. Consent isn't required to buy. Message and data rates may apply. Reply STOP to opt out. <a href="/legal/privacy">Privacy</a></span></label>
+      <p class="err" id="ofErr" role="alert"></p>
+      <button class="btn" id="ofGo">Claim my 25% off</button>
+      <button type="button" class="no" id="offerNo">No thanks</button>
+    </form>
+    <div id="offerDone" hidden>
+      <h2>You're in. <b>25% off</b> is saved.</h2>
+      <p>Sign up with <b id="ofShow"></b> and pick a monthly plan. The discount shows up at checkout on its own.</p>
+      <a class="btn" href="/signup">Create my account</a>
+    </div>
+  </div>
+</div>
+
 <script>
 (() => {
   const $ = id => document.getElementById(id);
   $('yr').textContent = new Date().getFullYear();
+  // 25% off popup: once per visitor, on exit intent (desktop) or after 40 seconds
+  (() => {
+    const box = $('offer'); let seen = false, opener = null;
+    try { seen = !!localStorage.getItem('jsOffer'); } catch {}
+    const mark = v => { try { localStorage.setItem('jsOffer', v); } catch {} };
+    const close = () => { box.hidden = true; document.removeEventListener('keydown', onKey); if (opener && opener.focus) opener.focus(); };
+    const onKey = e => { if (e.key === 'Escape') close(); };
+    const open = () => { if (seen || !box.hidden) return; seen = true; mark('shown'); opener = document.activeElement; box.hidden = false; document.addEventListener('keydown', onKey); $('ofName').focus(); };
+    if (!seen) {
+      const t0 = Date.now();
+      document.addEventListener('mouseout', e => { if (!e.relatedTarget && e.clientY <= 0 && Date.now() - t0 > 5000) open(); });
+      setTimeout(open, 40000);
+    }
+    $('offerX').onclick = $('offerNo').onclick = close;
+    box.addEventListener('mousedown', e => { if (e.target === box) close(); });
+    $('offerForm').addEventListener('submit', async e => {
+      e.preventDefault(); const err = $('ofErr'); err.textContent = '';
+      const name = $('ofName').value.trim(), email = $('ofEmail').value.trim(), phone = $('ofPhone').value.trim();
+      if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = 'Enter your name and a valid email.'; return; }
+      if (phone.replace(/\D/g, '').length < 10) { err.textContent = 'Enter a phone number with area code.'; return; }
+      if (!$('ofAgree').checked) { err.textContent = 'Check the box so we can contact you.'; return; }
+      let via = ''; try { const x = JSON.parse(localStorage.getItem('jsVia') || 'null'); if (x) via = x.c; } catch {}
+      $('ofGo').disabled = true; $('ofGo').textContent = 'Saving…';
+      try {
+        const r = await fetch('/api/auth', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'offer', name, email, phone, agree: true, via, web: $('ofWeb').value }) });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(j.error || 'That didn\'t save. Try again.');
+        mark('claimed'); try { localStorage.setItem('jsOfferEmail', email); } catch {}
+        $('ofShow').textContent = email; $('offerForm').hidden = true; $('offerDone').hidden = false;
+      } catch (x) { err.textContent = x.message; $('ofGo').disabled = false; $('ofGo').textContent = 'Claim my 25% off'; }
+    });
+  })();
   // Affiliate links: getjstarpro.com/?via=<code> is remembered for 60 days and counted once per browser
   try { const v = (new URLSearchParams(location.search).get('via') || '').toLowerCase();
     if (/^[a-z0-9-]{3,24}$/.test(v)) { localStorage.setItem('jsVia', JSON.stringify({ c: v, at: Date.now() }));

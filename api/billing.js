@@ -1,6 +1,8 @@
 // Stripe Checkout (plans and the custom-domain add-on) and the Stripe customer portal (switch plan, card, invoices, cancel).
 import { currentUser, saveUser } from '../lib/auth.js';
 import { tierOf, PLANS, PACKS, isActive, SELF_SERVE } from '../lib/plan.js';
+import crypto from 'node:crypto';
+import { getDoc } from '../lib/db.js';
 import { stripe as api, priceFor } from '../lib/stripe.js';
 
 const stripe = (path, params, opt) => api('POST', path, params, opt);
@@ -54,7 +56,11 @@ export default async function handler(req, res) {
       };
       // Referred and paying monthly: 50% off the first month (yearly already includes 2 free months)
       const firstPlan = feature === 'plan' && !u.stripeSubId && !u.refUsed;
+      // Sales-page popup lead: 25% off the first month, matched by signup email for 60 days
+      const offer = firstPlan && interval === 'month' && !u.referredBy && u.email
+        ? await getDoc(`offer/${crypto.createHash('sha256').update(String(u.email).toLowerCase()).digest('hex').slice(0, 32)}`).catch(() => null) : null;
       if (firstPlan && u.referredBy && interval === 'month') params['discounts[0][coupon]'] = 'jstarpro-ref-50';
+      else if (offer && Date.now() - offer.at < 60 * 864e5) params['discounts[0][coupon]'] = 'jstarpro-first-25';
       else params.allow_promotion_codes = 'true';
       // Sales tax: turn on with STRIPE_TAX=1 once Stripe Tax is set up and you're registered in Texas
       if (process.env.STRIPE_TAX === '1') Object.assign(params, { 'automatic_tax[enabled]': 'true', 'customer_update[address]': 'auto', 'customer_update[name]': 'auto', billing_address_collection: 'required' });

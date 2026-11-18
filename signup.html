@@ -106,6 +106,8 @@
   try { const v = (new URLSearchParams(location.search).get('via') || '').toLowerCase();
     if (/^[a-z0-9-]{3,24}$/.test(v)) { localStorage.setItem('jsVia', JSON.stringify({ c: v, at: Date.now() }));
       if (localStorage.getItem('jsViaSeen') !== v) { localStorage.setItem('jsViaSeen', v); fetch('/api/affiliate', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'click', code: v }) }).catch(() => {}); } } } catch {}
+  // 25% off popup lead: prefill the email the discount is tied to
+  try { const oe = localStorage.getItem('jsOfferEmail'); if (oe && !$('sEmail').value) { $('sEmail').value = oe; const n = document.createElement('div'); n.textContent = '25% off your first month is saved for this email. It applies at checkout on a monthly plan.'; n.style.cssText = 'font-size:13px;color:var(--ok);margin:6px 0 0'; $('sEmail').after(n); } } catch {}
   let via = ''; try { const x = JSON.parse(localStorage.getItem('jsVia') || 'null'); if (x && Date.now() - x.at < 60 * 864e5) via = x.c; } catch {}
   const drawPlan = () => {
     const [n, p] = PLANS[plan];
