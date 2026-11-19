@@ -5,6 +5,8 @@ import { listDeals } from '../lib/store.js';
 import { sendPlainEmail } from '../lib/auth.js';
 import { isActive, isOperator } from '../lib/plan.js';
 import { layout, p as P, small, h3, button, stats, items, callout } from '../lib/email.js';
+import { bizOf } from '../lib/auth.js';
+import { sendStep, advance, stopReason } from '../lib/followup.js';
 
 export const maxDuration = 300;
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -94,5 +96,19 @@ export default async function handler(req, res) {
       if (!dry) await putDoc(`t/${u.id}/cron`, { ...state, ...(wantRem ? { rem: today } : {}), ...(wantRecap ? { recap: today } : {}) }, { keep: 1 });
     } catch (e) { console.error('cron user', u.id, e.message); out.push({ uid: u.id, error: e.message }); }
   }
-  return res.status(200).json({ ok: true, today, users: users.length, sent: out });
+  // Automatic seller follow-ups that are due (runs even if the account turned its own reminder emails off)
+  const fu = [];
+  for (const u of users) {
+    try {
+      const col = `t/${u.id}/leads`, due = (await listDocs(col)).filter(l => l.seq?.on && l.seq.nextAt && l.seq.nextAt <= now + 2 * 36e5);
+      for (const l of due.slice(0, 200)) {
+        const why = stopReason(l);
+        if (why) { if (!dry) await putDoc(`${col}/${l.id}`, { ...l, seq: { ...l.seq, on: false, stoppedReason: why }, updatedAt: now }); fu.push({ uid: u.id, lead: l.id, stopped: why }); continue; }
+        const r = await sendStep(l, bizOf(u), u.settings || {}, u.id, base, { dry });
+        if (!dry) await putDoc(`${col}/${l.id}`, advance(l, r, now));
+        fu.push({ uid: u.id, lead: l.id, step: (l.seq.step || 0) + 1, sent: r.sent, errors: r.errors.length ? r.errors : undefined });
+      }
+    } catch (e) { console.error('cron followup', u.id, e.message); fu.push({ uid: u.id, error: e.message }); }
+  }
+  return res.status(200).json({ ok: true, today, users: users.length, sent: out, followups: fu });
 }

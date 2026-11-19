@@ -91,6 +91,18 @@
   .acts2 { margin-top:14px; } .act { display:flex; gap:10px; padding:8px 0; border-top:1px solid var(--line2); } .act:first-of-type { border-top:0; }
   .act i { width:28px; height:28px; border-radius:8px; display:grid; place-items:center; background:var(--brand-soft); color:var(--brand); flex:none; } .act i.text { background:var(--ok-bg); color:var(--ok); }
   .act i svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; } .act b { display:block; font-size:13.5px; } .act span { display:block; font-size:13px; color:var(--ink2); } .act small { color:var(--muted); font-size:12px; }
+  .ai details { border-top:1px solid var(--line); padding:10px 0; } .ai details:first-of-type { border-top:0; padding-top:2px; }
+  .ai summary { cursor:pointer; font-weight:700; font-size:14.5px; display:flex; align-items:center; gap:8px; list-style:none; } .ai summary::-webkit-details-marker { display:none; }
+  .ai summary::after { content:'▾'; margin-left:auto; color:var(--muted); font-size:12px; } .ai details[open] summary::after { content:'▴'; }
+  .ai summary .pill { font-size:11px; padding:2px 8px; } .ai summary .pill.on { background:var(--ok); color:#fff; } .ai summary .pill:empty { display:none; }
+  .aigrid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:10px 0; } .aigrid label:last-child { grid-column:1/-1; }
+  .ai select, .ai input, .ai textarea { width:100%; box-sizing:border-box; font:15px var(--body); padding:9px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--ink); min-height:40px; }
+  .ai textarea { resize:vertical; line-height:1.45; } .aigrid label { display:flex; flex-direction:column; gap:4px; font-size:12px; font-weight:600; color:var(--muted); }
+  .aigrid select, .aigrid input { min-width:0; }
+  .ai .note.warn { color:var(--err); }
+  .airep { border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin-top:8px; font-size:14px; } .airep b { display:block; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px; }
+  .airep .acts3 { display:flex; gap:8px; margin-top:8px; } .airep .acts3 .btn { padding:6px 12px; font-size:13px; min-height:34px; }
+  .airead { margin:10px 0 0; font-size:13.5px; color:var(--ink2); }
 </style>
 <link rel="stylesheet" href="/ui.css">
 <link rel="stylesheet" href="/kit.css">
@@ -153,6 +165,32 @@
                 <button class="btn" type="button" id="lvLogSave">Save call</button>
               </div>
               <div class="acts2" id="lvActs"></div>
+            </section>
+            <section class="card ai" id="lvAi">
+              <h2>JStar AI</h2>
+              <details id="aiOffer" open><summary>Write my offer</summary>
+                <div class="aigrid"><label>Send by<select id="aiCh"><option value="text">Text</option><option value="email">Email</option></select></label>
+                <label>Tone<select id="aiTone"><option value="friendly">Friendly</option><option value="direct">Direct</option><option value="flexible">Flexible</option></select></label>
+                <label>Offer<input id="aiAmt" inputmode="numeric"></label></div>
+                <button class="btn ghost wide" type="button" id="aiWrite">Write it</button>
+                <div id="aiOut" hidden>
+                  <input id="aiSubj" placeholder="Subject" hidden style="margin-top:10px">
+                  <textarea id="aiBody" rows="6" style="margin-top:8px"></textarea>
+                  <p class="note warn" id="aiWarn" hidden></p>
+                  <div class="lvbtns rbtns"><a class="btn" id="aiTextIt" href="#">Text it</a><button class="btn" type="button" id="aiEmailIt" hidden>Email it</button><button class="btn ghost" type="button" id="aiCopy">Copy</button></div>
+                </div>
+              </details>
+              <details id="aiNeg"><summary>Seller replied? Get a response</summary>
+                <textarea id="aiSaid" rows="3" placeholder="Paste what the seller said. Example: That's way too low, Zillow says it's worth 260."></textarea>
+                <button class="btn ghost wide" type="button" id="aiSuggest" style="margin-top:8px">Suggest replies</button>
+                <div id="aiReplies"></div>
+                <p class="note" style="margin:8px 0 0">Replies never go above your max offer. You choose what to send.</p>
+              </details>
+              <details id="aiSeq"><summary>Auto follow-up <span class="pill" id="aiSeqPill"></span></summary>
+                <p class="note" id="aiSeqTxt" style="margin:6px 0 10px"></p>
+                <button class="btn ghost wide" type="button" id="aiSeqBtn"></button>
+              </details>
+              <div class="err" id="aiErr" role="alert"></div>
             </section>
             <section class="card" id="lvSeller"></section>
             <section class="card" id="lvSkip"></section>
@@ -556,13 +594,14 @@
     $('lvSnap').innerHTML = snap; $('lvFull').open = !snap; if (snap) J.mountSnapshot($('lvSnap'));
     $('lvAv').innerHTML = J ? J.avatar($('lvName').textContent, 'lg') : '';
     if (J) J.skipCard($('lvSkip'), { target: { leadId: curLead.id }, skip: curLead.skip || null, onDone: (sk, u) => { curLead.skip = sk; const i = leads.findIndex(l => l.id === curLead.id); if (i >= 0) leads[i].skip = sk; if (u) { usage = u; renderUsage(); } } });
+    setupAi(L, b);
     $('lvCall2').innerHTML = (J ? J.svg('phone') : '') + ' Call'; $('lvText2').innerHTML = (J ? J.svg('msg') : '') + ' Text';
     $('lvCall2').href = 'tel:' + digits; $('lvText2').href = 'sms:' + digits; $('lvCall2').hidden = $('lvText2').hidden = !digits;
     if (curLead.status === 'new') { post('/api/leads', { action: 'status', id, status: 'contacted' }).then(x => { if (x.ok) { curLead = { ...curLead, status: 'contacted' }; $('lvStatus').value = 'contacted'; const i = leads.findIndex(l => l.id === id); if (i >= 0) leads[i].status = 'contacted'; } }); }
   }
   // ── Reach out: text templates + call log ──
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  const OUTL = { no_answer: 'No answer', voicemail: 'Left voicemail', interested: 'Talked: interested', not_now: 'Talked: not yet', not_interested: 'Not interested', wrong_number: 'Wrong number', texted: 'Texted' };
+  const OUTL = { no_answer: 'No answer', voicemail: 'Left voicemail', interested: 'Talked: interested', not_now: 'Talked: not yet', not_interested: 'Not interested', wrong_number: 'Wrong number', texted: 'Texted', emailed: 'Emailed', followup_sent: 'Auto follow-up sent', followup_failed: 'Auto follow-up failed', unsubscribed: 'Seller unsubscribed' };
   const NEXT = { no_answer: 1, voicemail: 2, interested: 1, not_now: 14, not_interested: 0, wrong_number: 0 };
   let reachOut = null, reachDigits = '';
   function tplText(k, L, b) {
@@ -609,6 +648,70 @@
   };
   // After tapping Call, open the call log so it's one tap to record how it went
   ['lvCall', 'lvCall2'].forEach(id => $(id).addEventListener('click', () => setTimeout(() => { $('lvReach').scrollIntoView({ behavior: 'smooth', block: 'center' }); $('lvOuts').classList.add('pulse'); setTimeout(() => $('lvOuts').classList.remove('pulse'), 1600); }, 600)));
+
+
+  // ── JStar AI on a lead: offer writer, negotiation replies, auto follow-up ──
+  let aiSeq = null;
+  function setupAi(L, b) {
+    $('aiErr').textContent = ''; $('aiOut').hidden = true; $('aiReplies').innerHTML = ''; $('aiSaid').value = '';
+    $('aiAmt').value = b.opening ? '$' + Math.round(b.opening).toLocaleString() : '';
+    $('aiCh').value = String(L.phone || '').replace(/\D/g, '') ? 'text' : 'email'; $('aiCh').querySelector('[value=email]').disabled = !L.email; $('aiCh').querySelector('[value=text]').disabled = !String(L.phone || '').replace(/\D/g, '');
+    loadSeq();
+  }
+  const aiBusy = (btn, on, label) => { btn.disabled = on; if (on) { btn.dataset.l = btn.textContent; btn.textContent = label; } else btn.textContent = btn.dataset.l || btn.textContent; };
+  const aiPost = body => post('/api/assist', { id: curLead.id, ...body });
+  $('aiWrite').onclick = async () => {
+    $('aiErr').textContent = ''; aiBusy($('aiWrite'), true, 'Writing…');
+    const amt = Number($('aiAmt').value.replace(/[^\d.]/g, '')) || null, ch = $('aiCh').value;
+    const r = await aiPost({ action: 'offer', channel: ch, tone: $('aiTone').value, amount: amt });
+    aiBusy($('aiWrite'), false);
+    if (!r.ok) { $('aiErr').textContent = r.j.error || 'JStar AI had trouble. Try again.'; return; }
+    $('aiOut').hidden = false; $('aiBody').value = r.j.body; $('aiSubj').value = r.j.subject || ''; $('aiSubj').hidden = ch !== 'email';
+    $('aiWarn').hidden = !r.j.warning; $('aiWarn').textContent = r.j.warning || '';
+    $('aiTextIt').hidden = ch !== 'text'; $('aiEmailIt').hidden = ch !== 'email'; aiLinks(); $('aiWrite').textContent = 'Write another';
+  };
+  const aiLinks = () => { $('aiTextIt').href = smsHref(reachDigits, $('aiBody').value); };
+  $('aiBody').oninput = aiLinks;
+  $('aiTextIt').addEventListener('click', () => { if (curLead) logEvent('texted', { tpl: 'AI offer', note: $('aiBody').value.slice(0, 160) }); });
+  $('aiCopy').onclick = async () => { try { await navigator.clipboard.writeText(($('aiSubj').hidden ? '' : $('aiSubj').value + '\n\n') + $('aiBody').value); } catch {} flash($('aiCopy'), 'Copied'); };
+  $('aiEmailIt').onclick = async () => {
+    $('aiErr').textContent = ''; aiBusy($('aiEmailIt'), true, 'Sending…');
+    const r = await aiPost({ action: 'email', subject: $('aiSubj').value, body: $('aiBody').value });
+    aiBusy($('aiEmailIt'), false);
+    if (!r.ok) { $('aiErr').textContent = r.j.error || 'Could not send.'; return; }
+    curLead = r.j.lead; renderActs(); $('lvStatus').value = curLead.status; window.JK?.toast('Email sent. Replies go to your inbox.'); loadSeq();
+  };
+  $('aiSuggest').onclick = async () => {
+    $('aiErr').textContent = ''; if ($('aiSaid').value.trim().length < 2) { $('aiErr').textContent = 'Paste what the seller said first.'; return; }
+    aiBusy($('aiSuggest'), true, 'Thinking…');
+    const r = await aiPost({ action: 'reply', message: $('aiSaid').value });
+    aiBusy($('aiSuggest'), false);
+    if (!r.ok) { $('aiErr').textContent = r.j.error || 'JStar AI had trouble. Try again.'; return; }
+    $('aiReplies').innerHTML = (r.j.read ? `<p class="airead">${esc(r.j.read)}</p>` : '') + r.j.replies.map((x, i) => `<div class="airep"><b>${esc(x.label)}</b><div>${esc(x.text)}</div><div class="acts3">${reachDigits ? `<a class="btn" href="${esc(smsHref(reachDigits, x.text))}" data-t="${i}">Text it</a>` : ''}<button class="btn ghost" type="button" data-c="${i}">Copy</button></div></div>`).join('');
+    $('aiReplies').querySelectorAll('[data-t]').forEach(a => a.addEventListener('click', () => logEvent('texted', { tpl: 'AI reply', note: r.j.replies[+a.dataset.t].text.slice(0, 160) })));
+    $('aiReplies').querySelectorAll('[data-c]').forEach(x => x.onclick = async () => { try { await navigator.clipboard.writeText(r.j.replies[+x.dataset.c].text); } catch {} flash(x, 'Copied'); });
+  };
+  async function loadSeq() {
+    $('aiSeqPill').textContent = ''; $('aiSeqTxt').textContent = 'Loading…'; $('aiSeqBtn').hidden = true;
+    const r = await aiPost({ action: 'seqStatus' }); if (!r.ok || !curLead) { $('aiSeqTxt').textContent = r.j?.error || ''; return; }
+    aiSeq = r.j; drawSeq();
+  }
+  function drawSeq() {
+    const q = aiSeq.seq, ch = aiSeq.channels, on = !!q?.on, n = aiSeq.steps.length;
+    const via = [ch.email && 'email', ch.text && 'text (GoHighLevel)'].filter(Boolean).join(' and ');
+    const md = t => new Date(t).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    $('aiSeqPill').textContent = on ? 'On' : ''; $('aiSeqPill').className = 'pill' + (on ? ' on' : '');
+    $('aiSeqBtn').hidden = aiSeq.optOut; $('aiSeqBtn').textContent = on ? 'Turn off auto follow-up' : 'Turn on auto follow-up';
+    $('aiSeqTxt').innerHTML = aiSeq.optOut ? 'This seller unsubscribed, so follow-up is off for good.'
+      : on ? `Following up by ${via}: message ${(q.step || 0) + 1} of ${n} goes out ${md(q.nextAt)} (days ${aiSeq.steps.join(', ')}). It stops on its own if you log a call or text, mark the lead dead, move it to deals, or the seller unsubscribes.`
+      : `${q?.stoppedReason ? `<b>Stopped: ${esc(q.stoppedReason)}.</b> ` : ''}Sends ${n} short, friendly check-ins over 30 days (days ${aiSeq.steps.join(', ')}) ${via ? 'by ' + via : ''}${!ch.email && !ch.text ? '. This lead has no email' + (ch.ghl ? ' and didn’t agree to texts' : '. Connect GoHighLevel to also follow up by text') : ''}. Replies come to you.${ch.email && !ch.address ? ' Add your business mailing address in Settings first (the law requires it in follow-up emails).' : ''}`;
+  }
+  $('aiSeqBtn').onclick = async () => {
+    $('aiErr').textContent = ''; const on = !!aiSeq?.seq?.on; aiBusy($('aiSeqBtn'), true, on ? 'Turning off…' : 'Turning on…');
+    const r = await aiPost({ action: on ? 'seqOff' : 'seqOn' }); aiBusy($('aiSeqBtn'), false);
+    if (!r.ok) { $('aiErr').textContent = r.j.error || 'Could not change it.'; return; }
+    aiSeq = r.j; drawSeq(); window.JK?.toast(r.j.seq?.on ? 'Auto follow-up is on' : 'Auto follow-up is off');
+  };
 
   function closeLead() { $('leadView').hidden = true; $('leadIndex').hidden = false; curLead = null; if (leads.length || $('leadList').querySelector('table, .empty')) renderLeads(); }
   $('leadBack').onclick = () => { location.hash = 'leads'; };
