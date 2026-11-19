@@ -125,6 +125,11 @@
   .dmode button[aria-pressed=true] { background:var(--brand); color:#fff; }
   .dlist label.done { opacity:.55; } .dlist label .sent { margin-left:auto; white-space:nowrap; font-size:11.5px; font-weight:700; color:var(--muted); }
   #dTNext { text-align:center; }
+  .ghl { margin-top:14px; padding:14px; border:1px solid var(--line); border-radius:12px; font-size:14px; }
+  .ghl .row { display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+  .ghl .row b { font-size:14px; } .ghl small { display:block; color:var(--muted); font-size:12.5px; margin-top:2px; }
+  .ghl ol { margin:10px 0 4px; padding-left:20px; color:var(--muted); font-size:13px; line-height:1.55; }
+  .ghl .prog { height:6px; border-radius:99px; background:var(--line2); overflow:hidden; margin-top:10px; } .ghl .prog i { display:block; height:100%; width:0; background:var(--brand); transition:width .3s; }
   .dispo .acct-only { display:block !important; }
 </style>
 <link rel="stylesheet" href="/ui.css">
@@ -282,6 +287,7 @@
         </div>
         <div class="dhead"><b id="dCount"></b><span><button type="button" class="link" id="dAll">All</button> · <button type="button" class="link" id="dMatch">Matches only</button></span></div>
         <div id="dList" class="dlist"></div>
+        <div class="ghl" id="ghlBox" hidden></div>
         <div class="err" id="dErr" role="alert"></div>
         <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap"><button type="button" class="btn ghost" id="dSms">Copy text version</button><button type="button" class="btn" id="dSend">Send email</button><a class="btn" id="dTNext" href="#" hidden>Text</a></div>
       </div>
@@ -441,7 +447,9 @@
   const phDigits = v => { const d = String(v || '').replace(/\D/g, ''); return d.length === 11 && d[0] === '1' ? d.slice(1) : d.length === 10 ? d : ''; };
   const smsHref = (d, body) => `sms:+1${d}${isIOS ? '&' : '?'}body=${encodeURIComponent(body)}`;
   const txtFor = b => $('dTxtMsg').value.replace(/\{first\}/g, (b.name || '').split(' ')[0] || 'there');
-  const queue = () => [...$('dList').querySelectorAll('input:checked')].map(i => dBuyers.find(b => b.id === i.value)).filter(b => b && !txtSent.has(b.id));
+  // Selected buyers not texted yet, one per phone number (the same number on two buyers only gets one text)
+  const queue = () => { const seen = new Set(dBuyers.filter(b => txtSent.has(b.id)).map(b => phDigits(b.phone)));
+    return [...$('dList').querySelectorAll('input:checked')].map(i => dBuyers.find(b => b.id === i.value)).filter(b => { if (!b || txtSent.has(b.id)) return false; const d = phDigits(b.phone); if (seen.has(d)) return false; seen.add(d); return true; }); };
   function drawBuyers(only) {
     const price = dPriceNow(), text = dMode === 'text';
     const list = dBuyers.filter(b => !b.unsub && (text ? phDigits(b.phone) : b.email)).map(b => ({ b, fit: fits(b, cur, price) })).sort((x, y) => y.fit - x.fit);
@@ -456,25 +464,75 @@
         $('dTNext').textContent = nx ? `Text ${esc((nx.name || '').split(' ')[0] || 'buyer')}${left > 1 ? ` (${left} left)` : ''}` : (txtSent.size ? `Done: texted ${txtSent.size}` : 'Pick buyers to text');
         $('dTNext').href = nx ? smsHref(phDigits(nx.phone), txtFor(nx)) : '#'; $('dTNext').style.opacity = nx ? 1 : .55; $('dTNext').dataset.id = nx ? nx.id : ''; }
     };
-    $('dList').onchange = upd; upd(); dUpd = upd;
+    $('dList').onchange = () => { upd(); if (ghl?.connected && !ghlBusy) drawGhl(); }; upd(); dUpd = upd;
   }
   let dUpd = () => {};
   const setMode = m => {
     dMode = m; $('dmEmail').setAttribute('aria-pressed', m === 'email'); $('dmText').setAttribute('aria-pressed', m === 'text');
     $('dTxtWrap').hidden = m !== 'text';
     $('dSend').hidden = m === 'text'; $('dSms').hidden = m === 'text'; $('dTNext').hidden = m !== 'text';
-    $('dTDesk').hidden = isPhone;
+    $('dTDesk').hidden = isPhone; if (m !== 'text') $('ghlBox').hidden = true;
     if (m === 'text' && !txtEdited) $('dTxtMsg').value = 'Hi {first}, ' + smsText();
     drawBuyers();
   };
-  $('dmEmail').onclick = () => setMode('email'); $('dmText').onclick = () => setMode('text');
+
+  // ── GoHighLevel: send every selected buyer the text at once from the user's A2P-registered GHL number ──
+  let ghl = null, ghlOpen = false, ghlBusy = false;
+  const bapi = body => fetch('/api/buyers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...body, pin }) }).then(async x => ({ ok: x.ok, j: await x.json().catch(() => ({})) })).catch(() => ({ ok: false, j: { error: 'Network error. Try again.' } }));
+  async function loadGhl() { const r = await bapi({ action: 'ghlStatus' }); ghl = r.ok ? r.j : { connected: false, canEdit: false }; drawGhl(); }
+  function drawGhl(msg) {
+    const box = $('ghlBox'); box.hidden = dMode !== 'text' || !ghl || (!ghl.connected && !ghl.canEdit); if (box.hidden) return;
+    if (ghl.connected) {
+      const n = queue().length;
+      box.innerHTML = `<div class="row"><div><b>GoHighLevel connected</b><small>Sends from your sub-account's number (${esc(ghl.locationId)}). Contacts with Do Not Disturb on are skipped.</small></div>${ghl.canEdit ? '<button type="button" class="link" id="ghlOff">Disconnect</button>' : ''}</div>
+        <button type="button" class="btn" id="ghlGo" style="width:100%;margin-top:12px" ${n && !ghlBusy ? '' : 'disabled'}>${ghlBusy ? 'Sending…' : n ? (n === 1 ? 'Send to 1 buyer with GoHighLevel' : `Send to all ${n} with GoHighLevel`) : 'Pick buyers to text'}</button>
+        <div class="prog" id="ghlProg" hidden><i></i></div><div class="note" id="ghlMsg" style="margin-top:8px">${msg || ''}</div>`;
+      $('ghlGo').onclick = ghlSendAll; if ($('ghlOff')) $('ghlOff').onclick = async () => { const r = await bapi({ action: 'ghlDisconnect' }); if (r.ok) { ghl = r.j; drawGhl(); } };
+    } else if (!ghlOpen) {
+      box.innerHTML = `<div class="row"><div><b>Use GoHighLevel?</b><small>Send all of these at once from your A2P-registered number instead of one tap each.</small></div><button type="button" class="btn ghost" id="ghlOpen">Connect</button></div>`;
+      $('ghlOpen').onclick = () => { ghlOpen = true; drawGhl(); };
+    } else {
+      box.innerHTML = `<b>Connect GoHighLevel</b>
+        <ol><li>In your GHL sub-account, go to <b>Settings → Private Integrations → Create new integration</b>.</li><li>Turn on these scopes: <b>View Contacts</b>, <b>Edit Contacts</b>, <b>View Conversation Messages</b>, <b>Edit Conversation Messages</b>. Copy the token.</li><li>Copy the <b>Location ID</b> from <b>Settings → Business Profile</b>.</li></ol>
+        <label class="f" for="ghlTok">Private Integration token</label><input type="password" id="ghlTok" autocomplete="off" placeholder="pit-…">
+        <label class="f" for="ghlLoc">Location ID</label><input type="text" id="ghlLoc" autocomplete="off">
+        <div class="err" id="ghlErr" role="alert"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px"><button type="button" class="btn ghost" id="ghlCancel">Cancel</button><button type="button" class="btn" id="ghlSave">Connect</button></div>
+        <p class="note" style="margin:8px 0 0">Your token is encrypted and never shown again. Texts send from the number your GHL sub-account uses, so it needs to be A2P 10DLC registered.</p>`;
+      $('ghlCancel').onclick = () => { ghlOpen = false; drawGhl(); };
+      $('ghlSave').onclick = async () => {
+        $('ghlErr').textContent = ''; $('ghlSave').disabled = true; $('ghlSave').textContent = 'Checking…';
+        const r = await bapi({ action: 'ghlConnect', token: $('ghlTok').value.trim(), locationId: $('ghlLoc').value.trim() });
+        if (!r.ok) { $('ghlErr').textContent = r.j.error || 'Could not connect.'; $('ghlSave').disabled = false; $('ghlSave').textContent = 'Connect'; return; }
+        ghl = r.j; ghlOpen = false; drawGhl(); window.JK?.toast('GoHighLevel connected');
+      };
+    }
+  }
+  async function ghlSendAll() {
+    const q = queue(); if (!q.length || ghlBusy) return;
+    if (!txtSid) txtSid = Math.random().toString(36).slice(2, 10);
+    ghlBusy = true; drawGhl(); $('ghlProg').hidden = false;
+    let failed = [], done = 0, base = new Set(dBuyers.filter(b => txtSent.has(b.id)).map(b => phDigits(b.phone))).size;
+    for (let i = 0; i < q.length; i += 20) {
+      const part = q.slice(i, i + 20);
+      const r = await bapi({ action: 'ghlSend', dealId: cur.id, ids: part.map(b => b.id), message: $('dTxtMsg').value, sid: txtSid, prior: base + done, price: dPriceNow() });
+      if (!r.ok) { failed.push(...part.map(b => ({ b, error: r.j.error }))); break; }
+      for (const x of r.j.results) { const b = part.find(y => y.id === x.id); if (x.ok) { const d = phDigits(b?.phone); dBuyers.forEach(y => { if (y.id === x.id || (d && phDigits(y.phone) === d)) txtSent.add(y.id); }); done++; } else failed.push({ b, error: x.dnd ? 'Do Not Disturb is on in GHL' : x.error }); }
+      $('ghlProg').firstElementChild.style.width = Math.round(Math.min(1, (i + part.length) / q.length) * 100) + '%';
+    }
+    ghlBusy = false; drawBuyers('keep');
+    const f = failed.length ? `<br><span style="color:var(--err)">${failed.length} didn't send:</span> ${failed.slice(0, 6).map(x => `${esc(x.b?.name || 'Buyer')} (${esc(x.error || 'error')})`).join(', ')}${failed.length > 6 ? '…' : ''}` : '';
+    drawGhl(`${done ? `Sent to ${done} buyer${done === 1 ? '' : 's'}. Replies land in your GoHighLevel inbox.` : ''}${f}`);
+    if (done) { window.JK?.toast(`Texted ${done} buyer${done === 1 ? '' : 's'} through GoHighLevel`); const tn = base + done; $('dispoLast').textContent = `Last sent today: texted ${tn} buyer${tn === 1 ? '' : 's'} through GoHighLevel.`; }
+  }
+  $('dmEmail').onclick = () => setMode('email'); $('dmText').onclick = () => { setMode('text'); if (!ghl) loadGhl(); else drawGhl(); };
   $('dTxtMsg').addEventListener('input', () => { txtEdited = true; dUpd(); });
   ['dShow', 'dNote'].forEach(id => $(id).addEventListener('input', () => { if (dMode === 'text' && !txtEdited) { $('dTxtMsg').value = 'Hi {first}, ' + smsText(); dUpd(); } }));
   $('dTNext').addEventListener('click', e => {
     const id = $('dTNext').dataset.id; if (!id) { e.preventDefault(); return; }
     if (!txtSid) txtSid = Math.random().toString(36).slice(2, 10);
-    setTimeout(() => { txtSent.add(id); drawBuyers('keep');
-      fetch('/api/buyers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'texted', pin, dealId: cur.id, sid: txtSid, n: txtSent.size, price: dPriceNow() }) }).catch(() => {}); }, 400);
+    setTimeout(() => { const d = phDigits(dBuyers.find(b => b.id === id)?.phone); dBuyers.forEach(b => { if (b.id === id || (d && phDigits(b.phone) === d)) txtSent.add(b.id); }); drawBuyers('keep');
+      fetch('/api/buyers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'texted', pin, dealId: cur.id, sid: txtSid, n: new Set(dBuyers.filter(b => txtSent.has(b.id)).map(b => phDigits(b.phone))).size, price: dPriceNow() }) }).catch(() => {}); }, 400);
   });
   $('dispoBtn').onclick = async () => {
     if (!cur?.id) { $('edErr').textContent = 'Save the deal first.'; return; }

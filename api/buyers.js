@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import { getActor } from '../lib/auth.js';
 import { getDoc, putDoc, deleteDoc, listDocs, newId } from '../lib/db.js';
 import { getDeal, saveDeal } from '../lib/store.js';
+import { getGhl, saveGhl, dropGhl, publicGhl, testGhl, ghlText } from '../lib/ghl.js';
 import { layout, p as P, small, rows as R, callout, button } from '../lib/email.js';
 
 export const maxDuration = 60;
@@ -60,6 +61,49 @@ export default async function handler(req, res) {
       const fresh = rows.filter(r => !have.has(r.email || r.phone));
       for (let i = 0; i < fresh.length; i += 10) await Promise.all(fresh.slice(i, i + 10).map(r => putDoc(key(r.id), r)));
       return res.status(200).json({ added: fresh.length, skipped: rows.length - fresh.length });
+    }
+
+    // ── GoHighLevel: send buyer texts from the user's own A2P-registered number ──
+    const canEdit = !actor.member; // account owner (not a team member) manages the connection
+    if (b.action === 'ghlStatus') return res.status(200).json(publicGhl(await getGhl(sc), canEdit));
+    if (b.action === 'ghlConnect') {
+      if (!canEdit) return res.status(403).json({ error: 'Only the account owner can connect GoHighLevel.' });
+      const token = str(b.token, 400).replace(/^Bearer\s+/i, ''), locationId = str(b.locationId, 60);
+      if (token.length < 20) return res.status(400).json({ error: 'Paste your Private Integration token.' });
+      if (!/^[A-Za-z0-9]{10,40}$/.test(locationId)) return res.status(400).json({ error: 'Paste the Location ID from Settings → Business Profile.' });
+      const t = await testGhl({ token, locationId });
+      if (!t.ok) return res.status(400).json({ error: t.error });
+      await saveGhl(sc, { token, locationId, by: actor.member?.id || actor.user?.id });
+      return res.status(200).json(publicGhl(await getGhl(sc), canEdit));
+    }
+    if (b.action === 'ghlDisconnect') {
+      if (!canEdit) return res.status(403).json({ error: 'Only the account owner can disconnect GoHighLevel.' });
+      await dropGhl(sc); return res.status(200).json(publicGhl(null, canEdit));
+    }
+    if (b.action === 'ghlSend') {
+      const g = await getGhl(sc); if (!g) return res.status(400).json({ error: 'Connect GoHighLevel first.' });
+      const deal = await getDeal(String(b.dealId || ''), sc); if (!deal) return res.status(404).json({ error: 'Deal not found.' });
+      const msg = str(b.message, 1200); if (!msg) return res.status(400).json({ error: 'Write the text first.' });
+      const ids = new Set((Array.isArray(b.ids) ? b.ids : []).slice(0, 25));
+      const ph = v => { const d = String(v || '').replace(/\D/g, ''); return d.length === 11 && d[0] === '1' ? d.slice(1) : d.length === 10 ? d : ''; };
+      const seenPh = new Set(), to = (await listDocs(col(sc))).filter(x => ids.has(x.id) && !x.unsub && ph(x.phone) && !seenPh.has(ph(x.phone)) && seenPh.add(ph(x.phone)));
+      const results = [];
+      for (let i = 0; i < to.length; i += 4) {
+        results.push(...await Promise.all(to.slice(i, i + 4).map(async x => {
+          const r = await ghlText(g, x, ph(x.phone), msg.replace(/\{first\}/g, (x.name || '').split(' ')[0] || 'there')).catch(e => ({ ok: false, error: e.message }));
+          if (r.contactId && (x.ghlId !== r.contactId || x.ghlLoc !== g.locationId)) await putDoc(key(x.id), { ...x, ghlId: r.contactId, ghlLoc: g.locationId }).catch(() => {});
+          return { id: x.id, ok: r.ok, error: r.ok ? null : r.error, dnd: !!r.dnd };
+        })));
+      }
+      const sent = results.filter(r => r.ok).length;
+      if (sent) {
+        const sid = str(b.sid, 12), total = Math.max(0, Math.min(1000, Math.round(Number(b.prior) || 0))) + sent, price = num(b.price);
+        const text = `Texted ${total} buyer${total > 1 ? 's' : ''} through GoHighLevel${price ? ' at ' + $$(price) : ''}`;
+        const fresh = await getDeal(deal.id, sc) || deal, hist = [...(fresh.history || [])], i = sid ? hist.findIndex(h => h.sid === sid) : -1;
+        if (i >= 0) hist[i] = { ...hist[i], text }; else hist.push({ at: Date.now(), sid, text });
+        await saveDeal({ ...fresh, history: hist }, sc);
+      }
+      return res.status(200).json({ sent, results });
     }
 
     if (b.action === 'texted') {
