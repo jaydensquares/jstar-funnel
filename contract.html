@@ -27,11 +27,19 @@
   .init { margin-top:10px; }
   .sig { display:grid; grid-template-columns:1fr 1fr; gap:28px 40px; margin-top:30px; }
   .sig div { border-top:1px solid var(--ink); padding-top:4px; font-size:13px; min-height:52px; }
+  .bar .tabs { display:flex; gap:4px; }
+  .bar .tabs a { padding:8px 12px; border-radius:8px; color:#c3cde0; }
+  .bar .tabs a[aria-current=page] { background:#1d2c4d; color:#fff; }
+  .jvf { max-width:820px; margin:14px auto 0; background:#fff; border-radius:8px; padding:14px 16px; font:14px/1.4 -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:10px 14px; }
+  .jvf b { grid-column:1/-1; font-size:14px; }
+  .jvf label { display:flex; flex-direction:column; gap:4px; font-size:12.5px; font-weight:600; color:#333; }
+  .jvf input, .jvf select { font:15px -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif; padding:8px 10px; border:1px solid #c9cfda; border-radius:6px; }
+  .jvf .wide { grid-column:1/-1; }
   .err { max-width:820px; margin:30px auto; font:16px -apple-system, sans-serif; color:#b42318; text-align:center; }
   @media (max-width:640px) { .page { padding:28px 20px; margin:10px 8px 30px; } .sig { grid-template-columns:1fr; } }
   @media print {
     body { background:#fff; font-size:11.5pt; }
-    .bar, .note { display:none !important; }
+    .bar, .note, .jvf { display:none !important; }
     .page { box-shadow:none; margin:0; padding:0; max-width:none; }
     @page { margin:0.75in; }
     h2 { break-after:avoid; }
@@ -43,10 +51,22 @@
 <div class="bar">
   <a href="/underwriting" id="back">Back to deal</a>
   <span class="sp"></span>
-  <button class="alt" id="swap" type="button"></button>
+  <nav class="tabs" id="tabs"><a data-d="psa" href="#">Purchase agreement</a><a data-d="assign" href="#">Assignment</a><a data-d="jv" href="#">JV agreement</a></nav>
   <button id="print" type="button">Print / Save PDF</button>
 </div>
 <div class="note" id="note">Template only. Have a Texas real estate attorney review this contract before you use it with a real seller or buyer. Fill in anything blank (legal description, names) before signing.</div>
+<form class="jvf" id="jvf" hidden autocomplete="off">
+  <b>JV details (saved on this device; not printed)</b>
+  <label>Who holds the purchase contract?<select id="jHolder"><option value="me">My company</option><option value="partner">The JV partner</option></select></label>
+  <label>Partner's role<select id="jRole"><option value="dispo">Brings the buyer (dispo)</option><option value="acq">Brought the deal (acquisitions)</option><option value="both">Shares acquisition and dispo</option></select></label>
+  <label>Your share of net profit (%)<input id="jSplit" type="number" min="0" max="100" step="1" value="50"></label>
+  <label>Partner name<input id="jName"></label>
+  <label>Partner company (optional)<input id="jCo"></label>
+  <label>Partner phone<input id="jPhone" type="tel"></label>
+  <label>Partner email<input id="jEmail" type="email"></label>
+  <label>Earnest money paid by<select id="jEm"><option value="holder">The contract holder</option><option value="partner">The other party</option><option value="split">Split by the profit share</option></select></label>
+  <label class="wide">Extra terms (optional)<input id="jExtra" placeholder="Example: Partner covers up to $500 in buyer marketing, reimbursed off the top"></label>
+</form>
 <div class="err" id="err" hidden></div>
 <div class="page" id="doc" hidden></div>
 
@@ -56,7 +76,7 @@
   const BIZ = { company: 'JStar Acquisitions', signer: 'Jayden Squares', title: 'Owner', phone: '(832) 833-0125', email: '' };
 
   const qs = new URLSearchParams(location.search);
-  const id = qs.get('id'), docType = qs.get('doc') === 'assign' ? 'assign' : 'psa';
+  const id = qs.get('id'), docType = ['assign', 'jv'].includes(qs.get('doc')) ? qs.get('doc') : 'psa', blank = qs.get('blank') === '1' && docType === 'jv';
   const $ = s => document.getElementById(s);
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const money = n => (n || n === 0) ? '$' + Number(n).toLocaleString() : '<span class="blank"></span>';
@@ -73,12 +93,12 @@
   };
 
   $('back').href = '/underwriting#' + (id || '');
-  $('swap').textContent = docType === 'psa' ? 'View assignment' : 'View purchase agreement';
-  $('swap').onclick = () => { qs.set('doc', docType === 'psa' ? 'assign' : 'psa'); location.search = qs.toString(); };
+  document.querySelectorAll('#tabs a').forEach(a => { const q = new URLSearchParams(qs); q.set('doc', a.dataset.d); q.delete('blank'); a.href = '?' + q.toString(); if (a.dataset.d === docType) a.setAttribute('aria-current', 'page'); if (blank) a.hidden = a.dataset.d !== 'jv'; });
   $('print').onclick = () => window.print();
 
   let pin = ''; try { pin = sessionStorage.getItem('opPin') || ''; } catch {}
   const fail = m => { $('err').hidden = false; $('err').innerHTML = m; };
+  if (blank) { $('back').hidden = true; render({}); return; }
   if (!id) return fail('No deal selected. <a href="/underwriting">Pick a deal</a>');
 
   fetch('/api/deals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, action: 'get', id }) })
@@ -92,7 +112,7 @@
     const sellers = [s.name, s.name2].filter(Boolean).join(' and ');
     const titleCo = [tc.company, tc.officer && `Attn: ${tc.officer}`, tc.phone, tc.email].filter(Boolean).join(' · ');
     const optDays = t.optionDays || 10, emDays = t.emDays || 3;
-    document.title = (docType === 'psa' ? 'Purchase Agreement' : 'Assignment') + ' – ' + (a.street || 'Deal');
+    document.title = ({ psa: 'Purchase Agreement', assign: 'Assignment', jv: 'JV Agreement' })[docType] + ' – ' + (a.street || 'Deal');
     const preTitle = a.street ? `<p class="sub">${esc(addr)}</p>` : '';
 
     const psa = `
@@ -186,8 +206,81 @@
       </div>
       <p style="font-size:12px;color:var(--muted);margin-top:22px">Title Company: ${titleCo ? esc(titleCo) : '________________________'} · Assignor: ${esc(BIZ.phone)}${b.phone ? ` · Assignee: ${esc(b.phone)}` : ''}${b.email ? ' · ' + esc(b.email) : ''}</p>`;
 
+    if (docType === 'jv') return jv(d, { a, s, n, t, tc, addr, sellers, titleCo });
     $('doc').innerHTML = docType === 'psa' ? psa : assign;
     $('doc').hidden = false;
+  }
+
+  // ── Joint venture agreement for one wholesale deal ──
+  function jv(d, { a, s, n, t, tc, addr, sellers }) {
+    const F = ['jHolder', 'jRole', 'jSplit', 'jName', 'jCo', 'jPhone', 'jEmail', 'jEm', 'jExtra'], key = 'jv:' + (id || 'blank');
+    try { const sv = JSON.parse(localStorage.getItem(key) || 'null'); if (sv) F.forEach(f => { if (sv[f] != null) $(f).value = sv[f]; }); } catch {}
+    $('jvf').hidden = blank; if (blank) { $('note').textContent = 'Blank JV agreement. Template only: have a Texas real estate attorney review it before you use it.'; }
+    const draw = () => {
+      const g = Object.fromEntries(F.map(f => [f, $(f).value.trim()]));
+      try { localStorage.setItem(key, JSON.stringify(g)); } catch {}
+      const mine = blank ? null : Math.max(0, Math.min(100, Math.round(Number(g.jSplit) || 0))), theirs = mine == null ? null : 100 - mine;
+      const pct = x => x == null ? '<span class="blank" style="min-width:50px"></span>%' : `<b>${x}%</b>`;
+      const me = blank ? null : BIZ.company, partner = blank ? '' : (g.jCo ? `${g.jCo}${g.jName ? ', by ' + g.jName : ''}` : g.jName);
+      const holderIsMe = g.jHolder !== 'partner';
+      const A = blank ? '<span class="blank" style="min-width:240px"></span>' : `<b>${esc(holderIsMe ? me : partner || '')}</b>${!holderIsMe && !partner ? '<span class="blank" style="min-width:240px"></span>' : ''}`;
+      const B = blank ? '<span class="blank" style="min-width:240px"></span>' : (holderIsMe ? (partner ? `<b>${esc(partner)}</b>` : '<span class="blank" style="min-width:240px"></span>') : `<b>${esc(me)}</b>`);
+      const shareA = holderIsMe ? mine : theirs, shareB = holderIsMe ? theirs : mine;
+      const roleB = { dispo: 'finding and bringing a qualified cash buyer (end buyer) for the Property and coordinating that buyer through closing', acq: 'having located the Property and the seller and brought the deal to the Contract Holder', both: 'sharing acquisition and disposition work as described in Section 3' }[blank ? 'both' : g.jRole];
+      const em = blank ? 'the party named here: <span class="blank" style="min-width:200px"></span>' : { holder: 'the Contract Holder', partner: 'the JV Partner', split: 'both parties, in the same percentages as the profit split' }[g.jEm];
+      const sigName = (who) => who === 'me' ? `${esc(BIZ.company)}<br><br>By: ${esc(BIZ.signer)}, ${esc(BIZ.title)}` : (blank ? '<br><br>By:' : `${esc(g.jCo || g.jName || '')}<br><br>${g.jCo && g.jName ? 'By: ' + esc(g.jName) : ''}`);
+      $('doc').innerHTML = `
+      <h1>Joint Venture Agreement</h1><p class="sub">Single-property wholesale transaction${addr ? ' · ' + esc(addr) : ''}</p>
+      <p>This Joint Venture Agreement (the "Agreement") is effective on the date the last Party signs, between ${A} (the "Contract Holder") and ${B} (the "JV Partner"). Each is a "Party" and together the "Parties".</p>
+
+      <h2>1. Purpose</h2>
+      <p>The Parties are working together on one transaction only: the sale or assignment of the purchase contract for the property at ${v(addr, 300)} (the "Property"). This Agreement does not create a general partnership, employment relationship or any obligation beyond this one transaction. Neither Party may sign for or bind the other except as written here.</p>
+
+      <h2>2. The Contract</h2>
+      <p>The Contract Holder is the buyer under a Real Estate Purchase and Sale Agreement dated ${v(date(t.contractDate), 160)} with ${v(sellers, 220)} (the "Seller") for a purchase price of ${money(n.contractPrice)}, scheduled to close on or before ${v(date(t.closingDate), 160)} at ${v(tc.company, 200)} (the "Title Company") (the "Contract"). The Contract Holder will give the JV Partner a copy of the Contract on request and will keep the Contract in good standing, including meeting its deadlines and communicating with the Seller.</p>
+
+      <h2>3. Roles</h2>
+      <p><b>Contract Holder</b> will: keep control of the Contract; handle all communication with the Seller; arrange access to the Property for showings and inspections; and sign the assignment or closing documents.</p>
+      <p><b>JV Partner</b> is contributing by ${roleB}. The JV Partner will not contact the Seller directly unless the Contract Holder approves in writing, and will not change, extend or cancel the Contract.</p>
+      <p>Any buyer either Party brings must be approved by the Contract Holder before an assignment is signed, and must place a non-refundable deposit with the Title Company as the Contract Holder requires.</p>
+
+      <h2>4. Earnest Money and Expenses</h2>
+      <p>The earnest money under the Contract (${money(n.earnest)}) is paid by ${em}. Each Party pays its own marketing, travel and overhead unless both Parties approve an expense in writing (text or email is enough) before it is spent. At closing, the earnest money (if not credited to the end buyer) and any approved expenses are repaid to whoever paid them before profits are split.</p>
+
+      <h2>5. Profit Split</h2>
+      <p>"Net Profit" means the assignment fee or the difference between the end buyer's price and the Contract price (expected about ${money(n.assignmentFee)}), minus the repayments in Section 4. The Parties split Net Profit as follows: Contract Holder ${pct(shareA)} and JV Partner ${pct(shareB)}.</p>
+      <p>Both shares are paid by the Title Company at closing, through the settlement statement or written disbursement instructions signed by both Parties. Neither Party will accept any payment for this transaction outside of closing. If the deal closes through a double close instead of an assignment, the same split applies to the spread after the costs of the second closing.</p>
+
+      <h2>6. Marketing and Legal Compliance</h2>
+      <p>The Parties act only as principals with an equitable interest in the Contract, not as real estate brokers or agents for the Seller or any buyer. Any marketing of the deal must be approved by the Contract Holder, must not be posted on the MLS, and must clearly say that what is being offered is an assignment of a purchase contract (an equitable interest), not legal title to the Property, as required by Texas Occupations Code §1101.0045. Each Party will follow all laws that apply to it, including Texas Property Code §5.0205 disclosures, fair housing laws, and telemarketing and texting rules.</p>
+
+      <h2>7. Non-Circumvention</h2>
+      <p>For 12 months after signing, neither Party will go around the other to buy, sell or assign the Property, or to deal directly with the Seller or the end buyer on this Property, without paying the other Party its full share under Section 5.</p>
+
+      <h2>8. Confidentiality</h2>
+      <p>The Parties will keep the Contract terms, the Seller's information and the buyer's information confidential and will use them only for this transaction.</p>
+
+      <h2>9. Term and Termination</h2>
+      <p>This Agreement ends when the Net Profit is paid at closing, or if the Contract ends without closing. If the Contract ends without closing, each Party bears its own costs, and any refunded earnest money goes back to whoever paid it. Sections 7 and 8 survive.</p>
+
+      <h2>10. Independent Parties, Taxes and Liability</h2>
+      <p>Each Party is an independent business, responsible for its own taxes, licenses and insurance, and will receive its own tax reporting from the Title Company where applicable. Each Party is responsible for its own acts and will indemnify the other for claims caused by its own breach, negligence or violation of law.</p>
+
+      <h2>11. Disputes</h2>
+      <p>This Agreement is governed by Texas law. The Parties will first try in good faith to resolve any dispute by talking, then by mediation in ${v(a.county ? a.county + ' County' : '', 140)}, Texas, before filing suit there. The winning Party in any lawsuit may recover reasonable attorney's fees.</p>
+
+      <h2>12. General</h2>
+      <p>This is the entire agreement between the Parties about this transaction. Changes must be in writing and signed (electronic signatures and counterparts are fine). If any part is unenforceable, the rest still applies.</p>
+      ${g.jExtra && !blank ? `<h2>13. Additional Terms</h2><p>${esc(g.jExtra)}</p>` : blank ? '<h2>13. Additional Terms</h2><p><span class="blank" style="min-width:100%"></span></p><p><span class="blank" style="min-width:100%"></span></p>' : ''}
+
+      <div class="sig">
+        <div>Contract Holder: ${sigName(blank ? 'x' : holderIsMe ? 'me' : 'partner')}</div><div>Date</div>
+        <div>JV Partner: ${sigName(blank ? 'x' : holderIsMe ? 'partner' : 'me')}</div><div>Date</div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-top:22px">${blank ? 'Contract Holder contact: ________________________ · JV Partner contact: ________________________' : `${esc(BIZ.company)}: ${esc(BIZ.phone)}${BIZ.email ? ' · ' + esc(BIZ.email) : ''}${g.jPhone || g.jEmail ? ` · JV Partner: ${esc([g.jPhone, g.jEmail].filter(Boolean).join(' · '))}` : ''}`}${tc.company ? ' · Title: ' + esc(tc.company) : ''}</p>`;
+      $('doc').hidden = false;
+    };
+    $('jvf').addEventListener('input', draw); $('jvf').addEventListener('change', draw); draw();
   }
 })();
 </script>

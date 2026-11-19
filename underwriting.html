@@ -269,6 +269,7 @@
       <div class="grid2">
         <a class="btn linkbtn" id="psaBtn" href="#" >Purchase agreement</a>
         <a class="btn ghost linkbtn" id="asgBtn" href="#" >Assignment</a>
+        <a class="btn ghost linkbtn" id="jvBtn" href="#" style="grid-column:1/-1">JV agreement (split a deal with a partner)</a>
       </div>
     </section>
 
@@ -585,8 +586,8 @@
     $('hist').innerHTML = (d.history || []).slice().reverse().map(h => `${h.at ? new Date(h.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''} · ${esc(h.text)}`).join('<br>') || '—';
     $('delBtn').hidden = !d.id;
     const ready = !!d.id;
-    ['psaBtn', 'asgBtn'].forEach(b => { $(b).style.opacity = ready ? 1 : .5; $(b).style.pointerEvents = ready ? '' : 'none'; });
-    if (ready) { $('psaBtn').href = `/contract?id=${d.id}&doc=psa`; $('asgBtn').href = `/contract?id=${d.id}&doc=assign`; }
+    ['psaBtn', 'asgBtn', 'jvBtn'].forEach(b => { $(b).style.opacity = ready ? 1 : .5; $(b).style.pointerEvents = ready ? '' : 'none'; });
+    if (ready) { $('psaBtn').href = `/contract?id=${d.id}&doc=psa`; $('asgBtn').href = `/contract?id=${d.id}&doc=assign`; $('jvBtn').href = `/contract?id=${d.id}&doc=jv`; }
     $('skipCard').hidden = !d.id || !window.JK;
     if (d.id && window.JK) JK.skipCard($('skipCard'), { target: { dealId: d.id }, skip: d.skip || null, pin, onDone: sk => {
       cur.skip = sk; const ph = $('ed').querySelector('[data-f="seller.phone"]'), nm = $('ed').querySelector('[data-f="seller.name"]');
