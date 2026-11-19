@@ -97,7 +97,7 @@
   $('pfx').textContent = location.host + '/f/';
   const PLANS = { starter: ['Starter', 89], pro: ['Pro', 149], team: ['Team', 299] };
   const qs = new URLSearchParams(location.search);
-  // Every account needs a plan; there's no free trial. Yearly = 10 months' price (2 months free).
+  // Every account starts with a 3-day free trial (card required, charged when it ends). Yearly = 10 months' price (2 months free).
   let plan = PLANS[qs.get('plan')] ? qs.get('plan') : 'pro', interval = qs.get('billing') === 'year' ? 'year' : 'month';
   // Referral: ?ref=<username>, remembered from the sales page too
   let ref = (qs.get('ref') || '').toLowerCase(); try { if (ref) localStorage.setItem('jsRef', ref); else ref = localStorage.getItem('jsRef') || ''; } catch {}
@@ -113,12 +113,12 @@
     const [n, p] = PLANS[plan];
     $('planPick').innerHTML = `<div class="ppick"><div class="seg2"><button type="button" data-i="month" class="${interval === 'month' ? 'on' : ''}">Monthly</button><button type="button" data-i="year" class="${interval === 'year' ? 'on' : ''}">Yearly <em>2 months free</em></button></div>
       <select id="planSel" aria-label="Plan">${Object.entries(PLANS).map(([k, [nm, pr]]) => `<option value="${k}" ${k === plan ? 'selected' : ''}>${nm} · ${interval === 'year' ? '$' + (pr * 10).toLocaleString() + '/year' : '$' + pr + '/month'}</option>`).join('')}</select>
-      <p class="hint" style="margin:6px 0 0">${interval === 'year' ? `$${(p * 10).toLocaleString()} billed yearly, about $${Math.round(p * 10 / 12)}/month. You save $${p * 2}.` : ref ? '<b>Referral applied:</b> 50% off your first month.' : 'Billed monthly. Cancel any time.'} <a href="/support?topic=agency">Agency plan? Book a call</a></p></div>`;
+      <p class="hint" style="margin:6px 0 0"><b>3 days free</b>, then ${interval === 'year' ? `$${(p * 10).toLocaleString()}/year (about $${Math.round(p * 10 / 12)}/month, you save $${p * 2})` : `$${p}/month`}${ref && interval === 'month' ? '. <b>Referral applied:</b> 50% off your first month' : ''}. Cancel before the trial ends and you pay nothing. <a href="/support?topic=agency">Agency plan? Book a call</a></p></div>`;
     $('planSel').onchange = e => { plan = e.target.value; drawPlan(); };
     $('planPick').querySelectorAll('[data-i]').forEach(b => b.onclick = () => { interval = b.dataset.i; drawPlan(); });
   };
   $('planPick').hidden = false; drawPlan();
-  $('sBtn').textContent = 'Create account and continue to payment';
+  $('sBtn').textContent = 'Start my 3-day free trial';
   // Team invite: ?invite=<token> → join an existing account, no plan or payment
   const invite = /^[a-f0-9]{32}$/.test(qs.get('invite') || '') ? qs.get('invite') : null;
   if (invite) {
@@ -175,7 +175,7 @@
     if (!created) {
       $('sBtn').textContent = 'Creating your account…';
       const r = await post({ action: 'signup', name: $('sName').value.trim(), phone: $('sPhone').value.trim(), company: $('sCompany').value.trim(), username: $('sUser').value.trim(), email: $('sEmail').value.trim(), password: $('sPass').value, agree: $('sAgree').checked, ref, via });
-      if (!r.ok) { $('sBtn').disabled = false; $('sBtn').textContent = 'Create account and continue to payment'; $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
+      if (!r.ok) { $('sBtn').disabled = false; $('sBtn').textContent = 'Start my 3-day free trial'; $('sErr').textContent = r.j.error || 'Could not sign up.'; return; }
       created = true;
       $('signup').querySelectorAll('input').forEach(i => { i.disabled = true; });
     }

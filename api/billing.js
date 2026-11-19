@@ -1,6 +1,6 @@
 // Stripe Checkout (plans and the custom-domain add-on) and the Stripe customer portal (switch plan, card, invoices, cancel).
 import { currentUser, saveUser } from '../lib/auth.js';
-import { tierOf, PLANS, PACKS, isActive, SELF_SERVE } from '../lib/plan.js';
+import { tierOf, PLANS, PACKS, isActive, SELF_SERVE, TRIAL_DAYS } from '../lib/plan.js';
 import crypto from 'node:crypto';
 import { getDoc } from '../lib/db.js';
 import { stripe as api, priceFor } from '../lib/stripe.js';
@@ -59,8 +59,12 @@ export default async function handler(req, res) {
       // Sales-page popup lead: 25% off the first month, matched by signup email for 60 days
       const offer = firstPlan && interval === 'month' && !u.referredBy && u.email
         ? await getDoc(`offer/${crypto.createHash('sha256').update(String(u.email).toLowerCase()).digest('hex').slice(0, 32)}`).catch(() => null) : null;
-      if (firstPlan && u.referredBy && interval === 'month') params['discounts[0][coupon]'] = 'jstarpro-ref-50';
-      else if (offer && Date.now() - offer.at < 60 * 864e5) params['discounts[0][coupon]'] = 'jstarpro-first-25';
+      // First plan ever: 3-day free trial, card collected up front, first charge when the trial ends
+      const trial = feature === 'plan' && !u.stripeSubId && !u.trialUsed;
+      if (trial) Object.assign(params, { 'subscription_data[trial_period_days]': String(TRIAL_DAYS), 'metadata[trial]': '1', payment_method_collection: 'always' });
+      // With a trial, the first-month coupons repeat for 1 month so they land on the first paid invoice, not the $0 trial one
+      if (firstPlan && u.referredBy && interval === 'month') params['discounts[0][coupon]'] = trial ? 'jstarpro-ref-50-t' : 'jstarpro-ref-50';
+      else if (offer && Date.now() - offer.at < 60 * 864e5) params['discounts[0][coupon]'] = trial ? 'jstarpro-first-25-t' : 'jstarpro-first-25';
       else params.allow_promotion_codes = 'true';
       // Sales tax: turn on with STRIPE_TAX=1 once Stripe Tax is set up and you're registered in Texas
       if (process.env.STRIPE_TAX === '1') Object.assign(params, { 'automatic_tax[enabled]': 'true', 'customer_update[address]': 'auto', 'customer_update[name]': 'auto', billing_address_collection: 'required' });

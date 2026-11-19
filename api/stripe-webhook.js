@@ -5,7 +5,7 @@ import crypto from 'node:crypto';
 import { getUserById, saveUser, sendPlainEmail } from '../lib/auth.js';
 import { getDoc, putDoc } from '../lib/db.js';
 import { tierFromLookup, stripe } from '../lib/stripe.js';
-import { PACKS, PLANS, PAID } from '../lib/plan.js';
+import { PACKS, PLANS, PAID, TRIAL_DAYS, TRIAL_LIMITS } from '../lib/plan.js';
 import { addCredits } from '../lib/usage.js';
 import { recordCommission, AFF } from '../lib/affiliate.js';
 import { layout, p as P, small, button, rows, callout, esc as E } from '../lib/email.js';
@@ -64,16 +64,18 @@ export default async function handler(req, res) {
       if (uid && o.subscription) await putDoc(`idx/stripe-sub/${o.subscription}`.toLowerCase(), { uid, feature, tier });
       if (uid && feature === 'customDomain') await setPlan(uid, { customDomain: true, domainSubId: o.subscription }, { stripeCustomerId: o.customer });
       if (uid && feature === 'plan' && PAID.includes(tier)) {
-        await setPlan(uid, { tier, interval: o.metadata?.interval || 'month' }, { stripeCustomerId: o.customer, stripeSubId: o.subscription, ...(o.discounts?.length || o.total_details?.amount_discount ? { refUsed: true } : {}) });
+        const trial = o.metadata?.trial === '1', trialEnd = trial ? Date.now() + TRIAL_DAYS * 864e5 : null;
+        await setPlan(uid, { tier, interval: o.metadata?.interval || 'month', trialEnd }, { stripeCustomerId: o.customer, stripeSubId: o.subscription, ...(trial ? { trialUsed: true } : {}), ...(o.discounts?.length || o.total_details?.amount_discount ? { refUsed: true } : {}) });
         // Welcome email, once per account
         const w = await getUserById(uid);
         if (w && !w.welcomed) {
           await saveUser({ ...w, welcomed: Date.now() });
-          const pl = PLANS[tier], L = pl.limits, first = (w.name || '').split(' ')[0] || 'there', funnel = `https://getjstarpro.com/f/${w.slug}`;
+          const pl = PLANS[tier], L = trial ? Object.fromEntries(Object.entries(pl.limits).map(([k, v]) => [k, Math.min(v, TRIAL_LIMITS[k] ?? v)])) : pl.limits, first = (w.name || '').split(' ')[0] || 'there', funnel = `https://getjstarpro.com/f/${w.slug}`;
+          const endTxt = trial ? new Date(trialEnd).toLocaleDateString('en-US', { timeZone: 'America/Chicago', month: 'long', day: 'numeric' }) : '';
           await sendPlainEmail(w.email, `Welcome to JStar Pro, ${first}`,
-            `Hi ${first},\n\nYou're on JStar Pro ${pl.name}. Your seller funnel is live at ${funnel}.\n\nGet set up in 3 steps:\n1. Add your logo, phone and service area: ${APP}#funnel\n2. Point your ads or mailers at your funnel link.\n3. Run your first address: https://getjstarpro.com/operator\n\nQuestions? https://getjstarpro.com/support\n\nJStar Pro`,
-            layout({ preheader: `Your ${pl.name} plan is active and your seller funnel is live.`, eyebrow: `${pl.name} plan · active`, title: `Welcome to JStar Pro, ${E(first)}`,
-              body: P(`Your plan is active and your seller funnel is already live. Here's how to get your first deal moving.`)
+            `Hi ${first},\n\n${trial ? `Your 3-day free trial of JStar Pro ${pl.name} has started. Your first charge is on ${endTxt}, and you can cancel any time before then from Plan & account.` : `You're on JStar Pro ${pl.name}.`} Your seller funnel is live at ${funnel}.\n\nGet set up in 3 steps:\n1. Add your logo, phone and service area: ${APP}#funnel\n2. Point your ads or mailers at your funnel link.\n3. Run your first address: https://getjstarpro.com/operator\n\nQuestions? https://getjstarpro.com/support\n\nJStar Pro`,
+            layout({ preheader: trial ? `Your 3-day free trial has started and your seller funnel is live.` : `Your ${pl.name} plan is active and your seller funnel is live.`, eyebrow: trial ? `${pl.name} plan · free trial until ${endTxt}` : `${pl.name} plan · active`, title: `Welcome to JStar Pro, ${E(first)}`,
+              body: P(trial ? `Your free trial is on and your seller funnel is already live. You won't be charged until <b>${E(endTxt)}</b>, and you can cancel any time before then from Plan &amp; account. Trial limits are below; your full plan limits unlock with the first payment.` : `Your plan is active and your seller funnel is already live. Here's how to get your first deal moving.`)
                 + rows([['Your funnel', `<a href="${funnel}" style="color:#2f6fed;text-decoration:none">${E(funnel.replace('https://', ''))}</a>`], ['Deal analyses', `${L.runs.toLocaleString()} / month`], ['Skip traces', `${L.skips} / month`], ['Photo estimates', `${L.photos} / month`]])
                 + P(`<b>1.&nbsp; Brand your funnel.</b> Add your logo, phone number and service area so sellers know who they're talking to.<br><b>2.&nbsp; Send it traffic.</b> Point your ads, mailers or texts at your funnel link. Every lead lands with the math done.<br><b>3.&nbsp; Run your first address.</b> Comps, ARV, repairs, mortgage and your max offer in about 10 seconds.`)
                 + button(`${APP}#leads`, 'Open JStar Pro') + small('Questions or need a hand setting up? Reach us any time at <a href="https://getjstarpro.com/support" style="color:#2f6fed">getjstarpro.com/support</a>.'),
@@ -93,7 +95,7 @@ export default async function handler(req, res) {
       if (uid && feature === 'customDomain') await setPlan(uid, { customDomain: active });
       if (uid && feature === 'plan') {
         const u = await getUserById(uid);
-        if (u && (!u.stripeSubId || u.stripeSubId === o.id)) await setPlan(uid, { tier: active && tierNow ? tierNow : 'trial', interval: p.recurring?.interval || 'month' }, { stripeSubId: active ? o.id : null, billingIssue: o.status === 'past_due' });
+        if (u && (!u.stripeSubId || u.stripeSubId === o.id)) await setPlan(uid, { tier: active && tierNow ? tierNow : 'trial', interval: p.recurring?.interval || 'month', trialEnd: active && o.status === 'trialing' && o.trial_end ? o.trial_end * 1000 : null }, { stripeSubId: active ? o.id : null, billingIssue: o.status === 'past_due' });
       }
     }
     // Renewal went through: clear any card-problem flag
