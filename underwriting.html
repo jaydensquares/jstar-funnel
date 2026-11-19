@@ -120,6 +120,11 @@
   .dlist label small { display:block; color:var(--muted); font-size:12.5px; }
   .dlist label .fit { margin-left:auto; font-size:11.5px; font-weight:700; color:#067647; background:#ecfdf3; padding:3px 8px; border-radius:999px; }
   .dlist input { width:17px; height:17px; accent-color:var(--brand); flex:none; }
+  .dmode { display:inline-flex; gap:4px; padding:4px; margin:12px 0 2px; border:1px solid var(--line); border-radius:10px; }
+  .dmode button { border:0; background:transparent; color:var(--muted); font:600 14px var(--body); padding:7px 16px; border-radius:7px; cursor:pointer; min-height:36px; }
+  .dmode button[aria-pressed=true] { background:var(--brand); color:#fff; }
+  .dlist label.done { opacity:.55; } .dlist label .sent { margin-left:auto; white-space:nowrap; font-size:11.5px; font-weight:700; color:var(--muted); }
+  #dTNext { text-align:center; }
   .dispo .acct-only { display:block !important; }
 </style>
 <link rel="stylesheet" href="/ui.css">
@@ -264,16 +269,21 @@
 
     <section class="card dispo acct-only" id="dispoCard">
       <h2>Send to buyers</h2>
-      <p class="note" style="margin-top:0">Email this deal to the cash buyers on your list who fit it. Save the deal first. <a href="/app#buyers">Manage buyers</a></p>
+      <p class="note" style="margin-top:0">Email or text this deal to the cash buyers on your list who fit it. Save the deal first. <a href="/app#buyers">Manage buyers</a></p>
       <div id="dispoLast" class="note"></div>
       <button type="button" class="btn sun" id="dispoBtn">Send to buyers</button>
       <div id="dispoBox" hidden>
+        <div class="dmode" role="group" aria-label="Send by"><button type="button" id="dmEmail" aria-pressed="true">Email</button><button type="button" id="dmText" aria-pressed="false">Text</button></div>
         <div class="grid2" style="margin-top:12px"><div><label class="f" for="dPrice">Price to buyers</label><input type="text" id="dPrice" inputmode="numeric"></div><div><label class="f" for="dShow">Showings <span class="opt">(optional)</span></label><input type="text" id="dShow" placeholder="Lockbox, Sat 10–12"></div></div>
         <label class="f" for="dNote">Note to buyers <span class="opt">(optional)</span></label><textarea id="dNote" placeholder="3/2, 1,490 sf, needs updates. Seller needs to close in 30 days."></textarea>
+        <div id="dTxtWrap" hidden>
+          <label class="f" for="dTxtMsg">Text message</label><textarea id="dTxtMsg" style="min-height:130px"></textarea>
+          <p class="note" style="margin:6px 0 0">{first} becomes each buyer's first name. Texts go out from your phone one tap at a time, so replies come straight to you. Tap <b>Text</b>, hit send in Messages, then come back for the next one.<span id="dTDesk"> On a computer this opens Messages on a Mac; otherwise open this deal on your phone.</span></p>
+        </div>
         <div class="dhead"><b id="dCount"></b><span><button type="button" class="link" id="dAll">All</button> · <button type="button" class="link" id="dMatch">Matches only</button></span></div>
         <div id="dList" class="dlist"></div>
         <div class="err" id="dErr" role="alert"></div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap"><button type="button" class="btn ghost" id="dSms">Copy text version</button><button type="button" class="btn" id="dSend">Send email</button></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap"><button type="button" class="btn ghost" id="dSms">Copy text version</button><button type="button" class="btn" id="dSend">Send email</button><a class="btn" id="dTNext" href="#" hidden>Text</a></div>
       </div>
     </section>
 
@@ -424,14 +434,48 @@
     const inArea = !areas.length || areas.some(x => [a.city, a.zip, a.county].filter(Boolean).some(v => String(v).toLowerCase().includes(x) || x.includes(String(v).toLowerCase())));
     return inArea && (!price || ((!b.maxPrice || b.maxPrice >= price) && (!b.minPrice || b.minPrice <= price)));
   };
+  // Text mode: one tap per buyer opens Messages with the deal filled in, then moves to the next buyer
+  let dMode = 'email', txtSid = '', txtSent = new Set(), txtEdited = false;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isPhone = isIOS || /Android/i.test(navigator.userAgent);
+  const phDigits = v => { const d = String(v || '').replace(/\D/g, ''); return d.length === 11 && d[0] === '1' ? d.slice(1) : d.length === 10 ? d : ''; };
+  const smsHref = (d, body) => `sms:+1${d}${isIOS ? '&' : '?'}body=${encodeURIComponent(body)}`;
+  const txtFor = b => $('dTxtMsg').value.replace(/\{first\}/g, (b.name || '').split(' ')[0] || 'there');
+  const queue = () => [...$('dList').querySelectorAll('input:checked')].map(i => dBuyers.find(b => b.id === i.value)).filter(b => b && !txtSent.has(b.id));
   function drawBuyers(only) {
-    const price = dPriceNow();
-    const list = dBuyers.filter(b => b.email && !b.unsub).map(b => ({ b, fit: fits(b, cur, price) })).sort((x, y) => y.fit - x.fit);
-    $('dList').innerHTML = list.length ? list.map(({ b, fit }) => `<label><input type="checkbox" value="${esc(b.id)}" ${(only === 'all' || fit) ? 'checked' : ''}>${window.JK ? JK.avatar(b.name) : ''}<span><b>${esc(b.name)}</b><small>${esc(b.areas || 'Anywhere')}${b.maxPrice ? ' · up to ' + $$(b.maxPrice) : ''}</small></span>${fit ? '<span class="fit">Fits</span>' : ''}</label>`).join('')
-      : '<p class="note" style="padding:14px;margin:0">No buyers with an email yet. <a href="/app#buyers">Add buyers</a></p>';
-    const upd = () => { const n = $('dList').querySelectorAll('input:checked').length; $('dCount').textContent = `${n} buyer${n === 1 ? '' : 's'} selected`; $('dSend').textContent = n ? `Email ${n} buyer${n === 1 ? '' : 's'}` : 'Send email'; };
-    $('dList').onchange = upd; upd();
+    const price = dPriceNow(), text = dMode === 'text';
+    const list = dBuyers.filter(b => !b.unsub && (text ? phDigits(b.phone) : b.email)).map(b => ({ b, fit: fits(b, cur, price) })).sort((x, y) => y.fit - x.fit);
+    const was = new Set([...$('dList').querySelectorAll('input:checked')].map(i => i.value));
+    $('dList').innerHTML = list.length ? list.map(({ b, fit }) => { const done = text && txtSent.has(b.id);
+      return `<label class="${done ? 'done' : ''}"><input type="checkbox" value="${esc(b.id)}" ${(only === 'keep' ? was.has(b.id) : (only === 'all' || fit)) ? 'checked' : ''}>${window.JK ? JK.avatar(b.name) : ''}<span><b>${esc(b.name)}</b><small>${text ? phDigits(b.phone).replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3') + ' · ' : ''}${esc(b.areas || 'Anywhere')}${b.maxPrice ? ' · up to ' + $$(b.maxPrice) : ''}</small></span>${done ? '<span class="sent">Texted ✓</span>' : fit ? '<span class="fit">Fits</span>' : ''}</label>`; }).join('')
+      : `<p class="note" style="padding:14px;margin:0">No buyers with ${text ? 'a phone number' : 'an email'} yet. <a href="/app#buyers">Add buyers</a></p>`;
+    const upd = () => {
+      const n = $('dList').querySelectorAll('input:checked').length; $('dCount').textContent = `${n} buyer${n === 1 ? '' : 's'} selected`;
+      $('dSend').textContent = n ? `Email ${n} buyer${n === 1 ? '' : 's'}` : 'Send email';
+      if (text) { const q = queue(), nx = q[0], left = q.length;
+        $('dTNext').textContent = nx ? `Text ${esc((nx.name || '').split(' ')[0] || 'buyer')}${left > 1 ? ` (${left} left)` : ''}` : (txtSent.size ? `Done: texted ${txtSent.size}` : 'Pick buyers to text');
+        $('dTNext').href = nx ? smsHref(phDigits(nx.phone), txtFor(nx)) : '#'; $('dTNext').style.opacity = nx ? 1 : .55; $('dTNext').dataset.id = nx ? nx.id : ''; }
+    };
+    $('dList').onchange = upd; upd(); dUpd = upd;
   }
+  let dUpd = () => {};
+  const setMode = m => {
+    dMode = m; $('dmEmail').setAttribute('aria-pressed', m === 'email'); $('dmText').setAttribute('aria-pressed', m === 'text');
+    $('dTxtWrap').hidden = m !== 'text';
+    $('dSend').hidden = m === 'text'; $('dSms').hidden = m === 'text'; $('dTNext').hidden = m !== 'text';
+    $('dTDesk').hidden = isPhone;
+    if (m === 'text' && !txtEdited) $('dTxtMsg').value = 'Hi {first}, ' + smsText();
+    drawBuyers();
+  };
+  $('dmEmail').onclick = () => setMode('email'); $('dmText').onclick = () => setMode('text');
+  $('dTxtMsg').addEventListener('input', () => { txtEdited = true; dUpd(); });
+  ['dShow', 'dNote'].forEach(id => $(id).addEventListener('input', () => { if (dMode === 'text' && !txtEdited) { $('dTxtMsg').value = 'Hi {first}, ' + smsText(); dUpd(); } }));
+  $('dTNext').addEventListener('click', e => {
+    const id = $('dTNext').dataset.id; if (!id) { e.preventDefault(); return; }
+    if (!txtSid) txtSid = Math.random().toString(36).slice(2, 10);
+    setTimeout(() => { txtSent.add(id); drawBuyers('keep');
+      fetch('/api/buyers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'texted', pin, dealId: cur.id, sid: txtSid, n: txtSent.size, price: dPriceNow() }) }).catch(() => {}); }, 400);
+  });
   $('dispoBtn').onclick = async () => {
     if (!cur?.id) { $('edErr').textContent = 'Save the deal first.'; return; }
     $('dispoBtn').disabled = true;
@@ -441,9 +485,9 @@
     dBuyers = r.j.buyers || [];
     const n = cur.numbers || {}; const p = (n.contractPrice || 0) + (n.assignmentFee || 0);
     $('dPrice').value = p ? '$' + p.toLocaleString() : '';
-    $('dispoBtn').hidden = true; $('dispoBox').hidden = false; drawBuyers();
+    $('dispoBtn').hidden = true; $('dispoBox').hidden = false; txtSent = new Set(); txtSid = ''; txtEdited = false; setMode('email');
   };
-  $('dPrice').addEventListener('input', () => { const n = num($('dPrice').value); $('dPrice').value = n ? '$' + n.toLocaleString() : ''; drawBuyers(); });
+  $('dPrice').addEventListener('input', () => { const n = num($('dPrice').value); $('dPrice').value = n ? '$' + n.toLocaleString() : ''; if (dMode === 'text' && !txtEdited) $('dTxtMsg').value = 'Hi {first}, ' + smsText(); drawBuyers(); });
   $('dAll').onclick = () => drawBuyers('all'); $('dMatch').onclick = () => drawBuyers();
   const smsText = () => { const a = cur.address || {}, n = cur.numbers || {}, p = dPriceNow(); return [`Off-market: ${[a.street, a.city].filter(Boolean).join(', ')}`, p && `Price ${$$(p)}`, n.arv && `ARV ${$$(n.arv)}`, n.repairs && `Repairs ~${$$(n.repairs)}`, $('dShow').value.trim() && `Showings: ${$('dShow').value.trim()}`, $('dNote').value.trim(), 'Reply if you want it.'].filter(Boolean).join('\n'); };
   $('dSms').onclick = async () => { try { await navigator.clipboard.writeText(smsText()); window.JK?.toast('Text copied. Paste it into your texting tool.'); } catch { $('dErr').textContent = 'Could not copy.'; } };
@@ -473,8 +517,8 @@
   function fill(d) {
     cur = d; dirty = false;
     $('dispoBox').hidden = true; $('dispoBtn').hidden = false; $('dErr').textContent = '';
-    const lb = (d.history || []).filter(h => /^Sent to \d+ buyer/.test(h.text)).pop();
-    $('dispoLast').textContent = lb ? `Last sent ${new Date(lb.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}: ${lb.text.replace(/^Sent/, 'sent')}.` : '';
+    const lb = (d.history || []).filter(h => /^(Sent|Texted) to \d+ buyer|^Texted \d+ buyer/.test(h.text)).pop();
+    $('dispoLast').textContent = lb ? `Last sent ${new Date(lb.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}: ${lb.text.replace(/^Sent/, 'sent').replace(/^Texted/, 'texted')}.` : '';
     document.querySelectorAll('[data-f]').forEach(el => { el.value = getPath(d, el.dataset.f) ?? ''; });
     document.querySelectorAll('[data-n]').forEach(el => { const v = d.numbers?.[el.dataset.n]; el.value = v == null ? '' : el.dataset.n === 'buyerCostPct' ? v : '$' + Number(v).toLocaleString(); });
     document.querySelectorAll('[data-c]').forEach(el => { el.checked = !!d.checklist?.[el.dataset.c]; });

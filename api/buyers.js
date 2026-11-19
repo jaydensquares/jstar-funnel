@@ -62,6 +62,18 @@ export default async function handler(req, res) {
       return res.status(200).json({ added: fresh.length, skipped: rows.length - fresh.length });
     }
 
+    if (b.action === 'texted') {
+      // Logs one-tap texting from the deal page (texts are sent from the user's own phone)
+      const deal = await getDeal(String(b.dealId || ''), sc);
+      if (!deal) return res.status(404).json({ error: 'Deal not found.' });
+      const sid = str(b.sid, 12), n = Math.max(1, Math.min(300, Math.round(Number(b.n) || 1))), price = num(b.price);
+      const text = `Texted ${n} buyer${n > 1 ? 's' : ''}${price ? ' at ' + $$(price) : ''}`;
+      const hist = [...(deal.history || [])], i = sid ? hist.findIndex(h => h.sid === sid) : -1;
+      if (i >= 0) hist[i] = { ...hist[i], text }; else hist.push({ at: Date.now(), sid, text });
+      await saveDeal({ ...deal, history: hist }, sc);
+      return res.status(200).json({ ok: true });
+    }
+
     if (b.action === 'blast') {
       const deal = await getDeal(String(b.dealId || ''), sc);
       if (!deal) return res.status(404).json({ error: 'Deal not found.' });

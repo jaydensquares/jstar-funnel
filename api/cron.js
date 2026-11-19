@@ -34,7 +34,7 @@ export function recap(user, leads, deals, usage, monthStart, monthEnd) {
     leads: L.length, hot: L.filter(l => l.brief?.label === 'HOT').length, analyses: usage?.runs || 0, photos: usage?.photos || 0,
     newDeals: deals.filter(d => inM(d.createdAt)).length, contracts: contracts.length, closed: closed.length, closedFees: closed.reduce((s, d) => s + fee(d), 0),
     pendingFees: deals.filter(d => ['contract', 'assigned'].includes(d.status)).reduce((s, d) => s + fee(d), 0),
-    blasts: deals.reduce((s, d) => s + (d.history || []).filter(h => inM(h.at) && /^Sent to \d+ buyer/.test(h.text || '')).length, 0),
+    blasts: deals.reduce((s, d) => s + (d.history || []).filter(h => inM(h.at) && /^(Sent to|Texted) \d+ buyer/.test(h.text || '')).length, 0),
   };
 }
 
