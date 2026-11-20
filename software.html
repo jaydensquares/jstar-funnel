@@ -74,6 +74,14 @@
   .btn.alt { background:transparent; color:inherit; border-color:currentColor; opacity:.9; }
   .kicker { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:var(--brand); margin:0 0 14px; }
 
+  /* JStar AI section */
+  .aisplit { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:48px; align-items:center; }
+  .aiList { list-style:none; margin:18px 0 24px; padding:0; display:flex; flex-direction:column; gap:12px; }
+  .aiList li { position:relative; padding-left:28px; font-size:16.5px; line-height:1.5; color:var(--ink2); }
+  .aiList li::before { content:''; position:absolute; left:0; top:7px; width:14px; height:14px; border-radius:4px; background:var(--sun); }
+  .aiList b { color:var(--ink); }
+  @media (max-width:900px) { .aisplit { grid-template-columns:1fr; gap:28px; } }
+
   /* Conversion pass */
   .top nav .login { opacity:.8; font-weight:600; }
   .hero .fine b { color:var(--on-navy); }
@@ -297,6 +305,28 @@
     <div><b>AI assistant</b><span>finds leads, runs deals, skip traces</span></div>
   </div></section>
 
+  <section class="s ai" id="ai"><div class="w aisplit">
+    <div>
+      <h2>An AI acquisitions assistant, built in.</h2>
+      <p class="intro">JStar AI works your leads with you: it runs the numbers, writes the offer, answers pushback and follows up, so nothing goes cold while you're busy.</p>
+      <ul class="aiList">
+        <li><b>Ask it anything.</b> "Run this address and tell me what to offer."</li>
+        <li><b>Writes your offer.</b> A cash offer text or email, never above your max offer.</li>
+        <li><b>Handles pushback.</b> Paste what the seller said, get three replies that hold your number.</li>
+        <li><b>Follows up for 30 days.</b> Five check-ins by email and text that stop when you take over.</li>
+        <li><b>Blasts your buyers.</b> Text every cash buyer at once through GoHighLevel, or one tap from your phone.</li>
+      </ul>
+      <a class="btn" href="/signup?plan=pro">Try JStar AI free for 3 days</a>
+    </div>
+    <div class="vsl" id="aiVsl">
+      <img src="/media/ai-vsl.jpg" alt="" width="1280" height="720" loading="lazy">
+      <button class="play" type="button" id="aiPlay" aria-label="Play the JStar AI video">
+        <span class="cap"><b>See JStar AI work a lead</b><span>1 minute. Real app, no actors.</span></span>
+        <span class="pb"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l15 8-15 8z"/></svg></span>
+      </button>
+    </div>
+  </div></section>
+
   <section class="s" id="problem"><div class="w">
     <div class="split">
       <div>
@@ -507,6 +537,9 @@
   // ── VSL: load the video only when someone presses play ──
   $('vslPlay').addEventListener('click', () => {
     $('vsl').innerHTML = '<video poster="/media/vsl.jpg" controls autoplay playsinline><source src="/media/vsl.mp4" type="video/mp4"></video>';
+  });
+  $('aiPlay').addEventListener('click', () => {
+    $('aiVsl').innerHTML = '<video poster="/media/ai-vsl.jpg" controls autoplay playsinline><source src="/media/ai-vsl.mp4" type="video/mp4"></video>';
   });
   // Hero "Watch the walkthrough": scroll to the video and start it
   $('heroWatch').addEventListener('click', e => { e.preventDefault(); const b = $('vslPlay'); $('vsl').scrollIntoView({ behavior: 'smooth', block: 'center' }); if (b) b.click(); });
