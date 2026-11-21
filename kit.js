@@ -34,10 +34,10 @@
   const svg = K.svg = (n, cls = '') => `<svg viewBox="0 0 24 24" class="${cls}" aria-hidden="true">${I[n] || ''}</svg>`;
 
   // ── Small visuals ──
-  const PAL = [['#4a85ff', '#2f6fed'], ['#9b8afb', '#7a5af8'], ['#32d583', '#12b76a'], ['#ff9f5a', '#f04438'], ['#ffc93c', '#f79009'], ['#36bffa', '#0ba5ec'], ['#f670c7', '#dd2590']];
+  const PAL = ['#3d5a80', '#52606d', '#2f6b55', '#8a5a44', '#7c6a2e', '#2e6a8a', '#6b5478']; // muted, solid
   const hash = s => [...String(s)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
   K.initials = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '?';
-  K.avatar = (name, cls = '') => { const [a, b] = PAL[hash(name) % PAL.length]; return `<span class="av ${cls}" style="background:linear-gradient(135deg,${a},${b})">${esc(K.initials(name))}</span>`; };
+  K.avatar = (name, cls = '') => { const a = PAL[hash(name) % PAL.length]; return `<span class="av ${cls}" style="background:${a}">${esc(K.initials(name))}</span>`; };
   const LCOL = { HOT: '#f04438', WARM: '#f79009', COLD: '#98a2b3' };
   K.labelColor = l => LCOL[l] || '#98a2b3';
 

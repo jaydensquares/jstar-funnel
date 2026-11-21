@@ -12,7 +12,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:#ffffff; --bg2:#f2f6ff; --ink:#0f1a33; --ink2:#36425c; --muted:#66728a; --line:#e2e8f5;
+    --bg:#ffffff; --bg2:#f6f7f9; --ink:#0f1a33; --ink2:#36425c; --muted:#66728a; --line:#e2e8f5;
     --navy:#0a1633; --on-navy:#f5f8ff; --on-navy2:#aebddc; --gold:#ffc93c; --sun:#ffc93c; --mint:#2fd38a; --coral:#ff6b5a;
     --brand:#2f6fed; --brand-ink:#fff; --brand-soft:#eaf1ff; --ok:#12a150;
     --display:'IBM Plex Sans','Helvetica Neue',Arial,sans-serif; --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -20,48 +20,46 @@
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
     --bg:#0e1116; --bg2:#151a22; --ink:#f3f4f6; --ink2:#d1d5db; --muted:#9ca3af; --line:#273042;
     --brand:#5b8def; --brand-soft:#17223a; --ok:#86efac; color-scheme:dark; } }
-  /* Brighter, friendlier accents */
-  .hero { background:radial-gradient(900px 520px at 85% 15%, rgba(47,111,237,.38), transparent 60%), radial-gradient(700px 420px at 0% 100%, rgba(47,211,138,.14), transparent 60%), var(--navy) !important; }
+  /* Accents: one yellow for action on dark, navy buttons on light, blue only for links and highlights */
+  .hero { background:var(--navy) !important; }
   .hero h1 em { font-style:normal; color:var(--sun); }
   .hero .ctas .btn:not(.alt) { background:var(--sun); border-color:var(--sun); color:var(--navy); }
   .hero .ctas .btn:not(.alt):hover { filter:brightness(1.05); }
-  .vsl .pb { background:var(--sun) !important; box-shadow:0 0 0 8px rgba(255,201,60,.22); }
+  .vsl .pb { background:var(--sun) !important; box-shadow:none; }
   .top .btn { background:var(--sun) !important; border-color:var(--sun) !important; color:var(--navy) !important; }
   .cmp .us { background:var(--brand-soft); }
-  .cmp tfoot .us, .cmp tfoot .us b { background:var(--brand) !important; }
+  .cmp tfoot .us, .cmp tfoot .us b { background:var(--navy) !important; color:#fff !important; }
   .steps li.on .i { color:var(--brand); }
-  .steps li.on button .t { box-shadow:inset 0 -6px 0 rgba(255,201,60,.55); }
-  .phone { box-shadow:0 30px 60px rgba(47,111,237,.28), 0 0 0 1px rgba(15,26,51,.08); }
+  .steps li.on button .t { box-shadow:none; }
+  .phone { box-shadow:0 24px 48px rgba(15,26,51,.18), 0 0 0 1px rgba(15,26,51,.08); }
   .phone .prog i { background:var(--sun); }
-  .result { background:linear-gradient(160deg, #0f2150, var(--navy)) !important; }
+  .result { background:var(--navy) !important; }
   .result .save b { color:var(--sun) !important; }
-  .plan.pick { background:linear-gradient(165deg, #3d7bff, var(--brand) 55%, #1f56d6) !important; color:#fff; box-shadow:0 24px 50px rgba(47,111,237,.35) !important; position:relative; z-index:1; border-radius:14px; margin:-10px 0; padding-top:38px; padding-bottom:38px; }
-  .plan.pick .for, .plan.pick .pr span { color:#dbe6ff !important; }
-  .plan.pick li { border-color:rgba(255,255,255,.18) !important; } .plan.pick li span { color:#e6eeff !important; } .plan.pick li b { color:#fff !important; }
+  .plan.pick { background:var(--navy) !important; color:#fff; box-shadow:none !important; position:relative; z-index:1; border-radius:12px; margin:-10px 0; padding-top:38px; padding-bottom:38px; }
+  .plan.pick .for, .plan.pick .pr span { color:var(--on-navy2) !important; }
+  .plan.pick li { border-color:rgba(255,255,255,.12) !important; } .plan.pick li span { color:var(--on-navy2) !important; } .plan.pick li b { color:#fff !important; }
   .plan.pick .btn { background:var(--sun) !important; border-color:var(--sun) !important; color:var(--navy) !important; }
   .plan.pick .nm::after { content:'Recommended'; font:700 12px var(--body); letter-spacing:.04em; background:var(--sun); color:var(--navy); padding:4px 10px; border-radius:999px; }
   .plan.pick + .plan { border-left:0 !important; }
   @media (max-width:899px) { .plan.pick { margin:0; border-radius:0; } .plan.pick + .plan { border-top:0 !important; } }
-  .plans { border-color:#d6e2fb !important; }
-  .bill { display:inline-grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:24px; background:#fff; border:1px solid #d6e2fb; border-radius:12px; padding:4px; }
+  .plans { border-color:var(--line) !important; }
+  .bill { display:inline-grid; grid-template-columns:1fr 1fr; gap:4px; margin-top:24px; background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:4px; }
   .bill button { border:0; background:none; font:600 15px var(--body); color:var(--muted); padding:9px 18px; border-radius:9px; cursor:pointer; }
-  .bill button.on { background:var(--brand); color:#fff; }
+  .bill button.on { background:var(--navy); color:#fff; }
   .bill em { font-style:normal; font-size:12px; font-weight:700; background:var(--sun); color:var(--navy); padding:2px 7px; border-radius:999px; margin-left:4px; }
   .plans { margin-top:20px !important; }
   .pr .yr { display:block; font-family:var(--body); font-size:13.5px; font-weight:600; color:#067647; letter-spacing:0; margin-top:4px; }
   .plan.pick .pr .yr { color:#ffe08a; }
-  .agency { display:grid; grid-template-columns:auto 1fr auto; gap:24px; align-items:center; margin-top:16px; padding:22px 26px; border-radius:14px; background:linear-gradient(120deg,#0a1633,#13306f); color:#fff; }
-  .agency b { display:block; font-size:20px; } .agency span { font-size:13.5px; color:#ffc93c; font-weight:600; } .agency p { margin:0; color:#c6d3f2; font-size:15px; line-height:1.5; }
+  .agency { display:grid; grid-template-columns:auto 1fr auto; gap:24px; align-items:center; margin-top:16px; padding:22px 26px; border-radius:12px; background:var(--bg2); color:var(--ink); border:1px solid var(--line); }
+  .agency b { display:block; font-size:20px; } .agency span { font-size:13.5px; color:var(--muted); font-weight:600; } .agency p { margin:0; color:var(--ink2); font-size:15px; line-height:1.5; }
   @media (max-width:760px) { .agency { grid-template-columns:1fr; gap:10px; } }
-  .cta2 { background:var(--brand) !important; }
-  .cta2 p { color:#dbe6ff !important; }
-  .cta2 .btn.alt { border-color:rgba(255,255,255,.5) !important; color:#fff !important; }
+  .cta2 { background:var(--navy) !important; }
   .btn.gold { background:var(--sun) !important; border-color:var(--sun) !important; color:var(--navy) !important; }
-  .faq summary::after { color:var(--brand) !important; }
+  .faq summary::after { color:var(--muted) !important; }
   .tool input[type=checkbox] { accent-color:var(--brand); }
-  mark { background:linear-gradient(transparent 58%, rgba(255,201,60,.75) 58%, rgba(255,201,60,.75) 92%, transparent 92%); color:inherit; padding:0 .06em; }
+  mark { background:none; color:inherit; }
   .steps .i { display:inline-grid; place-items:center; width:30px !important; height:30px; border-radius:50%; background:var(--line); color:var(--muted); }
-  .steps li.on .i { background:var(--brand); color:#fff !important; }
+  .steps li.on .i { background:var(--navy); color:#fff !important; }
   .cmp th.us { background:var(--sun) !important; color:var(--navy) !important; }
   * { box-sizing:border-box; }
   html, body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:17px; line-height:1.55; -webkit-font-smoothing:antialiased; }
@@ -72,6 +70,9 @@
   .btn { display:inline-block; text-decoration:none; font-weight:700; font-size:15px; border-radius:8px; padding:12px 20px; background:var(--brand); color:var(--brand-ink); border:1px solid var(--brand); cursor:pointer; font-family:var(--body); }
   .btn:hover { filter:brightness(1.08); }
   .btn.alt { background:transparent; color:inherit; border-color:currentColor; opacity:.9; }
+  .btn:not(.alt):not(.gold) { background:var(--navy); border-color:var(--navy); color:#fff; }
+  .hero .btn:not(.alt), .cta2 .btn:not(.alt), .plan.pick .btn, .result .btn, .stick .btn { background:var(--sun) !important; border-color:var(--sun) !important; color:var(--navy) !important; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn:not(.alt):not(.gold) { background:var(--sun); border-color:var(--sun); color:var(--navy); } }
   .kicker { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.12em; color:var(--brand); margin:0 0 14px; }
 
   /* JStar AI section */
@@ -330,7 +331,7 @@
   <section class="s" id="problem"><div class="w">
     <div class="split">
       <div>
-        <h2>You're paying for <mark>six tools</mark> that don't talk to each other.</h2>
+        <h2>You're paying for six tools that don't talk to each other.</h2>
         <p class="intro">A seller fills out your form. You copy the address into your comps tool, guess at repairs, run numbers in a spreadsheet, retype it all into a contract, then write the buyer blast from scratch. Meanwhile the seller is on the phone with the next wholesaler.</p>
       </div>
     </div>
@@ -359,7 +360,7 @@
   </div></section>
 
   <section class="s" id="pricing"><div class="w">
-    <h2>Every tool on <mark>every plan.</mark></h2>
+    <h2>Every tool on every plan.</h2>
     <p class="intro">Pick by how many deals you analyze each month. Every plan starts with <b>3 days free</b>: card up front, cancel before day 3 and you pay nothing.</p>
     <div class="bill" id="billTog" role="tablist" aria-label="Billing"><button type="button" class="on" data-i="month">Monthly</button><button type="button" data-i="year">Yearly <em>2 months free</em></button></div>
     <div class="plans">
@@ -407,7 +408,7 @@
       </div>
     </div>
     <p class="planhelp">Not sure which plan fits? <a href="/support?topic=call">Talk to the founder for 15 minutes</a>. You can switch plans any time.</p>
-    <div class="agency"><div><b>Agency</b><span>Custom pricing</span></div><p>For brokerages and acquisition teams: 2,000+ deal analyses a month, up to 5 team logins, higher photo and list limits, and help setting up your funnel and ads.</p><a class="btn gold" href="/support?topic=agency">Book a call</a></div>
+    <div class="agency"><div><b>Agency</b><span>Custom pricing</span></div><p>For brokerages and acquisition teams: 2,000+ deal analyses a month, up to 5 team logins, higher photo and list limits, and help setting up your funnel and ads.</p><a class="btn alt" href="/support?topic=agency">Book a call</a></div>
     <p class="addon">Every plan includes your funnel, lead inbox, JStar AI assistant, Run an address, mortgage and equity data, batch analysis, photo estimates, skip tracing, pipeline, underwriting, checklist, contracts, buyer blasts by email and text (or through GoHighLevel), owner lists and ad tracking. During the free trial: 25 deal analyses, 10 skip traces and 3 photo estimates.</p>
     <p class="addon" style="font-size:14px;color:var(--muted)"><b>Usage limits:</b> Plan limits reset on the 1st of each month, and unused plan usage doesn't roll over. Need more mid-month? Add-on packs: +100 deal analyses $25, +25 photo estimates $15, +5,000 list records $25, +100 skip traces $25. They don't expire. Skip traces with no match are free.</p>
   </div></section>

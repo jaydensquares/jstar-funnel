@@ -4,15 +4,15 @@
   const KEY = 'jsAiChat';
   const SUGGEST = ['Who should I call today?', 'Run 1207 Shady Oaks Ln, Houston TX 77008', 'Write a first text to my newest lead', 'Which of my buyers fit my latest deal?'];
   const css = `
-  .jai-fab{position:fixed;right:22px;bottom:22px;z-index:900;display:flex;align-items:center;gap:10px;height:52px;padding:0 20px 0 16px;border:0;border-radius:999px;cursor:pointer;
-    background:linear-gradient(135deg,#2f6fed,#7a5af8);color:#fff;font:700 15px var(--body,system-ui);box-shadow:0 10px 30px rgba(47,111,237,.35),0 2px 6px rgba(16,24,40,.12);transition:transform .15s}
-  .jai-fab:hover{transform:translateY(-2px)} .jai-fab svg{width:22px;height:22px}
+  .jai-fab{position:fixed;right:22px;bottom:22px;z-index:900;display:flex;align-items:center;gap:10px;height:46px;padding:0 18px 0 14px;border:1px solid rgba(255,255,255,.08);border-radius:999px;cursor:pointer;
+    background:#0a1633;color:#fff;font:600 14.5px var(--body,system-ui);box-shadow:0 6px 18px rgba(16,24,40,.18);transition:background .12s}
+  .jai-fab:hover{background:#142a5c} .jai-fab svg{width:20px;height:20px;color:#ffc93c}
   .jai-fab.hide{display:none}
   .jai{position:fixed;z-index:950;right:16px;bottom:16px;top:16px;width:440px;max-width:calc(100vw - 32px);display:none;flex-direction:column;background:var(--card,#fff);color:var(--ink,#101828);
-    border:1px solid var(--line,#e4e7ec);border-radius:18px;box-shadow:0 24px 60px rgba(16,24,40,.22);overflow:hidden;font-family:var(--body,system-ui)}
+    border:1px solid var(--line,#e4e7ec);border-radius:12px;box-shadow:0 24px 60px rgba(16,24,40,.18);overflow:hidden;font-family:var(--body,system-ui)}
   .jai.open{display:flex;animation:jaiIn .18s ease-out}@keyframes jaiIn{from{opacity:0;transform:translateY(10px)}}
-  .jai-hd{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line,#e4e7ec);background:linear-gradient(135deg,#0a1633,#142a5c);color:#fff}
-  .jai-hd .ic{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#2f6fed,#7a5af8);display:flex;align-items:center;justify-content:center;flex:none}
+  .jai-hd{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line,#e4e7ec);background:#0a1633;color:#fff}
+  .jai-hd .ic{width:34px;height:34px;border-radius:8px;background:#ffc93c;color:#0a1633;display:flex;align-items:center;justify-content:center;flex:none}
   .jai-hd .ic svg{width:20px;height:20px}.jai-hd b{display:block;font-size:15px}.jai-hd span{font-size:12px;color:#9fb0d4}
   .jai-hd .sp{flex:1}.jai-hd button{background:rgba(255,255,255,.1);border:0;color:#fff;width:34px;height:34px;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center}
   .jai-hd button:hover{background:rgba(255,255,255,.2)}.jai-hd button svg{width:18px;height:18px}
