@@ -69,6 +69,17 @@
   .drop { display:block; border:2px dashed var(--line); border-radius:12px; padding:22px; text-align:center; color:var(--muted); font-weight:600; cursor:pointer; }
   .drop:hover { border-color:var(--brand); color:var(--brand); }
   .drop input { display:none; }
+  .arvPick { display:grid; grid-template-columns:repeat(auto-fill, minmax(84px, 1fr)); gap:8px; margin:12px 0; }
+  .arvPick button { position:relative; padding:0; border:2px solid transparent; border-radius:8px; overflow:hidden; aspect-ratio:4/3; cursor:pointer; background:var(--line2); }
+  .arvPick button img { width:100%; height:100%; object-fit:cover; display:block; }
+  .arvPick button[aria-checked=true] { border-color:var(--brand); }
+  .arvPick button b { position:absolute; left:4px; top:4px; background:rgba(10,22,51,.75); color:#fff; font-size:11px; border-radius:4px; padding:1px 5px; }
+  .ba { position:relative; margin-top:14px; border-radius:10px; overflow:hidden; background:#000; user-select:none; touch-action:pan-y; }
+  .ba img { display:block; width:100%; height:auto; }
+  .baAfter { position:absolute; inset:0; clip-path:inset(0 0 0 50%); } .baAfter img { width:100%; height:100%; object-fit:cover; }
+  .baLine { position:absolute; top:0; bottom:0; left:50%; width:3px; margin-left:-1.5px; background:#fff; box-shadow:0 0 0 1px rgba(0,0,0,.2); pointer-events:none; }
+  .baTag { position:absolute; top:10px; background:rgba(10,22,51,.78); color:#fff; font-size:12px; font-weight:700; padding:4px 8px; border-radius:6px; pointer-events:none; } .baTag.l { left:10px; } .baTag.r { right:10px; }
+  .ba input[type=range] { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:ew-resize; margin:0; }
   .thumbs { display:grid; grid-template-columns:repeat(auto-fill, minmax(92px, 1fr)); gap:8px; margin-top:12px; }
   .thumb { position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; border:1px solid var(--line); background:var(--bg); }
   .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
@@ -148,6 +159,20 @@
       <div class="note" id="rConf"></div>
       <p style="margin:12px 0 0;line-height:1.55" id="rSummary"></p>
       <p class="note" style="margin-top:8px" id="rReason"></p>
+    </section>
+    <section class="card" id="arvCard">
+      <h2>See it after repairs</h2>
+      <p class="note" style="margin-top:-4px">Pick a photo and the AI shows the same space fixed up, flip-grade. Use it to help buyers picture the ARV. It's a concept, not a promise of how the house will turn out.</p>
+      <div class="arvPick" id="arvPick" role="radiogroup" aria-label="Photo to render"></div>
+      <button class="btn sun" type="button" id="arvGo">Show after repairs</button>
+      <div class="err" id="arvErr" role="alert"></div>
+      <div id="arvOut" hidden>
+        <div class="ba" id="ba"><img id="baBefore" alt="Before"><div class="baAfter" id="baAfterWrap"><img id="baAfter" alt="After repairs, AI concept"></div><div class="baLine" id="baLine"></div>
+          <span class="baTag l">Before</span><span class="baTag r">After · AI concept</span>
+          <input type="range" id="baRange" min="0" max="100" value="50" aria-label="Slide between before and after"></div>
+        <p class="note" style="margin:8px 0 0">AI concept of possible repairs, not the actual property. Label it that way anywhere you share it.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn ghost" type="button" id="arvSave">Download with label</button><button class="btn ghost" type="button" id="arvAgain">Try again</button></div>
+      </div>
     </section>
     <section class="card"><h2>Repair estimate</h2><table class="rtbl" id="rRepairs"></table></section>
     <section class="card flag" id="flagCard"><h2>Red flags</h2><ul class="l" id="rFlags"></ul></section>
@@ -270,7 +295,48 @@
     list('rHidden', j.not_visible, 'Nothing major'); list('rQs', j.walkthrough_questions, '—');
     $('form').hidden = true; $('results').hidden = false; window.scrollTo({ top: 0, behavior: 'smooth' });
     $('useBtn').classList.add('sun');
+    arvIdx = 0; $('arvOut').hidden = true; $('arvErr').textContent = ''; drawPick();
   }
+
+
+  // ── See it after repairs: one photo → AI concept of the finished flip ──
+  let arvIdx = 0, arvBefore = null, arvAfter = null;
+  function drawPick() {
+    $('arvPick').innerHTML = photos.map((p, i) => `<button type="button" role="radio" aria-checked="${i === arvIdx}" data-i="${i}"><img src="${p.url}" alt="Photo ${i + 1}"><b>${i + 1}</b></button>`).join('');
+    $('arvPick').querySelectorAll('button').forEach(b => b.onclick = () => { arvIdx = +b.dataset.i; drawPick(); });
+  }
+  const setBa = v => { $('baAfterWrap').style.clipPath = `inset(0 0 0 ${v}%)`; $('baLine').style.left = v + '%'; };
+  $('baRange').addEventListener('input', e => setBa(e.target.value));
+  async function renderArv() {
+    const p = photos[arvIdx]; if (!p) return;
+    $('arvErr').textContent = ''; $('arvGo').disabled = true; $('arvGo').textContent = 'Rendering… about 20 to 40 seconds';
+    let img; try { img = await encode(p.file, 1536, 0.86); } catch { $('arvErr').textContent = "Couldn't read that photo. Try a JPG or PNG."; $('arvGo').disabled = false; $('arvGo').textContent = 'Show after repairs'; return; }
+    const r = await fetch('/api/render', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, photo: img, repairs: (last?.repairs || []).map(x => x.item) }) }).catch(() => null);
+    $('arvGo').disabled = false; $('arvGo').textContent = 'Show after repairs';
+    if (!r) { $('arvErr').textContent = 'Network error. Try again.'; return; }
+    if (r.status === 401) return lock('PIN expired or changed. Enter it again.');
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { $('arvErr').textContent = j.error || 'Something went wrong.'; return; }
+    arvBefore = img; arvAfter = j.image;
+    $('baBefore').src = img; $('baAfter').src = j.image; $('baRange').value = 50; setBa(50);
+    $('arvOut').hidden = false; $('arvOut').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  $('arvGo').addEventListener('click', renderArv);
+  $('arvAgain').addEventListener('click', renderArv);
+  // Download: before and after side by side, with the AI label burned in
+  $('arvSave').addEventListener('click', async () => {
+    const ld = src => new Promise((ok, bad) => { const i = new Image(); i.onload = () => ok(i); i.onerror = bad; i.src = src; });
+    const [a, b] = await Promise.all([ld(arvBefore), ld(arvAfter)]);
+    const h = 900, wa = Math.round(a.naturalWidth * h / a.naturalHeight), wb = Math.round(b.naturalWidth * h / b.naturalHeight), band = 64;
+    const c = document.createElement('canvas'); c.width = wa + wb + 12; c.height = h + band; const x = c.getContext('2d');
+    x.fillStyle = '#0a1633'; x.fillRect(0, 0, c.width, c.height);
+    x.drawImage(a, 0, 0, wa, h); x.drawImage(b, wa + 12, 0, wb, h);
+    const tag = (t, X) => { x.font = '700 26px system-ui, sans-serif'; const w = x.measureText(t).width + 24; x.fillStyle = 'rgba(10,22,51,.8)'; x.fillRect(X + 16, 16, w, 42); x.fillStyle = '#fff'; x.fillText(t, X + 28, 46); };
+    tag('Before', 0); tag('After · AI concept', wa + 12);
+    x.fillStyle = '#ffc93c'; x.font = '600 24px system-ui, sans-serif'; x.fillText('AI concept of possible repairs. Not the actual property.', 20, h + 42);
+    x.fillStyle = '#aebddc'; x.textAlign = 'right'; x.fillText('JStar Pro', c.width - 20, h + 42);
+    c.toBlob(bl => { const u = URL.createObjectURL(bl), l = document.createElement('a'); l.href = u; l.download = 'after-repairs-ai-concept.jpg'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 2000); }, 'image/jpeg', 0.9);
+  });
 
   // Send to Run deal: condition, issues and repair lines (midpoint of each range)
   $('useBtn').addEventListener('click', () => {
