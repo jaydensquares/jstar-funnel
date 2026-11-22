@@ -47,6 +47,7 @@ http.createServer(async (req, res) => {
   const pathname = decodeURIComponent(req.url.split('?')[0]);
   let file = path.join(root, pathname === '/' ? 'index.html' : pathname);
   if (!fs.existsSync(file) && fs.existsSync(file + '.html')) file += '.html'; // like Vercel cleanUrls
+  if (fs.existsSync(file) && fs.statSync(file).isDirectory() && fs.existsSync(path.join(file, 'index.html'))) file = path.join(file, 'index.html'); // directory index, like Vercel
   if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) { res.statusCode = 404; return res.end('Not found'); }
   res.setHeader('Content-Type', ({ html: 'text/html', js: 'text/javascript', mp4: 'video/mp4', jpg: 'image/jpeg', png: 'image/png', css: 'text/css' })[file.split('.').pop()] || 'text/plain');
   fs.createReadStream(file).pipe(res);
