@@ -35,6 +35,9 @@
   .pill { display:inline-block; font-size:12px; font-weight:700; padding:3px 8px; border-radius:999px; background:var(--brand-soft); color:var(--brand); }
   .pill.trial { background:transparent; color:var(--muted); border:1px solid var(--line); }
   .pill.comp { background:#f6edd8; color:#7a5a12; }
+  .costgrid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:6px; } @media (max-width:760px) { .costgrid { grid-template-columns:1fr; } }
+  .ch { font-size:13px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:6px 0 4px; }
+  td small.lo { color:var(--err); font-weight:600; } td small.okm { color:var(--ok, #067647); }
   .meter { width:90px; height:5px; background:var(--line); border-radius:3px; margin-top:5px; }
   .meter i { display:block; height:100%; background:var(--brand); border-radius:3px; }
   .meter i.hi { background:var(--err); }
@@ -86,6 +89,9 @@
         <p class="note">Calls JStar Pro made to your data providers, all accounts combined. Repeat addresses come from the 30-day cache and don't count. Set your plan sizes in Vercel with RENTCAST_MONTHLY_CALLS and REALIE_MONTHLY_CALLS.</p></section>
       <section class="card"><h2>Support messages</h2><div id="support"></div></section>
     </div>
+    <section class="card" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><h2>Costs &amp; margin this month</h2><span class="note" id="costSum"></span></div>
+      <div class="costgrid"><div id="costBreak"></div><div id="vendor"></div></div>
+      <p class="note" id="unitNote"></p></section>
     <section class="card" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap"><h2>Affiliates</h2><span class="note" id="affSums"></span></div>
       <p class="note">Pay each affiliate the "Ready" amount by their method, then hit Mark paid. Commissions sit 30 days (refund window) before they're ready. If a customer is refunded, void that line first.</p>
       <div id="affs"></div></section>
@@ -96,7 +102,7 @@
     </div>
     <div class="err" id="err" role="alert"></div>
     <div class="tbl"><table>
-      <thead><tr><th>Account</th><th>Plan</th><th>Analyses this month</th><th>Photos</th><th>Leads</th><th>Funnel / domain</th><th>Joined</th><th></th></tr></thead>
+      <thead><tr><th>Account</th><th>Plan</th><th>Analyses this month</th><th>Photos</th><th>Cost / margin</th><th>Leads</th><th>Funnel / domain</th><th>Joined</th><th></th></tr></thead>
       <tbody id="rows"></tbody>
     </table></div>
     <div class="card linkbox" id="linkbox" hidden>
@@ -133,7 +139,7 @@
   function render() {
     const q = $('q').value.trim().toLowerCase();
     const list = rows.filter(r => !q || [r.name, r.email, r.company, r.slug, r.domain?.name].join(' ').toLowerCase().includes(q));
-    if (!list.length) { $('rows').innerHTML = `<tr><td colspan="8" class="empty">${rows.length ? 'No accounts match.' : 'No accounts yet. They show up here when someone signs up.'}</td></tr>`; return; }
+    if (!list.length) { $('rows').innerHTML = `<tr><td colspan="9" class="empty">${rows.length ? 'No accounts match.' : 'No accounts yet. They show up here when someone signs up.'}</td></tr>`; return; }
     $('rows').innerHTML = list.map(r => `
       <tr class="${r.disabled ? 'off' : ''}" data-id="${esc(r.id)}">
         <td><b>${esc(r.name)}</b>${r.disabled ? ' <span class="pill trial">Disabled</span>' : ''}<small>${esc(r.email)}</small><small>${esc(r.company)}${r.phone ? ' · ' + esc(r.phone) : ''}</small></td>
@@ -141,6 +147,7 @@
           <small>${r.operator ? '<span class="pill opr">Operator · unlimited</span>' : r.paying ? `<span class="pill">Paying ${money(r.mrr)}/mo</span>` : r.comp ? '<span class="pill comp">Comped</span>' : r.tier === 'trial' ? '<span class="pill trial">Not paid</span>' : ''}</small></td>
         <td>${meter(r.usage.runs, r.limits.runs)}</td>
         <td>${meter(r.usage.photos, r.limits.photos)}</td>
+        <td>${costCell(r)}</td>
         <td>${r.leads}</td>
         <td><a href="/f/${esc(r.slug)}" target="_blank" rel="noopener">/f/${esc(r.slug)}</a>${r.domain ? `<small>${esc(r.domain.name)} · ${esc(r.domain.status || '')}</small>` : r.domainAddon ? '<small>Domain paid, not set up</small>' : ''}</td>
         <td>${date(r.createdAt)}</td>
@@ -148,10 +155,31 @@
           <button class="sbtn ${r.disabled ? '' : 'warn'}" data-act="${r.disabled ? 'enable' : 'disable'}" type="button">${r.disabled ? 'Enable' : 'Disable'}</button>${r.paying || r.operator ? '' : '<button class="sbtn warn" data-act="delete" type="button" title="Permanently delete this account and all its data">Delete</button>'}</div></td>
       </tr>`).join('');
   }
+  const usd2 = n => '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const KL = { runs: 'Deal analyses', photos: 'Photo reports', renders: 'After-repair renders', listCalls: 'List pages (500 records)', skips: 'Skip trace hits', agent: 'JStar AI messages' };
+  function costCell(r) {
+    const c = r.cost, tip = Object.entries(c.parts).filter(([, v]) => v > 0).map(([k, v]) => `${KL[k]} ${usd2(v)}`).concat(c.stripe ? [`Stripe ${usd2(c.stripe)}`] : [], c.affiliate ? [`Affiliate ${usd2(c.affiliate)}`] : []).join(' · ') || 'No usage yet';
+    const m = c.margin == null ? '' : `<small class="${c.margin < 50 ? 'lo' : 'okm'}">${c.margin}% margin · ${usd2(c.profit)} profit</small>`;
+    return `<span title="${esc(tip)}">${usd2(c.cost)}</span>${m}`;
+  }
+  function costs(t, v, units) {
+    $('costSum').textContent = t.margin == null ? `Est. cost ${usd2(t.cost)} · no paying revenue yet` : `Revenue ${money(t.mrr)} · est. cost ${usd2(t.cost)} · profit ${usd2(t.profit)} · ${t.margin}% margin`;
+    const row = (a, b, sub) => `<div class="drow"><div><b>${a}</b>${sub ? `<small>${sub}</small>` : ''}</div><div class="dnum">${b}</div></div>`;
+    $('costBreak').innerHTML = '<h3 class="ch">Per account (from plan usage)</h3>'
+      + row('Data &amp; AI', usd2(t.dataCost), 'Every account\'s usage × the unit costs below')
+      + row('Stripe fees', usd2(t.stripe), '2.9% + $0.30 per paying account')
+      + row('Affiliate commissions', usd2(t.affiliate), '30% of referred customers, first 12 months')
+      + row('<span style="color:var(--ink)">Total cost</span>', `<b>${usd2(t.cost)}</b>`)
+      + row('Gross profit', `<b>${usd2(t.profit)}</b>`, t.margin == null ? '' : `${t.margin}% of ${money(t.mrr)} revenue`);
+    const vc = v?.cur || { lines: [], total: 0 }, vl = v?.last || { total: 0 };
+    $('vendor').innerHTML = '<h3 class="ch">Vendor calls (from the meters)</h3>' + vc.lines.map(l => row(l.name, usd2(l.amount), esc(l.sub))).join('')
+      + row('Total', `<b>${usd2(vc.total)}</b>`, `Last month ${usd2(vl.total)}. Includes your own and operator use, which plan usage doesn't bill.`);
+    $('unitNote').textContent = 'Unit costs used: ' + Object.entries(units || {}).map(([k, n]) => `${KL[k]} $${n}`).join(' · ') + '. Estimates at published vendor prices, before your fixed plan fees (RentCast, Realie, Vercel). Change any in Vercel with COST_RUNS, COST_SKIPS, etc.';
+  }
   function stats(t) {
     $('stats').innerHTML = [
       [money(t.mrr), 'Monthly revenue'], [t.accounts, 'Accounts'], [t.paying, 'Paying'], [t.trial, 'No plan yet'],
-      [t.runs, 'Analyses this month'], [t.photos, 'Photo reports this month'], [t.leads, 'Funnel leads, all time'], [t.comp, 'Comped'],
+      [usd2(t.cost), 'Est. costs this month'], [t.margin == null ? 'n/a' : t.margin + '%', 'Gross margin'], [t.runs, 'Analyses this month'], [t.leads, 'Funnel leads, all time'],
     ].map(([b, s]) => `<div><b>${esc(b)}</b><span>${s}</span></div>`).join('');
   }
   function dataUse(d) {
@@ -175,7 +203,7 @@
     $('refresh').disabled = false;
     if (r.status === 401) { sessionStorage.removeItem('jsPin'); $('dash').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'Wrong PIN.'; return false; }
     if (!r.ok) { $('err').textContent = r.j.error || 'Could not load.'; return true; }
-    rows = r.j.rows; stats(r.j.totals); render(); dataUse(r.j.data); support(r.j.support || []); loadAffs();
+    rows = r.j.rows; stats(r.j.totals); render(); dataUse(r.j.data); costs(r.j.totals, r.j.vendor, r.j.units); support(r.j.support || []); loadAffs();
     $('asof').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
     return true;
   }

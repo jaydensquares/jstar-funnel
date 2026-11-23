@@ -5,6 +5,7 @@ import { getUserById, getUserByEmail, getUserBySlug, saveUser, resetToken, sha, 
 import crypto from 'node:crypto';
 import { PLANS, DOMAIN_ADDON_PRICE, tierOf } from '../lib/plan.js';
 import { meterKey, allowances } from '../lib/meter.js';
+import { accountCost, vendorSpend, unitCosts, KINDS } from '../lib/costs.js';
 import { getAff, saveAff, totals, payOut, publicAff } from '../lib/affiliate.js';
 
 export const maxDuration = 60;
@@ -15,13 +16,14 @@ const slow = () => new Promise(r => setTimeout(r, 800));
 function row(u, usage, leads) {
   const tier = tierOf(u);
   const paying = !!u.stripeSubId && tier !== 'trial';
+  const mrr = (paying ? PLANS[tier].price : 0) + (u.plan?.domainSubId && u.plan?.customDomain ? DOMAIN_ADDON_PRICE : 0);
   return {
     id: u.id, name: u.name, email: u.email, company: u.company || '', slug: u.slug, phone: u.phone || '',
     createdAt: u.createdAt, disabled: !!u.disabled, tier, comp: !!u.plan?.comp, paying, operator: !!u.operator,
     domainAddon: !!u.plan?.customDomain, domain: u.domain ? { name: u.domain.name, status: u.domain.status } : null,
-    usage: { runs: usage?.runs || 0, photos: usage?.photos || 0, listCalls: usage?.listCalls || 0 }, limits: PLANS[tier].limits,
-    leads,
-    mrr: (paying ? PLANS[tier].price : 0) + (u.plan?.domainSubId && u.plan?.customDomain ? DOMAIN_ADDON_PRICE : 0),
+    usage: Object.fromEntries(KINDS.map(k => [k, usage?.[k] || 0])), limits: PLANS[tier].limits,
+    leads, mrr,
+    cost: accountCost(usage || {}, mrr, u),
   };
 }
 
@@ -50,10 +52,14 @@ export default async function handler(req, res) {
         photos: rows.reduce((s, r) => s + r.usage.photos, 0),
         leads: rows.reduce((s, r) => s + r.leads, 0),
       };
+      const sum = k => Math.round(rows.reduce((s, r) => s + r.cost[k], 0) * 100) / 100;
+      totals.cost = sum('cost'); totals.dataCost = sum('data'); totals.stripe = sum('stripe'); totals.affiliate = sum('affiliate');
+      totals.profit = Math.round((totals.mrr - totals.cost) * 100) / 100;
+      totals.margin = totals.mrr > 0 ? Math.round(totals.profit / totals.mrr * 100) : null;
       const prev = new Date(); prev.setUTCDate(1); prev.setUTCMonth(prev.getUTCMonth() - 1);
       const [cur, last] = await Promise.all([getDoc(meterKey(m)).catch(() => null), getDoc(meterKey(prev.toISOString().slice(0, 7).replace('-', ''))).catch(() => null)]);
       const support = (await listDocs('support').catch(() => [])).sort((a, z) => z.at - a.at).slice(0, 10);
-      return res.status(200).json({ rows, totals, month: m, data: { cur: cur || {}, last: last || {}, allow: allowances() }, support });
+      return res.status(200).json({ rows, totals, month: m, data: { cur: cur || {}, last: last || {}, allow: allowances() }, vendor: { cur: vendorSpend(cur || {}), last: vendorSpend(last || {}) }, units: unitCosts(), support });
     }
 
     // Affiliates: who's owed what, mark payouts sent, void a refunded line, ban
