@@ -9,6 +9,7 @@ import { PACKS, PLANS, PAID, TRIAL_DAYS, TRIAL_LIMITS } from '../lib/plan.js';
 import { addCredits } from '../lib/usage.js';
 import { recordCommission, AFF } from '../lib/affiliate.js';
 import { layout, p as P, small, button, rows, callout, esc as E } from '../lib/email.js';
+import { checkTrialCheckout } from '../lib/trialguard.js';
 const APP = 'https://getjstarpro.com/app';
 
 // past_due stays on while Smart Retries work; unpaid / canceled / incomplete turn it off
@@ -66,8 +67,26 @@ export default async function handler(req, res) {
       if (uid && feature === 'plan' && PAID.includes(tier)) {
         const trial = o.metadata?.trial === '1', trialEnd = trial ? Date.now() + TRIAL_DAYS * 864e5 : null;
         await setPlan(uid, { tier, interval: o.metadata?.interval || 'month', trialEnd }, { stripeCustomerId: o.customer, stripeSubId: o.subscription, ...(trial ? { trialUsed: true } : {}), ...(o.discounts?.length || o.total_details?.amount_discount ? { refUsed: true } : {}) });
+        // One free trial per person: a card or name + billing address that already had one cancels this trial (no charge)
+        let blocked = null;
+        if (trial && o.subscription) {
+          try { const g = await checkTrialCheckout(await getUserById(uid), o.subscription); if (g.blocked) blocked = g; }
+          catch (e) { console.error('trial guard', e.status || '', e.message); }
+        }
+        if (blocked) {
+          const b = await getUserById(uid);
+          await saveUser({ ...b, trialUsed: true, trialBlocked: { at: Date.now(), reason: blocked.reason, other: blocked.otherUid }, stripeSubId: null, plan: { ...(b.plan || {}), tier: 'trial', trialEnd: null } });
+          const first = (b.name || '').split(' ')[0] || 'there';
+          await sendPlainEmail(b.email, 'About your JStar Pro free trial',
+            `Hi ${first},\n\nThe free trial is one per person, and that ${blocked.reason} has already been used for a JStar Pro trial, so we canceled this one. You haven't been charged.\n\nYou can still start any plan right away from Plan & account: ${APP}#account\n\nIf you think this is a mistake, reply to this email or reach us at https://getjstarpro.com/support\n\nJStar Pro`,
+            layout({ preheader: "The free trial is one per person. You haven't been charged.", eyebrow: 'Free trial', title: 'Your free trial was already used',
+              body: P(`The free trial is one per person, and that ${E(blocked.reason)} has already been used for a JStar Pro trial, so we canceled this one. <b>You haven't been charged.</b>`)
+                + P('You can still start any plan right away, and every tool unlocks as soon as it\'s active.') + button(`${APP}#account`, 'Choose a plan')
+                + small('Think this is a mistake? Reply to this email or reach us at <a href="https://getjstarpro.com/support" style="color:#2f6fed">getjstarpro.com/support</a>.'),
+              footer: 'You received this email because you started a JStar Pro checkout.' })).catch(e => console.error('trial blocked email', e.message));
+        }
         // Welcome email, once per account
-        const w = await getUserById(uid);
+        const w = blocked ? null : await getUserById(uid);
         if (w && !w.welcomed) {
           await saveUser({ ...w, welcomed: Date.now() });
           const pl = PLANS[tier], L = trial ? Object.fromEntries(Object.entries(pl.limits).map(([k, v]) => [k, Math.min(v, TRIAL_LIMITS[k] ?? v)])) : pl.limits, first = (w.name || '').split(' ')[0] || 'there', funnel = `https://getjstarpro.com/f/${w.slug}`;

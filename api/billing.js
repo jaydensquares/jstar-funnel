@@ -1,5 +1,6 @@
 // Stripe Checkout (plans and the custom-domain add-on) and the Stripe customer portal (switch plan, card, invoices, cancel).
 import { currentUser, saveUser } from '../lib/auth.js';
+import { usedBy, identityKeys } from '../lib/trialguard.js';
 import { tierOf, PLANS, PACKS, isActive, SELF_SERVE, TRIAL_DAYS } from '../lib/plan.js';
 import crypto from 'node:crypto';
 import { getDoc } from '../lib/db.js';
@@ -60,8 +61,9 @@ export default async function handler(req, res) {
       const offer = firstPlan && interval === 'month' && !u.referredBy && u.email
         ? await getDoc(`offer/${crypto.createHash('sha256').update(String(u.email).toLowerCase()).digest('hex').slice(0, 32)}`).catch(() => null) : null;
       // First plan ever: 3-day free trial, card collected up front, first charge when the trial ends
-      const trial = feature === 'plan' && !u.stripeSubId && !u.trialUsed;
-      if (trial) Object.assign(params, { 'subscription_data[trial_period_days]': String(TRIAL_DAYS), 'metadata[trial]': '1', payment_method_collection: 'always' });
+      // ...one per person: no trial if this email (Gmail dots/+tags ignored) or phone already had one. The webhook also checks the card and billing address.
+      const trial = feature === 'plan' && !u.stripeSubId && !u.trialUsed && !(await usedBy(identityKeys(u), u.id).catch(() => null));
+      if (trial) Object.assign(params, { 'subscription_data[trial_period_days]': String(TRIAL_DAYS), 'metadata[trial]': '1', payment_method_collection: 'always', billing_address_collection: 'required' });
       // With a trial, the first-month coupons repeat for 1 month so they land on the first paid invoice, not the $0 trial one
       if (firstPlan && u.referredBy && interval === 'month') params['discounts[0][coupon]'] = trial ? 'jstarpro-ref-50-t' : 'jstarpro-ref-50';
       else if (offer && Date.now() - offer.at < 60 * 864e5) params['discounts[0][coupon]'] = trial ? 'jstarpro-first-25-t' : 'jstarpro-first-25';
