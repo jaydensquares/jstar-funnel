@@ -354,3 +354,40 @@ details.full[open] > summary { margin-bottom:12px; }
   .ctab td.lnk { grid-column:2 / 4; text-align:left; margin-top:6px; } .ctab td.lnk a { margin:0 16px 0 0; } }
 
 .jk-darkmap .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(.9) saturate(.6)}
+
+/* ── Phones: bottom tab bar + More sheet (replaces the two sideways strips of links) ── */
+.tabbar, .moresheet { display:none; }
+@media (max-width:900px) {
+  .side nav.snav, .side .foot.snav { display:none !important; }
+  .side { padding:10px 16px; flex-wrap:nowrap; }
+  .side .brandbox { padding-bottom:0; }
+  body.shell main.page, .page { padding-bottom:calc(96px + env(safe-area-inset-bottom, 0px)) !important; }
+  .tabbar { position:fixed; left:0; right:0; bottom:0; z-index:850; display:grid; grid-auto-flow:column; grid-auto-columns:1fr; align-items:end;
+    background:color-mix(in srgb, var(--card) 94%, transparent); backdrop-filter:saturate(1.4) blur(12px); -webkit-backdrop-filter:saturate(1.4) blur(12px);
+    border-top:1px solid var(--line); padding:6px 4px calc(6px + env(safe-area-inset-bottom, 0px)); }
+  .tabbar a, .tabbar button { display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0 4px; min-height:50px; justify-content:center; border:0; background:none; cursor:pointer;
+    color:var(--muted); text-decoration:none; font:600 11px var(--body); }
+  .tabbar svg { width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .tabbar a.on { color:var(--brand); }
+  .tabbar a.run svg { width:24px; height:24px; padding:9px; box-sizing:content-box; border-radius:14px; background:var(--navy, #0a1633); color:#ffc93c; margin-top:-18px; box-shadow:0 6px 16px rgba(10,22,51,.3); }
+  .tabbar a.run span { margin-top:-1px; }
+  .tabbar .acct-only { display:none; } body.acct .tabbar .acct-only { display:flex; }
+  .moresheet { display:block; position:fixed; inset:0; z-index:950; background:rgba(6,12,28,0); transition:background .2s; }
+  .moresheet.in { background:rgba(6,12,28,.5); }
+  .moresheet .ms { position:absolute; left:0; right:0; bottom:0; background:var(--card); border-radius:18px 18px 0 0; padding:8px 12px calc(16px + env(safe-area-inset-bottom, 0px));
+    transform:translateY(100%); transition:transform .22s ease-out; max-height:80vh; overflow:auto; }
+  .moresheet.in .ms { transform:none; }
+  .moresheet .grab { width:40px; height:5px; border-radius:3px; background:var(--line); margin:4px auto 10px; }
+  .moresheet a { display:flex; align-items:center; gap:14px; padding:14px 10px; border-radius:10px; color:var(--ink); text-decoration:none; font:600 16px var(--body); }
+  .moresheet a + a { border-top:1px solid var(--line2); }
+  .moresheet a:active { background:var(--bg); }
+  .moresheet svg { width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; color:var(--muted); flex:none; }
+  .jai-fab { bottom:calc(84px + env(safe-area-inset-bottom, 0px)) !important; }
+}
+@media (prefers-reduced-motion: reduce) { .moresheet, .moresheet .ms { transition:none; } }
+@media (max-width:900px) {
+  .tabbar a, .tabbar button, body.acct .tabbar .acct-only { flex-direction:column !important; }
+  .topbar .sp { display:none; }
+  .topbar .cmd { max-width:none; }
+}
+@media (max-width:900px) { body.acct .tabbar a.acct-only, body.acct .tabbar a.acct-only.on { display:flex !important; } }

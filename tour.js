@@ -1,5 +1,5 @@
 // Welcome walkthrough for new paying accounts: a welcome screen, then a spotlight tour of the sidebar,
-// then a "Getting started" checklist on the Leads page. Replay any time from the sidebar.
+// then a "Getting started" checklist on the Leads page (only the steps still to do). Replay any time from the account menu.
 (() => {
   const css = `
   .tw-veil { position:fixed; inset:0; z-index:1000; pointer-events:auto; }
@@ -176,7 +176,7 @@
     if (n === items.length || store.get('jsGsHide:' + c.user.id)) { host.innerHTML = ''; return; }
     host.innerHTML = `<section class="gs" id="gsCard"><div class="gs-top"><b>Getting started</b><span>${n} of ${items.length} done <button class="gs-x" type="button" id="gsHide">Hide</button></span></div>
       <div class="gs-bar"><i style="width:${n / items.length * 100}%"></i></div>
-      <ul>${items.map(x => `<li class="${x.done ? 'done' : ''}"><span class="ck"></span><span class="gt">${esc(x.t)}<small>${esc(x.d)}</small></span>${x.done ? '' : `<a href="${esc(x.href)}"${x.ext ? ' target="_blank" rel="noopener"' : ''}>${esc(x.a)}</a>`}</li>`).join('')}</ul></section>`;
+      <ul>${items.filter(x => !x.done).map(x => `<li class="${x.done ? 'done' : ''}"><span class="ck"></span><span class="gt">${esc(x.t)}<small>${esc(x.d)}</small></span>${x.done ? '' : `<a href="${esc(x.href)}"${x.ext ? ' target="_blank" rel="noopener"' : ''}>${esc(x.a)}</a>`}</li>`).join('')}</ul></section>`;
     host.querySelector('#gsHide').onclick = () => { store.set('jsGsHide:' + c.user.id, '1'); host.innerHTML = ''; };
   }
 

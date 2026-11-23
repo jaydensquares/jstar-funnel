@@ -241,6 +241,8 @@
     ['Photo estimate', '/photos', 'camera', 'Repair budget from photos'], ['Owner lists', '/list', 'pin', 'Pull, save and stack owner lists'], ['Driving for dollars', '/drive', 'camera', 'Snap a house, see the owner, run the numbers'],
     ['Funnel & business', '/app#funnel', 'funnel', 'Your funnel link and details'], ['Plan & account', '/app#account', 'user', 'Billing, usage, password'],
   ];
+  const NAV_HTML = "<a class=\"acct-only\" href=\"/app#leads\" data-t=\"leads\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 13h5l2 3h4l2-3h5\"/><path d=\"M5.5 5h13L21 13v6H3v-6z\"/></svg>Leads</a><a href=\"/underwriting\" data-p=\"deals\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3\" y=\"7\" width=\"18\" height=\"13\" rx=\"2\"/><path d=\"M8.5 7V4.5h7V7\"/><path d=\"M3 12.5h18\"/></svg>Deals</a><a class=\"acct-only\" href=\"/app#buyers\" data-t=\"buyers\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2.5 20c1-3.5 3.5-5.5 6.5-5.5s5.5 2 6.5 5.5\"/><path d=\"M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5c1.6.8 2.6 2.6 3 5.5\"/></svg>Buyers</a><span class=\"sh\">Analyze</span><a href=\"/operator\" data-p=\"run\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"7\"/><path d=\"M20 20l-4-4\"/></svg>Run an address</a><a href=\"/batch\" data-p=\"batch\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M9 6h12M9 12h12M9 18h12\"/><path d=\"M4 6h.01M4 12h.01M4 18h.01\"/></svg>Batch</a><a href=\"/photos\" data-p=\"photos\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 8h3l2-3h6l2 3h3v11H4z\"/><circle cx=\"12\" cy=\"13\" r=\"3.5\"/></svg>Photo estimate</a><a href=\"/list\" data-p=\"lists\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z\"/><circle cx=\"12\" cy=\"10\" r=\"2.5\"/></svg>Owner lists</a><a href=\"/drive\" data-p=\"drive\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5 17h14M6 17l1.5-5h9L18 17\"/><path d=\"M7.5 12l1.5-4h6l1.5 4\"/><circle cx=\"8\" cy=\"18.5\" r=\"1.5\"/><circle cx=\"16\" cy=\"18.5\" r=\"1.5\"/></svg>Driving for dollars</a><span class=\"sh acct-only\">Funnel</span><a class=\"acct-only\" href=\"/app#funnel\" data-t=\"funnel\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 5h18l-7 8v6l-4-2v-4z\"/></svg>Funnel &amp; business</a><a class=\"acct-only\" href=\"/app#ads\" data-t=\"ads\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"8\"/><circle cx=\"12\" cy=\"12\" r=\"3\"/></svg>Ad tracking</a><a class=\"acct-only\" href=\"/app#domain\" data-t=\"domain\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18\"/></svg>Domain</a>";
+  const FOOT_HTML = "<a href=\"/app#affiliate\" data-t=\"affiliate\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2v20M17 6.5c0-1.9-2.2-3.5-5-3.5s-5 1.6-5 3.5S9.2 10 12 10.5s5 1.6 5 3.5-2.2 3.5-5 3.5-5-1.6-5-3.5\"/></svg>Earn 30%</a><a class=\"acct-only\" href=\"/app#account\" data-t=\"account\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"8\" r=\"4\"/><path d=\"M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6\"/></svg>Plan &amp; account</a><a class=\"acct-only\" href=\"/support\" data-p=\"support\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.7M12 17h.01\"/></svg>Support</a>";
   let me = null, leadCache = null;
   const greet = () => { const h = new Date().getHours(); return h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening'; };
   K.greet = greet;
@@ -248,6 +250,14 @@
   function shell() {
     const side = document.querySelector('.side'), main = document.querySelector('main.page');
     if (!side || !main) return;
+    // One sidebar for every page (app.html is the source; tool pages used to carry their own, slightly different copies)
+    if (!location.pathname.startsWith('/app')) {
+      const nv = side.querySelector('nav.snav'), ft = side.querySelector('.foot.snav'), here = location.pathname.replace(/\.html$/, '').replace(/^\//, '');
+      const key = { underwriting: 'deals', operator: 'run', batch: 'batch', photos: 'photos', list: 'lists', drive: 'drive' }[here];
+      if (nv) nv.innerHTML = NAV_HTML; if (ft) ft.innerHTML = FOOT_HTML;
+      side.querySelectorAll(`a[data-p="${key}"]`).forEach(a => a.classList.add('on'));
+    }
+    tabbar(side);
     const bb = side.querySelector('.brandbox');
     // Phones: the nav is a sideways strip, so bring the current page into view
     const navTo = () => { const nav = side.querySelector('nav.snav'), on = nav?.querySelector('a.on'); if (nav && on && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = Math.max(0, on.getBoundingClientRect().left - nav.getBoundingClientRect().left + nav.scrollLeft - 24); };
@@ -264,9 +274,31 @@
       document.getElementById('jkAva').onclick = e => { e.stopPropagation(); menu(); };
     }
   }
+
+  // Phones: a bottom tab bar (Leads, Deals, Run, Buyers, More) replaces the two sideways strips of links
+  function tabbar(side) {
+    if (document.querySelector('.tabbar')) return;
+    const path = location.pathname.replace(/\.html$/, ''), hash = location.hash.replace('#', '').split('/')[0] || 'leads';
+    const isOn = k => (k === 'leads' && path === '/app' && hash === 'leads') || (k === 'buyers' && path === '/app' && hash === 'buyers') || (k === 'deals' && path === '/underwriting') || (k === 'run' && path === '/operator');
+    const T = [['leads', 'Leads', '/app#leads', 'inbox', 'acct-only'], ['deals', 'Deals', '/underwriting', 'deal', ''], ['run', 'Run', '/operator', 'search', ''], ['buyers', 'Buyers', '/app#buyers', 'user', 'acct-only']];
+    document.body.insertAdjacentHTML('beforeend', `<nav class="tabbar" aria-label="Main">${T.map(([k, n, h, ic, c]) => `<a href="${h}" data-k="${k}" class="${c} ${isOn(k) ? 'on' : ''}${k === 'run' ? ' run' : ''}">${svg(ic)}<span>${n}</span></a>`).join('')}<button type="button" id="jkMore">${svg('rows')}<span>More</span></button></nav>`);
+    const upd = () => { const hh = location.hash.replace('#', '').split('/')[0] || 'leads'; document.querySelectorAll('.tabbar a').forEach(a => { const k = a.dataset.k; a.classList.toggle('on', (k === 'leads' && path === '/app' && hh === 'leads') || (k === 'buyers' && path === '/app' && hh === 'buyers') || (k === 'deals' && path === '/underwriting') || (k === 'run' && path === '/operator')); }); };
+    window.addEventListener('hashchange', upd);
+    document.getElementById('jkMore').onclick = () => {
+      if (document.querySelector('.moresheet')) return;
+      const links = [...side.querySelectorAll('nav.snav a, .foot.snav a')].filter(a => !a.hidden && getComputedStyle(a).display !== 'none' && !['/app#leads', '/underwriting', '/operator', '/app#buyers'].includes(a.getAttribute('href')));
+      const back = document.createElement('div'); back.className = 'moresheet';
+      back.innerHTML = `<div class="ms" role="dialog" aria-label="More"><div class="grab"></div>${links.map(a => `<a href="${a.getAttribute('href')}">${a.querySelector('svg')?.outerHTML || ''}<span>${a.textContent.trim()}</span></a>`).join('')}<a href="/app?tour=1#leads">${svg('star')}<span>Take the tour</span></a></div>`;
+      document.body.appendChild(back); requestAnimationFrame(() => back.classList.add('in'));
+      const close = () => { back.classList.remove('in'); setTimeout(() => back.remove(), 200); };
+      back.addEventListener('click', e => { if (e.target === back || e.target.closest('a')) close(); });
+      document.addEventListener('keydown', function esc(e) { if (e.key === 'Escape') { close(); document.removeEventListener('keydown', esc); } });
+    };
+  }
   function menu() {
     const host = document.getElementById('jkAva').parentElement, ex = host.querySelector('.menu'); if (ex) { ex.remove(); return; }
-    host.insertAdjacentHTML('beforeend', `<div class="menu">${me ? `<div class="mwho"><b>${esc(me.user.name)}</b>${esc(me.user.email)}</div>` : ''}<a href="/app#account">Plan &amp; account</a><a href="/app#funnel">Funnel &amp; business</a><a href="/support">Support</a>${me ? '<button type="button" id="jkOut">Log out</button>' : ''}</div>`);
+    host.insertAdjacentHTML('beforeend', `<div class="menu">${me ? `<div class="mwho"><b>${esc(me.user.name)}</b>${esc(me.user.email)}</div>` : ''}<a href="/app#account">Plan &amp; account</a><a href="/app#funnel">Funnel &amp; business</a><a href="/app?tour=1#leads" id="jkTour">Take the tour</a><a href="/support">Support</a>${me ? '<button type="button" id="jkOut">Log out</button>' : ''}</div>`);
+    const tr = document.getElementById('jkTour'), rp = document.getElementById('replayTour'); if (tr && rp) tr.onclick = e => { e.preventDefault(); host.querySelector('.menu')?.remove(); rp.click(); };
     const out = document.getElementById('jkOut'); if (out) out.onclick = async () => { await fetch('/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"action":"logout"}' }).catch(() => {}); location.href = '/login'; };
     setTimeout(() => document.addEventListener('click', function off(e) { if (!e.target.closest('.menu')) { host.querySelector('.menu')?.remove(); document.removeEventListener('click', off); } }), 0);
   }
