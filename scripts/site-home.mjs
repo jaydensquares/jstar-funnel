@@ -208,7 +208,7 @@ ${finalCta('Get your funnel live today.', 'Sign up, add your business name and p
     image: '/media/vsl.jpg',
     extraHead: faqLd + `<style>
   .offer[hidden] { display:none; }
-  .offer { position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:20px; background:rgba(6,12,28,.62); }
+  .offer { position:fixed; inset:0; z-index:60; display:grid; place-items:center; padding:20px; background:rgba(17,17,17,.62); }
   .offer .box { position:relative; width:100%; max-width:440px; max-height:calc(100vh - 40px); overflow:auto; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:12px; padding:28px 24px 22px; box-shadow:0 24px 60px rgba(0,0,0,.35); }
   .offer h2 { font-size:28px; } .offer h2 b { color:var(--brand); }
   .offer p { margin:8px 0 16px; color:var(--muted); font-size:15px; }

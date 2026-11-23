@@ -85,9 +85,9 @@ export default async function handler(req, res) {
             `Hi ${first},\n\n${trial ? `Your 3-day free trial of JStar Pro ${pl.name} has started. Your first charge is on ${endTxt}, and you can cancel any time before then from Plan & account.` : `You're on JStar Pro ${pl.name}.`} Your seller funnel is live at ${funnel}.\n\nGet set up in 3 steps:\n1. Add your logo, phone and service area: ${APP}#funnel\n2. Point your ads or mailers at your funnel link.\n3. Run your first address: https://getjstarpro.com/operator\n\nQuestions? https://getjstarpro.com/support\n\nJStar Pro`,
             layout({ preheader: trial ? `Your 3-day free trial has started and your seller funnel is live.` : `Your ${pl.name} plan is active and your seller funnel is live.`, eyebrow: trial ? `${pl.name} plan · free trial until ${endTxt}` : `${pl.name} plan · active`, title: `Welcome to JStar Pro, ${E(first)}`,
               body: P(trial ? `Your free trial is on and your seller funnel is already live. You won't be charged until <b>${E(endTxt)}</b>, and you can cancel any time before then from Plan &amp; account. Trial limits are below; your full plan limits unlock with the first payment.` : `Your plan is active and your seller funnel is already live. Here's how to get your first deal moving.`)
-                + rows([['Your funnel', `<a href="${funnel}" style="color:#2f6fed;text-decoration:none">${E(funnel.replace('https://', ''))}</a>`], ['Deal analyses', `${L.runs.toLocaleString()} / month`], ['Skip traces', `${L.skips} / month`], ['Photo estimates', `${L.photos} / month`]])
+                + rows([['Your funnel', `<a href="${funnel}" style="color:#111111;text-decoration:none">${E(funnel.replace('https://', ''))}</a>`], ['Deal analyses', `${L.runs.toLocaleString()} / month`], ['Skip traces', `${L.skips} / month`], ['Photo estimates', `${L.photos} / month`]])
                 + P(`<b>1.&nbsp; Brand your funnel.</b> Add your logo, phone number and service area so sellers know who they're talking to.<br><b>2.&nbsp; Send it traffic.</b> Point your ads, mailers or texts at your funnel link. Every lead lands with the math done.<br><b>3.&nbsp; Run your first address.</b> Comps, ARV, repairs, mortgage and your max offer in about 10 seconds.`)
-                + button(`${APP}#leads`, 'Open JStar Pro') + small('Questions or need a hand setting up? Reach us any time at <a href="https://getjstarpro.com/support" style="color:#2f6fed">getjstarpro.com/support</a>.'),
+                + button(`${APP}#leads`, 'Open JStar Pro') + small('Questions or need a hand setting up? Reach us any time at <a href="https://getjstarpro.com/support" style="color:#111111">getjstarpro.com/support</a>.'),
               footer: 'You received this email because you started a JStar Pro subscription.' })).catch(e => console.error('welcome email', e.message));
         }
       }
@@ -125,7 +125,7 @@ export default async function handler(req, res) {
             layout({ preheader: `${u.company || u.name} joined through your link. $${amt} credit added.`, eyebrow: 'Referral reward', title: `You earned $${amt} off your next bill`,
               body: P(`Hi ${E(rf)},`) + P(`<b>${E(u.company || u.name)}</b> just became a paying JStar Pro customer through your referral link. Thank you for spreading the word.`)
                 + rows([['Credit added', `<span style="color:#067647">$${amt}.00</span>`], ['Applied to', 'Your next invoice'], ['Total referrals paid', String((fresh.refStats?.paid || 0) + 1)]])
-                + callout(`Every referral earns another 50% off a month. Share your link: <a href="https://getjstarpro.com/?ref=${E(r.slug)}" style="color:#2f6fed">getjstarpro.com/?ref=${E(r.slug)}</a>`, 'ok')
+                + callout(`Every referral earns another 50% off a month. Share your link: <a href="https://getjstarpro.com/?ref=${E(r.slug)}" style="color:#111111">getjstarpro.com/?ref=${E(r.slug)}</a>`, 'ok')
                 + button(`${APP}#account`, 'View your referrals'),
               footer: 'You received this email because someone signed up with your JStar Pro referral link.' })).catch(() => {});
         }

@@ -19,7 +19,7 @@ export const ICON = {
   play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l15 8-15 8z"/></svg>',
   check: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l2.8 2.8 6.2-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
-const FAVICON = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#ffc93c"/><path transform="translate(4 4)" fill="#0a1633" d="M12 2.5l2.9 6.2 6.6.7-5 4.5 1.4 6.6L12 17.2l-5.9 3.3 1.4-6.6-5-4.5 6.6-.7z"/></svg>')}`;
+const FAVICON = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#ffc93c"/><path transform="translate(4 4)" fill="#0a0a0a" d="M12 2.5l2.9 6.2 6.6.7-5 4.5 1.4 6.6L12 17.2l-5.9 3.3 1.4-6.6-5-4.5 6.6-.7z"/></svg>')}`;
 
 export const TRIAL = '/signup?plan=pro';
 export const url = slug => `/features/${slug}`;
@@ -41,7 +41,7 @@ function head({ title, desc, canonical, image = '/media/vsl.jpg', extra = '' }) 
 <meta property="og:url" content="${ORIGIN}${canonical}">
 <meta property="og:image" content="${ORIGIN}${image}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#0a1633">
+<meta name="theme-color" content="#0a0a0a">
 <link rel="icon" href="${FAVICON}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -34,15 +34,15 @@
   const svg = K.svg = (n, cls = '') => `<svg viewBox="0 0 24 24" class="${cls}" aria-hidden="true">${I[n] || ''}</svg>`;
 
   // ── Small visuals ──
-  const PAL = ['#3d5a80', '#52606d', '#2f6b55', '#8a5a44', '#7c6a2e', '#2e6a8a', '#6b5478']; // muted, solid
+  const PAL = ['#5e5e5e', '#606060', '#2f6b55', '#8a5a44', '#7c6a2e', '#111111', '#6b5478']; // muted, solid
   const hash = s => [...String(s)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
   K.initials = n => String(n || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0] || '').join('').toUpperCase() || '?';
   K.avatar = (name, cls = '') => { const a = PAL[hash(name) % PAL.length]; return `<span class="av ${cls}" style="background:${a}">${esc(K.initials(name))}</span>`; };
-  const LCOL = { HOT: '#f04438', WARM: '#f79009', COLD: '#98a2b3' };
-  K.labelColor = l => LCOL[l] || '#98a2b3';
+  const LCOL = { HOT: '#f04438', WARM: '#f79009', COLD: '#a5a5a5' };
+  K.labelColor = l => LCOL[l] || '#a5a5a5';
 
   // Progress ring; frac 0..1. The arc animates in when K.animate(root) runs.
-  K.ring = (frac, { size = 40, stroke = 4, color = '#2f6fed', track = 'var(--line2)', text = '', cls = '', grad } = {}) => {
+  K.ring = (frac, { size = 40, stroke = 4, color = '#111111', track = 'var(--line2)', text = '', cls = '', grad } = {}) => {
     const r = (size - stroke) / 2, c = 2 * Math.PI * r, off = c * (1 - Math.max(0, Math.min(1, frac || 0)));
     const gid = grad ? 'g' + Math.random().toString(36).slice(2, 8) : '';
     return `<span class="ring ${cls}" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}">${grad ? `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${grad[0]}"/><stop offset="1" stop-color="${grad[1]}"/></linearGradient></defs>` : ''}
@@ -52,7 +52,7 @@
   K.scoreRing = (score, label, size = 40) => score == null ? '<span class="note">n/a</span>'
     : K.ring(Math.min(1, score / 12), { size, stroke: size > 60 ? 8 : 4, color: K.labelColor(label), text: score, cls: size > 60 ? 'lg' : '' });
 
-  K.spark = (vals, { w = 96, h = 30, color = '#2f6fed' } = {}) => {
+  K.spark = (vals, { w = 96, h = 30, color = '#111111' } = {}) => {
     if (!vals?.length) return '';
     const mx = Math.max(1, ...vals), st = w / Math.max(1, vals.length - 1);
     const pts = vals.map((v, i) => [i * st, h - 3 - (v / mx) * (h - 6)]);
@@ -91,7 +91,7 @@
     if (reduce) return;
     const cv = document.createElement('canvas'), dpr = devicePixelRatio || 1; cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4000';
     document.body.appendChild(cv); const W = cv.width = innerWidth * dpr, H = cv.height = innerHeight * dpr, x = cv.getContext('2d');
-    const C = ['#2f6fed', '#ffc93c', '#12b76a', '#f04438', '#7a5af8', '#36bffa'];
+    const C = ['#111111', '#ffc93c', '#12b76a', '#f04438', '#7a5af8', '#36bffa'];
     const ps = Array.from({ length: 160 }, () => ({ x: W / 2 + (Math.random() - .5) * W * .3, y: H * .35, vx: (Math.random() - .5) * 26 * dpr, vy: (-Math.random() * 22 - 8) * dpr, r: (4 + Math.random() * 5) * dpr, c: C[Math.random() * C.length | 0], a: Math.random() * 6, va: (Math.random() - .5) * .4 }));
     let f = 0; const tick = () => { x.clearRect(0, 0, W, H); ps.forEach(p => { p.vy += .9 * dpr; p.vx *= .985; p.x += p.vx; p.y += p.vy; p.a += p.va; x.save(); x.translate(p.x, p.y); x.rotate(p.a); x.fillStyle = p.c; x.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); x.restore(); }); if (++f < 140) requestAnimationFrame(tick); else cv.remove(); };
     tick();
@@ -118,16 +118,16 @@
     const m = b.mortgage || null, out = [];
     const reasons = (b.reasons || []).map(r => `<span class="${/over MAO|above your max|Payoff/i.test(r) ? 'bad' : /Pre-foreclosure|auction|High equity|Free & clear|ASAP|≤ MAO/i.test(r) ? 'good' : ''}">${esc(r)}</span>`).join('');
     out.push(`<section class="snapcard hero"><div class="hgrid">
-      <div style="position:relative">${K.ring(Math.min(1, (b.score || 0) / 12), { size: 112, stroke: 10, track: 'rgba(255,255,255,.12)', grad: b.label === 'HOT' ? ['#ffb020', '#ff4d2e'] : b.label === 'WARM' ? ['#ffe08a', '#f79009'] : ['#c7d2e6', '#8a9ab8'], text: b.score ?? '–', cls: 'lg' })}<small style="position:absolute;left:0;right:0;bottom:22px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.08em;color:#c6d3f2">${esc(b.label || '')}</small></div>
+      <div style="position:relative">${K.ring(Math.min(1, (b.score || 0) / 12), { size: 112, stroke: 10, track: 'rgba(255,255,255,.12)', grad: b.label === 'HOT' ? ['#ffb020', '#ff4d2e'] : b.label === 'WARM' ? ['#ffe08a', '#f79009'] : ['#d6d6d6', '#a1a1a1'], text: b.score ?? '–', cls: 'lg' })}<small style="position:absolute;left:0;right:0;bottom:22px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.08em;color:#dcdcdc">${esc(b.label || '')}</small></div>
       <div><div class="lbl">${esc(title)}</div>
         <div class="big">${b.mao ? `<span data-count="${b.opening || b.mao}" data-fmt="money">$0</span> <small>to</small> <span data-count="${b.mao}" data-fmt="money">$0</span>` : '<small>No offer: thin comps or missing square feet</small>'}</div>
         <div class="nums">${[['ARV', b.value], ['Repairs', b.repairs], ['Asking', b.asking], ['Owed', m && !m.freeClear ? m.balance : null]].filter(x => x[1] != null).map(([k, v]) => `<div><b data-count="${v}" data-fmt="money">$0</b><span>${k}</span></div>`).join('')}</div>
-        ${sub ? `<div style="margin-top:10px;font-size:13.5px;color:#c6d3f2">${esc(sub)}</div>` : ''}
+        ${sub ? `<div style="margin-top:10px;font-size:13.5px;color:#dcdcdc">${esc(sub)}</div>` : ''}
       </div></div>${reasons ? `<div class="reasons">${reasons}</div>` : ''}</section>`);
 
     if (b.mao && b.value) {
       const fee = b.fee || 10000, buyer = b.buyerPrice || b.mao + fee, owed = m && !m.freeClear ? m.balance : null;
-      const marks = [['Owed', owed, '#f04438', 'Estimated mortgage payoff'], ['Asking', b.asking, '#f79009', 'What the seller asked for'], ['Opening', b.opening, '#32d583', 'Where to start the conversation'], ['Max offer', b.mao, '#0e9f6e', 'Highest you should sign at'], ['Buyer price', buyer, '#2f6fed', 'What a cash buyer pays you'], ['ARV', b.value, '#667085', 'Value after repairs']].filter(x => x[1]);
+      const marks = [['Owed', owed, '#f04438', 'Estimated mortgage payoff'], ['Asking', b.asking, '#f79009', 'What the seller asked for'], ['Opening', b.opening, '#32d583', 'Where to start the conversation'], ['Max offer', b.mao, '#0e9f6e', 'Highest you should sign at'], ['Buyer price', buyer, '#111111', 'What a cash buyer pays you'], ['ARV', b.value, '#767676', 'Value after repairs']].filter(x => x[1]);
       const lo = Math.min(...marks.map(x => x[1])) * .85, hi = Math.max(...marks.map(x => x[1])) * 1.03, pos = v => ((v - lo) / (hi - lo) * 100).toFixed(2) + '%';
       const smin = Math.round((b.opening || b.mao) * .85 / 500) * 500, smax = Math.round(Math.max(buyer, b.mao * 1.05) / 500) * 500;
       out.push(`<section class="snapcard" data-ladder='${esc(JSON.stringify({ buyer, owed, asking: b.asking || null, value: b.value, mao: b.mao, fee }))}'>
@@ -207,7 +207,7 @@
     return `<svg class="chart" viewBox="0 0 ${W} ${H}">
       ${ticks(4).map(v => `<line class="ax" x1="${P.l}" x2="${W - P.r}" y1="${Y(v)}" y2="${Y(v)}" stroke-dasharray="3 4"/><text x="${P.l - 8}" y="${Y(v) + 4}" text-anchor="end">${K.k(v)}</text>`).join('')}
       <text x="${W - P.r}" y="${H - 6}" text-anchor="end">square feet →</text>
-      ${b.value ? `<line x1="${P.l}" x2="${W - P.r}" y1="${Y(b.value)}" y2="${Y(b.value)}" stroke="#2f6fed" stroke-width="1.5" stroke-dasharray="6 5"/><text x="${W - P.r}" y="${Y(b.value) - 6}" text-anchor="end" style="fill:#2f6fed;font-weight:700">ARV ${K.k(b.value)}</text>` : ''}
+      ${b.value ? `<line x1="${P.l}" x2="${W - P.r}" y1="${Y(b.value)}" y2="${Y(b.value)}" stroke="#111111" stroke-width="1.5" stroke-dasharray="6 5"/><text x="${W - P.r}" y="${Y(b.value) - 6}" text-anchor="end" style="fill:#111111;font-weight:700">ARV ${K.k(b.value)}</text>` : ''}
       <line x1="${X(b.sqft)}" x2="${X(b.sqft)}" y1="${P.t}" y2="${H - P.b}" stroke="#7a5af8" stroke-width="1.5" stroke-dasharray="4 4"/><text x="${X(b.sqft) + (X(b.sqft) > W * .6 ? -5 : 5)}" y="${P.t + 10}" text-anchor="${X(b.sqft) > W * .6 ? 'end' : 'start'}" style="fill:#7a5af8;font-weight:700">This house ${b.sqft.toLocaleString()} sf</text>
       ${cs.map(c => `<circle class="pt" cx="${X(c.sqft)}" cy="${Y(c.price)}" r="6" fill="${c.sold ? '#12b76a' : '#f79009'}" fill-opacity=".85" stroke="#fff" stroke-width="2" data-tip="<b>${esc(c.a)}</b><br>${$$(c.price)} · ${c.sqft.toLocaleString()} sf · $${c.ppsf || Math.round(c.price / c.sqft)}/sf<br>${c.mi != null ? c.mi + ' mi · ' : ''}${c.sold ? 'Sold' : 'Listed'}"/>`).join('')}
       <circle cx="${P.l + 4}" cy="${H - 10}" r="4" fill="#12b76a"/><text x="${P.l + 12}" y="${H - 6}">Sold</text><circle cx="${P.l + 52}" cy="${H - 10}" r="4" fill="#f79009"/><text x="${P.l + 60}" y="${H - 6}">Listed</text>
@@ -304,7 +304,7 @@
   }
   function meterbox(u) {
     const foot = document.querySelector('.side .foot'); if (!foot || !u?.limits || document.querySelector('.meterbox')) return;
-    if (u.operator) { foot.insertAdjacentHTML('beforebegin', `<a class="meterbox" href="/app#account"><span class="ring" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#ffd666,#ffb020);color:#0a1633;font:800 18px var(--body)">∞</span><div><b>Operator</b><small>Unlimited · ${(u.runs || 0).toLocaleString()} analyses this month</small></div></a>`); return; }
+    if (u.operator) { foot.insertAdjacentHTML('beforebegin', `<a class="meterbox" href="/app#account"><span class="ring" style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#ffd666,#ffb020);color:#0a0a0a;font:800 18px var(--body)">∞</span><div><b>Operator</b><small>Unlimited · ${(u.runs || 0).toLocaleString()} analyses this month</small></div></a>`); return; }
     const lim = u.limits.runs || 0, used = u.runs || 0, extra = u.credits?.runs || 0, left = Math.max(0, lim - used) + extra;
     foot.insertAdjacentHTML('beforebegin', `<a class="meterbox" href="/app#account">${K.ring(lim ? Math.max(0, lim - used) / lim : 0, { size: 38, stroke: 4, track: 'rgba(255,255,255,.12)', grad: ['#ffd666', '#ffb020'] })}<div><b>${left.toLocaleString()} analyses left</b><small>${used.toLocaleString()} of ${lim.toLocaleString()} used this month</small></div></a>`);
     K.animate(document.querySelector('.meterbox'));

@@ -9,17 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy:#0c1a33; --bg:#f4f6fa; --card:#fff; --ink:#0f1729; --muted:#5b6578; --line:#e0e5ee; --input:#fff;
-    --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#ebf0fa; --gold:#c6a052; --err:#b42318;
+    --navy:#111111; --bg:#f7f7f7; --card:#fff; --ink:#111111; --muted:#6a6a6a; --line:#e7e7e7; --input:#fff;
+    --brand:#111111; --brand-ink:#fff; --brand-soft:#f2f2f2; --gold:#c6a052; --err:#b42318;
     --display:'Inter','Helvetica Neue',Arial,sans-serif; --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
   }
   @media (prefers-color-scheme: dark) { :root {
-    --bg:#0d121c; --card:#151c2a; --ink:#eef2f8; --muted:#98a3b5; --line:#273148; --input:#111827;
-    --brand:#4f7fe0; --brand-soft:#1a2640; --err:#ff8a7a; color-scheme: dark; } }
+    --bg:#141414; --card:#202020; --ink:#f3f3f3; --muted:#a6a6a6; --line:#383838; --input:#1c1c1c;
+    --brand:#111111; --brand-soft:#2d2d2d; --err:#ff8a7a; color-scheme: dark; } }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; -webkit-font-smoothing:antialiased; }
-  header { background:var(--navy); color:#f2f5fb; padding-block:16px; }
+  header { background:var(--navy); color:#f6f6f6; padding-block:16px; }
   .wrap { max-width:760px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
   header .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; }
   .logo { font-family:var(--display); font-weight:700; text-decoration:none; color:inherit; }
@@ -59,7 +59,7 @@
   .sheet > div { padding:0 !important; background:transparent !important; }
   .tenant { border:1px dashed var(--line); border-radius:10px; padding:4px 12px 12px; margin-top:10px; }
   @media (max-width:380px) { .row3 { grid-template-columns:1fr 1fr; } }
-  .nav a { color:#c3cde0; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
+  .nav a { color:#d2d2d2; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
   .nav a.on { color:var(--gold); }
   .stat { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
   .stat div { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
@@ -71,20 +71,20 @@
   .drop input { display:none; }
   .arvPick { display:grid; grid-template-columns:repeat(auto-fill, minmax(84px, 1fr)); gap:8px; margin:12px 0; }
   .arvPick button { position:relative; padding:0; border:2px solid transparent; border-radius:8px; overflow:hidden; aspect-ratio:4/3; cursor:pointer; background:var(--line2); }
-  .arvPick button img { width:100%; height:100%; object-fit:contain; display:block; background:#0a1633; }
+  .arvPick button img { width:100%; height:100%; object-fit:contain; display:block; background:#0a0a0a; }
   .arvPick button[aria-checked=true] { border-color:var(--brand); }
-  .arvPick button b { position:absolute; left:4px; top:4px; background:rgba(10,22,51,.75); color:#fff; font-size:11px; border-radius:4px; padding:1px 5px; }
-  .ba { position:relative; margin-top:14px; border-radius:10px; overflow:hidden; background:#0a1633; user-select:none; touch-action:pan-y; width:100%; aspect-ratio:4/3; max-height:78vh; }
+  .arvPick button b { position:absolute; left:4px; top:4px; background:rgba(30,30,30,.75); color:#fff; font-size:11px; border-radius:4px; padding:1px 5px; }
+  .ba { position:relative; margin-top:14px; border-radius:10px; overflow:hidden; background:#0a0a0a; user-select:none; touch-action:pan-y; width:100%; aspect-ratio:4/3; max-height:78vh; }
   .ba > img, .baAfter img { position:absolute; inset:0; display:block; width:100%; height:100%; object-fit:contain; }
   .baAfter { position:absolute; inset:0; clip-path:inset(0 0 0 50%); }
   .baLine { position:absolute; top:0; bottom:0; left:50%; width:3px; margin-left:-1.5px; background:#fff; box-shadow:0 0 0 1px rgba(0,0,0,.2); pointer-events:none; }
-  .baTag { position:absolute; top:10px; background:rgba(10,22,51,.78); color:#fff; font-size:12px; font-weight:700; padding:4px 8px; border-radius:6px; pointer-events:none; } .baTag.l { left:10px; } .baTag.r { right:10px; }
+  .baTag { position:absolute; top:10px; background:rgba(30,30,30,.78); color:#fff; font-size:12px; font-weight:700; padding:4px 8px; border-radius:6px; pointer-events:none; } .baTag.l { left:10px; } .baTag.r { right:10px; }
   .ba input[type=range] { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:ew-resize; margin:0; }
   .thumbs { display:grid; grid-template-columns:repeat(auto-fill, minmax(92px, 1fr)); gap:8px; margin-top:12px; }
   .thumb { position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; border:1px solid var(--line); background:var(--bg); }
   .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
-  .thumb b { position:absolute; left:6px; top:6px; background:rgba(12,26,51,.8); color:#fff; font-size:11px; padding:2px 6px; border-radius:6px; }
-  .thumb button { position:absolute; right:4px; top:4px; width:26px; height:26px; border-radius:50%; border:0; background:rgba(12,26,51,.8); color:#fff; font-size:15px; cursor:pointer; line-height:1; }
+  .thumb b { position:absolute; left:6px; top:6px; background:rgba(32,32,32,.8); color:#fff; font-size:11px; padding:2px 6px; border-radius:6px; }
+  .thumb button { position:absolute; right:4px; top:4px; width:26px; height:26px; border-radius:50%; border:0; background:rgba(32,32,32,.8); color:#fff; font-size:15px; cursor:pointer; line-height:1; }
   .pill { display:inline-block; font-size:12px; font-weight:800; letter-spacing:.06em; padding:4px 10px; border-radius:999px; background:var(--brand-soft); color:var(--brand); text-transform:uppercase; }
   .big { font-family:var(--display); font-size:28px; letter-spacing:-.02em; margin:6px 0 2px; }
   .rtbl { width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums; }
@@ -285,7 +285,7 @@
       $('pHero').innerHTML = `<section class="snapcard hero rise" style="margin-bottom:16px"><div class="hgrid" style="grid-template-columns:1fr">
         <div><div class="lbl">Estimated repairs · ${esc(j.confidence)} confidence</div><div class="big"><span data-count="${j.total.low}" data-fmt="money">$0</span> <small>to</small> <span data-count="${j.total.high}" data-fmt="money">$0</span></div>
         <div class="condm">${LV.map((k, i) => `<span class="${i === li ? 'on' : i < li ? 'past' : ''}">${COND[k]}</span>`).join('')}</div>
-        <div style="margin-top:12px;font-size:14px;color:#dbe4f7;line-height:1.55">${esc(j.summary)}</div>
+        <div style="margin-top:12px;font-size:14px;color:#e9e9e9;line-height:1.55">${esc(j.summary)}</div>
         <div class="hthumbs">${photos.slice(0, 12).map((p, i) => `<span><img src="${p.url}" alt=""><b>${i + 1}</b></span>`).join('')}</div></div></div></section>`;
       $('pBasic').hidden = true; J.animate($('pHero'));
     }
@@ -330,12 +330,12 @@
     const [a, b] = await Promise.all([ld(arvBefore), ld(arvAfter)]);
     const h = 900, wa = Math.round(a.naturalWidth * h / a.naturalHeight), wb = Math.round(b.naturalWidth * h / b.naturalHeight), band = 64;
     const c = document.createElement('canvas'); c.width = wa + wb + 12; c.height = h + band; const x = c.getContext('2d');
-    x.fillStyle = '#0a1633'; x.fillRect(0, 0, c.width, c.height);
+    x.fillStyle = '#0a0a0a'; x.fillRect(0, 0, c.width, c.height);
     x.drawImage(a, 0, 0, wa, h); x.drawImage(b, wa + 12, 0, wb, h);
-    const tag = (t, X) => { x.font = '700 26px system-ui, sans-serif'; const w = x.measureText(t).width + 24; x.fillStyle = 'rgba(10,22,51,.8)'; x.fillRect(X + 16, 16, w, 42); x.fillStyle = '#fff'; x.fillText(t, X + 28, 46); };
+    const tag = (t, X) => { x.font = '700 26px system-ui, sans-serif'; const w = x.measureText(t).width + 24; x.fillStyle = 'rgba(30,30,30,.8)'; x.fillRect(X + 16, 16, w, 42); x.fillStyle = '#fff'; x.fillText(t, X + 28, 46); };
     tag('Before', 0); tag('After · AI concept', wa + 12);
     x.fillStyle = '#ffc93c'; x.font = '600 24px system-ui, sans-serif'; x.fillText('AI concept of possible repairs. Not the actual property.', 20, h + 42);
-    x.fillStyle = '#aebddc'; x.textAlign = 'right'; x.fillText('JStar Pro', c.width - 20, h + 42);
+    x.fillStyle = '#b8b8b8'; x.textAlign = 'right'; x.fillText('JStar Pro', c.width - 20, h + 42);
     c.toBlob(bl => { const u = URL.createObjectURL(bl), l = document.createElement('a'); l.href = u; l.download = 'after-repairs-ai-concept.jpg'; document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(u), 2000); }, 'image/jpeg', 0.9);
   });
 

@@ -9,17 +9,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy:#0c1a33; --bg:#f4f6fa; --card:#fff; --ink:#0f1729; --muted:#5b6578; --line:#e0e5ee; --input:#fff;
-    --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#ebf0fa; --gold:#c6a052; --err:#b42318;
+    --navy:#111111; --bg:#f7f7f7; --card:#fff; --ink:#111111; --muted:#6a6a6a; --line:#e7e7e7; --input:#fff;
+    --brand:#111111; --brand-ink:#fff; --brand-soft:#f2f2f2; --gold:#c6a052; --err:#b42318;
     --display:'Inter','Helvetica Neue',Arial,sans-serif; --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
   }
   @media (prefers-color-scheme: dark) { :root {
-    --bg:#0d121c; --card:#151c2a; --ink:#eef2f8; --muted:#98a3b5; --line:#273148; --input:#111827;
-    --brand:#4f7fe0; --brand-soft:#1a2640; --err:#ff8a7a; color-scheme: dark; } }
+    --bg:#141414; --card:#202020; --ink:#f3f3f3; --muted:#a6a6a6; --line:#383838; --input:#1c1c1c;
+    --brand:#111111; --brand-soft:#2d2d2d; --err:#ff8a7a; color-scheme: dark; } }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; -webkit-font-smoothing:antialiased; }
-  header { background:var(--navy); color:#f2f5fb; padding-block:16px; }
+  header { background:var(--navy); color:#f6f6f6; padding-block:16px; }
   .wrap { max-width:760px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
   header .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; }
   .logo { font-family:var(--display); font-weight:700; text-decoration:none; color:inherit; }
@@ -59,7 +59,7 @@
   .sheet > div { padding:0 !important; background:transparent !important; }
   .tenant { border:1px dashed var(--line); border-radius:10px; padding:4px 12px 12px; margin-top:10px; }
   @media (max-width:380px) { .row3 { grid-template-columns:1fr 1fr; } }
-  .nav a { color:#c3cde0; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
+  .nav a { color:#d2d2d2; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
   .nav a.on { color:var(--gold); }
   .stat { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
   .stat div { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px; }
@@ -122,7 +122,7 @@
   .dlist input { width:17px; height:17px; accent-color:var(--brand); flex:none; }
   .dmode { display:inline-flex; gap:4px; padding:4px; margin:12px 0 2px; border:1px solid var(--line); border-radius:10px; }
   .dmode button { border:0; background:transparent; color:var(--muted); font:600 14px var(--body); padding:7px 16px; border-radius:7px; cursor:pointer; min-height:36px; }
-  .dmode button[aria-pressed=true] { background:var(--brand); color:#fff; }
+  .dmode button[aria-pressed=true] { background:var(--brand); color:var(--brand-ink); }
   .dlist label.done { opacity:.55; } .dlist label .sent { margin-left:auto; white-space:nowrap; font-size:11.5px; font-weight:700; color:var(--muted); }
   #dTNext { text-align:center; }
   .ghl { margin-top:14px; padding:14px; border:1px solid var(--line); border-radius:12px; font-size:14px; }
@@ -366,7 +366,7 @@
   const setView = v => { view = v; try { localStorage.setItem('jsDealView', v); } catch {} $('viewTog').querySelectorAll('button').forEach(b => { b.classList.toggle('on', b.dataset.v === v); }); renderList(); };
   if (J) $('viewTog').querySelectorAll('button').forEach(b => { b.innerHTML = J.svg(b.dataset.v === 'board' ? 'board' : 'rows') + b.textContent; b.onclick = () => setView(b.dataset.v); });
   $('viewTog').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === view));
-  const SCOL = { lead: '#98a2b3', offer: '#2f6fed', contract: '#7a5af8', assigned: '#f79009', closed: '#12b76a', dead: '#d0d5dd' };
+  const SCOL = { lead: '#a5a5a5', offer: '#111111', contract: '#7a5af8', assigned: '#f79009', closed: '#12b76a', dead: '#d6d6d6' };
   // Kanban: drag a card to another column to change its status
   function renderBoard() {
     const fee = d => d.numbers?.assignmentFee || 0;

@@ -28,7 +28,7 @@
   .dacts { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:14px; } .dacts .btn { width:100%; } .dacts .wide { grid-column:1 / -1; }
   #dmap { height:300px; border-radius:12px; overflow:hidden; border:1px solid var(--line); z-index:0; }
   .dlist { margin-top:10px; display:grid; gap:6px; } .dlist div { display:flex; gap:10px; align-items:center; font-size:13.5px; } .dlist img { width:44px; height:34px; object-fit:cover; border-radius:6px; } .dlist small { color:var(--muted); }
-  .cpin { width:26px; height:26px; border-radius:50%; background:var(--c); color:#fff; font:800 12px/22px var(--body); text-align:center; border:2px solid #fff; box-shadow:0 2px 8px rgba(10,22,51,.35); }
+  .cpin { width:26px; height:26px; border-radius:50%; background:var(--c); color:#fff; font:800 12px/22px var(--body); text-align:center; border:2px solid #fff; box-shadow:0 2px 8px rgba(30,30,30,.35); }
   @media (max-width:640px) { .kv2 { grid-template-columns:repeat(2, 1fr); } }
 </style>
 <link rel="stylesheet" href="/ui.css">
@@ -182,7 +182,7 @@
     if (!L) { $('dmap').hidden = true; return; }
     if (!map) { map = L.map('dmap', { scrollWheelZoom: false }); JK.tiles(L, map); }
     if (layer) layer.remove(); layer = L.layerGroup().addTo(map);
-    pts.forEach((r, i) => L.marker([r.lat, r.lng], { icon: L.divIcon({ className: '', html: `<div class="cpin" style="--c:${(r.dtags || []).length >= 2 ? '#d92d20' : '#2f6fed'}">${i + 1}</div>`, iconSize: [26, 26], iconAnchor: [13, 13] }) }).addTo(layer)
+    pts.forEach((r, i) => L.marker([r.lat, r.lng], { icon: L.divIcon({ className: '', html: `<div class="cpin" style="--c:${(r.dtags || []).length >= 2 ? '#d92d20' : '#111111'}">${i + 1}</div>`, iconSize: [26, 26], iconAnchor: [13, 13] }) }).addTo(layer)
       .bindPopup(`${r.photo ? `<img src="${r.photo}" style="width:180px;border-radius:8px;display:block;margin-bottom:6px">` : ''}<b>${esc(r.addr)}</b><br>${esc(r.owner || '')}<br><small>${esc((r.dtags || []).join(', '))}</small>`));
     map.fitBounds(pts.map(r => [r.lat, r.lng]), { padding: [30, 30], maxZoom: 17 });
   }

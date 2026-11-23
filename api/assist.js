@@ -49,7 +49,7 @@ async function ask(system, user, maxTokens = 700) {
 }
 const json = t => { const m = String(t).match(/\{[\s\S]*\}/); try { return m ? JSON.parse(m[0]) : null; } catch { return null; } };
 
-const page = (ok, msg) => `<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>Email preferences</title><body style="font-family:system-ui;max-width:480px;margin:80px auto;padding:0 20px;color:#1d2433"><h1 style="font-size:22px">${ok ? "You're unsubscribed" : 'That link didn’t work'}</h1><p>${esc(msg)}</p></body>`;
+const page = (ok, msg) => `<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><title>Email preferences</title><body style="font-family:system-ui;max-width:480px;margin:80px auto;padding:0 20px;color:#282828"><h1 style="font-size:22px">${ok ? "You're unsubscribed" : 'That link didn’t work'}</h1><p>${esc(msg)}</p></body>`;
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
@@ -114,7 +114,7 @@ Return only JSON: {"read": "...", "replies": [{"label": "Hold the number", "text
       const subject = str(b.subject, 140) || 'About your property', body = str(b.body, 3000); if (body.length < 5) return res.status(400).json({ error: 'Write the email first.' });
       const unsub = `https://${process.env.PUBLIC_HOST || 'getjstarpro.com'}/api/assist?u=${fuToken(actor.scope, lead.id)}`, addr = [biz.company, settings.address].filter(Boolean).join(' · ');
       await sendPlainEmail(lead.lead.email, subject, `${body}\n\n—\n${addr}\nUnsubscribe: ${unsub}`,
-        `<div style="font:15px/1.6 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#1d2433;max-width:560px">${esc(body).replace(/\n/g, '<br>')}<p style="margin-top:28px;font-size:12px;color:#8a93a3">${esc(addr)}<br><a href="${esc(unsub)}" style="color:#8a93a3">Unsubscribe</a></p></div>`,
+        `<div style="font:15px/1.6 -apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#282828;max-width:560px">${esc(body).replace(/\n/g, '<br>')}<p style="margin-top:28px;font-size:12px;color:#8a93a3">${esc(addr)}<br><a href="${esc(unsub)}" style="color:#8a93a3">Unsubscribe</a></p></div>`,
         settings.notifyEmail || u.email, biz.company);
       const ev = { at: Date.now(), kind: 'email', outcome: 'emailed', note: subject };
       const next = await putDoc(k, { ...lead, status: lead.status === 'new' ? 'contacted' : lead.status, activity: [ev, ...(lead.activity || [])].slice(0, 100), lastContactAt: ev.at, updatedAt: Date.now() });

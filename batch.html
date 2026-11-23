@@ -9,24 +9,24 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy:#0c1a33; --bg:#f4f6fa; --card:#fff; --ink:#0f1729; --muted:#5b6578; --line:#e0e5ee; --input:#fff;
-    --brand:#1a3f8f; --brand-ink:#fff; --brand-soft:#ebf0fa; --gold:#c6a052; --err:#b42318;
-    --hot:#b42318; --hot-bg:#fdecea; --warm:#9a6200; --warm-bg:#fff4dc; --cold:#3d5a8a; --cold-bg:#eaf0f9;
+    --navy:#111111; --bg:#f7f7f7; --card:#fff; --ink:#111111; --muted:#6a6a6a; --line:#e7e7e7; --input:#fff;
+    --brand:#111111; --brand-ink:#fff; --brand-soft:#f2f2f2; --gold:#c6a052; --err:#b42318;
+    --hot:#b42318; --hot-bg:#fdecea; --warm:#9a6200; --warm-bg:#fff4dc; --cold:#646464; --cold-bg:#f2f2f2;
     --display:'Inter','Helvetica Neue',Arial,sans-serif; --body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
   }
   @media (prefers-color-scheme: dark) { :root {
-    --bg:#0d121c; --card:#151c2a; --ink:#eef2f8; --muted:#98a3b5; --line:#273148; --input:#111827;
-    --brand:#4f7fe0; --brand-soft:#1a2640; --err:#ff8a7a;
-    --hot:#ff8a7a; --hot-bg:#3a1a1a; --warm:#f0c060; --warm-bg:#33280f; --cold:#9db8e8; --cold-bg:#1a2640; color-scheme: dark; } }
+    --bg:#141414; --card:#202020; --ink:#f3f3f3; --muted:#a6a6a6; --line:#383838; --input:#1c1c1c;
+    --brand:#111111; --brand-soft:#2d2d2d; --err:#ff8a7a;
+    --hot:#ff8a7a; --hot-bg:#3a1a1a; --warm:#f0c060; --warm-bg:#33280f; --cold:#c2c2c2; --cold-bg:#2d2d2d; color-scheme: dark; } }
   * { box-sizing: border-box; }
   [hidden] { display: none !important; }
   body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--body); font-size:16px; -webkit-font-smoothing:antialiased; }
-  header { background:var(--navy); color:#f2f5fb; padding-block:16px; }
+  header { background:var(--navy); color:#f6f6f6; padding-block:16px; }
   .wrap { max-width:980px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
   header .wrap { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
   .logo { font-family:var(--display); font-weight:700; text-decoration:none; color:inherit; }
   .logo span { color:var(--gold); }
-  .nav a { color:#c3cde0; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
+  .nav a { color:#d2d2d2; text-decoration:none; font-size:14px; font-weight:600; margin-left:14px; }
   .nav a.on { color:var(--gold); }
   main { padding-block:20px 60px; }
   .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:14px; }

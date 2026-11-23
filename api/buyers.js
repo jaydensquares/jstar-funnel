@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     let ok = false;
     try { const raw = Buffer.from(p, 'base64url').toString(); if (s && sig(raw) === s) { const [scope, id] = raw.split('|'); const k = `${col(scope)}/${id}`; const d = ID.test(id) && await getDoc(k); if (d) { await putDoc(k, { ...d, unsub: true, updatedAt: Date.now() }); ok = true; } } } catch {}
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.status(ok ? 200 : 400).send(`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><body style="font-family:system-ui;max-width:480px;margin:80px auto;padding:0 20px;color:#101828"><h1 style="font-size:22px">${ok ? 'You\'re unsubscribed' : 'That link didn\'t work'}</h1><p>${ok ? 'You won\'t get deal emails from this buyers list anymore.' : 'Reply to the email you got and ask to be removed.'}</p></body>`);
+    return res.status(ok ? 200 : 400).send(`<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><body style="font-family:system-ui;max-width:480px;margin:80px auto;padding:0 20px;color:#1c1c1c"><h1 style="font-size:22px">${ok ? 'You\'re unsubscribed' : 'That link didn\'t work'}</h1><p>${ok ? 'You won\'t get deal emails from this buyers list anymore.' : 'Reply to the email you got and ask to be removed.'}</p></body>`);
   }
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST only' });
   const b = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {});
@@ -152,7 +152,7 @@ export default async function handler(req, res) {
               + (note ? callout(esc(note).replace(/\n/g, '<br>'), 'info') : '')
               + P(`Reply to this email${biz.phone ? ` or call <b>${esc(biz.phone)}</b>` : ''} to lock it up. First come, first served.`)
               + (replyTo ? button(`mailto:${replyTo}?subject=${encodeURIComponent('Re: ' + subject)}`, "I'm interested") : ''),
-            footer: `${esc(biz.company || '')}${mailAddr ? '<br>' + esc(mailAddr) : ''}<br>You're receiving this because you're on our cash buyers list. <a href="${unsub}" style="color:#98a2b3;text-decoration:underline">Unsubscribe</a>` }),
+            footer: `${esc(biz.company || '')}${mailAddr ? '<br>' + esc(mailAddr) : ''}<br>You're receiving this because you're on our cash buyers list. <a href="${unsub}" style="color:#a5a5a5;text-decoration:underline">Unsubscribe</a>` }),
         };
       };
       let sent = 0, failed = 0;

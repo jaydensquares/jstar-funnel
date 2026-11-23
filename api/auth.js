@@ -116,7 +116,7 @@ export default async function handler(req, res) {
       if (to) await sendPlainEmail(to, `[JStar Pro support] ${topic}: ${name}`,
         `${message}\n\nFrom: ${name} <${email}>${me ? `\nAccount: ${me.company} (${me.plan?.tier || 'no plan'})` : ''}\nTopic: ${topic}\nReply to this email to answer them.`,
         layout({ preheader: message.slice(0, 120), eyebrow: 'Support request', title: E(topic),
-          body: rows([['From', E(name)], ['Email', `<a href="mailto:${E(email)}" style="color:#2f6fed;text-decoration:none">${E(email)}</a>`], ['Account', me ? E(`${me.company} · ${me.plan?.tier || 'no plan'}`) : 'Not logged in'], ['Received', new Date().toLocaleString('en-US', { timeZone: 'America/Chicago', dateStyle: 'medium', timeStyle: 'short' }) + ' CT']])
+          body: rows([['From', E(name)], ['Email', `<a href="mailto:${E(email)}" style="color:#111111;text-decoration:none">${E(email)}</a>`], ['Account', me ? E(`${me.company} · ${me.plan?.tier || 'no plan'}`) : 'Not logged in'], ['Received', new Date().toLocaleString('en-US', { timeZone: 'America/Chicago', dateStyle: 'medium', timeStyle: 'short' }) + ' CT']])
             + callout(E(message).replace(/\n/g, '<br>'), 'info') + small('Reply to this email to answer them directly.') }),
         email).catch(e => console.error('support email', e.message));
       return res.status(200).json({ ok: true });
@@ -142,7 +142,7 @@ export default async function handler(req, res) {
       if (to && !had) await sendPlainEmail(to, `[JStar Pro lead] 25% off popup: ${name}`,
         `New lead from the sales-page popup.\n\nName: ${name}\nPhone: ${phone}\nEmail: ${email}\n\nThey agreed to be called or texted. They get 25% off their first month when they sign up with this email.`,
         layout({ preheader: `${name} · ${phone}`, eyebrow: 'New lead', title: '25% off popup',
-          body: rows([['Name', E(name)], ['Phone', `<a href="tel:${E(phone.replace(/[^\d+]/g, ''))}" style="color:#2f6fed;text-decoration:none">${E(phone)}</a>`], ['Email', `<a href="mailto:${E(email)}" style="color:#2f6fed;text-decoration:none">${E(email)}</a>`], ['Received', new Date().toLocaleString('en-US', { timeZone: 'America/Chicago', dateStyle: 'medium', timeStyle: 'short' }) + ' CT']])
+          body: rows([['Name', E(name)], ['Phone', `<a href="tel:${E(phone.replace(/[^\d+]/g, ''))}" style="color:#111111;text-decoration:none">${E(phone)}</a>`], ['Email', `<a href="mailto:${E(email)}" style="color:#111111;text-decoration:none">${E(email)}</a>`], ['Received', new Date().toLocaleString('en-US', { timeZone: 'America/Chicago', dateStyle: 'medium', timeStyle: 'short' }) + ' CT']])
             + callout('They agreed to be called or texted. Call while it\'s fresh. Their 25% off applies on its own when they sign up with this email and pick a monthly plan.', 'info') }),
         email).catch(e => console.error('offer email', e.message));
       return res.status(200).json({ ok: true });

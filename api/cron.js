@@ -14,7 +14,7 @@ const $$ = n => '$' + Math.round(n || 0).toLocaleString();
 const ymd = (d = new Date()) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago' }).format(d); // YYYY-MM-DD
 const DAY = 864e5;
 const nm = L => [L?.firstName, L?.lastName].filter(Boolean).join(' ') || 'Seller';
-const PREFS = base => `You're receiving this because email updates are on for your JStar Pro account. <a href="${base}/app#account" style="color:#98a2b3;text-decoration:underline">Manage email preferences</a>`;
+const PREFS = base => `You're receiving this because email updates are on for your JStar Pro account. <a href="${base}/app#account" style="color:#a5a5a5;text-decoration:underline">Manage email preferences</a>`;
 
 export function reminders(user, leads, deals, today = ymd(), now = Date.now()) {
   const open = leads.filter(l => !['dead', 'converted'].includes(l.status));
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
           const html = layout({ preheader: `${r.due.length} scheduled, ${r.fresh.length} new, ${r.cold.length} going cold${r.closing.length ? `, ${r.closing.length} closing soon` : ''}.`,
             eyebrow: new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/Chicago' }), title: `${r.total} follow-up${r.total > 1 ? 's' : ''} for today`,
             body: P(`Good morning, ${esc(first_)}. Here's who to call today, in order of priority.`)
-              + stats([[r.due.length, 'Scheduled'], [r.fresh.length, 'New, not called', r.fresh.length ? '#2f6fed' : undefined], [r.cold.length, 'Going cold', r.cold.length ? '#b54708' : undefined]])
+              + stats([[r.due.length, 'Scheduled'], [r.fresh.length, 'New, not called', r.fresh.length ? '#111111' : undefined], [r.cold.length, 'Going cold', r.cold.length ? '#b54708' : undefined]])
               + sec('Follow-ups you scheduled', r.due.map(l => it(l, 'due ' + md(l.followUpAt + 'T12:00'))))
               + sec('New leads waiting on a call', r.fresh.slice(0, 8).map(l => it(l, 'came in ' + md(l.createdAt), l.brief?.label, l.brief?.label === 'HOT' ? '#b42318' : undefined)))
               + sec('Hot and warm leads going cold', r.cold.slice(0, 8).map(l => it(l, `no contact in ${Math.floor((now - (l.updatedAt || l.createdAt)) / DAY)} days`, l.brief.label, l.brief.label === 'HOT' ? '#b42318' : '#b54708')))
@@ -85,7 +85,7 @@ export default async function handler(req, res) {
         const c = recap(u, leads, deals, usage, mStart, mEnd);
         const html = layout({ preheader: `${c.leads} leads, ${c.contracts} under contract, ${$$(c.closedFees)} in fees closed.`, eyebrow: 'Monthly recap', title: `Your ${mName} on JStar Pro`,
           body: P(`Here's how ${mName} went, ${esc(first_)}.`)
-            + stats([[$$(c.closedFees), `Fees closed (${c.closed} deal${c.closed === 1 ? '' : 's'})`, '#067647'], [$$(c.pendingFees), 'Fees pending', '#2f6fed'], [c.contracts, 'Under contract', '#7a5af8'], [c.leads, 'New leads'], [c.hot, 'Hot leads', '#b42318'], [c.newDeals, 'Deals started'], [c.analyses, 'Deal analyses'], [c.blasts, 'Buyer blasts'], [c.photos, 'Photo estimates']])
+            + stats([[$$(c.closedFees), `Fees closed (${c.closed} deal${c.closed === 1 ? '' : 's'})`, '#067647'], [$$(c.pendingFees), 'Fees pending', '#111111'], [c.contracts, 'Under contract', '#7a5af8'], [c.leads, 'New leads'], [c.hot, 'Hot leads', '#b42318'], [c.newDeals, 'Deals started'], [c.analyses, 'Deal analyses'], [c.blasts, 'Buyer blasts'], [c.photos, 'Photo estimates']])
             + callout(c.closed ? 'Strong month. Keep the pipeline full so next month is even better.' : c.contracts ? 'You have deals under contract. Line up your buyers early with <b>Send to buyers</b> on each deal.' : 'New month, fresh start. Every lead in your inbox already has an offer worked out, so the fastest win is calling the newest ones first.', c.closed ? 'ok' : 'info')
             + button(base + '/app#leads', 'Open JStar Pro'),
           footer: PREFS(base) });

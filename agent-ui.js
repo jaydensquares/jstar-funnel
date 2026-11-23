@@ -5,45 +5,45 @@
   const SUGGEST = ['Who should I call today?', 'Run 1207 Shady Oaks Ln, Houston TX 77008', 'Write a first text to my newest lead', 'Which of my buyers fit my latest deal?'];
   const css = `
   .jai-fab{position:fixed;right:22px;bottom:22px;z-index:900;display:flex;align-items:center;gap:10px;height:46px;padding:0 18px 0 14px;border:1px solid rgba(255,255,255,.08);border-radius:999px;cursor:pointer;
-    background:#0a1633;color:#fff;font:600 14.5px var(--body,system-ui);box-shadow:0 6px 18px rgba(16,24,40,.18);transition:background .12s}
-  .jai-fab:hover{background:#142a5c} .jai-fab svg{width:20px;height:20px;color:#ffc93c}
+    background:#0a0a0a;color:#fff;font:600 14.5px var(--body,system-ui);box-shadow:0 6px 18px rgba(28,28,28,.18);transition:background .12s}
+  .jai-fab:hover{background:#1f1f1f} .jai-fab svg{width:20px;height:20px;color:#ffc93c}
   .jai-fab.hide{display:none}
-  .jai{position:fixed;z-index:950;right:16px;bottom:16px;top:16px;width:440px;max-width:calc(100vw - 32px);display:none;flex-direction:column;background:var(--card,#fff);color:var(--ink,#101828);
-    border:1px solid var(--line,#e4e7ec);border-radius:12px;box-shadow:0 24px 60px rgba(16,24,40,.18);overflow:hidden;font-family:var(--body,system-ui)}
+  .jai{position:fixed;z-index:950;right:16px;bottom:16px;top:16px;width:440px;max-width:calc(100vw - 32px);display:none;flex-direction:column;background:var(--card,#fff);color:var(--ink,#1c1c1c);
+    border:1px solid var(--line,#e8e8e8);border-radius:12px;box-shadow:0 24px 60px rgba(28,28,28,.18);overflow:hidden;font-family:var(--body,system-ui)}
   .jai.open{display:flex;animation:jaiIn .18s ease-out}@keyframes jaiIn{from{opacity:0;transform:translateY(10px)}}
-  .jai-hd{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line,#e4e7ec);background:#0a1633;color:#fff}
-  .jai-hd .ic{width:34px;height:34px;border-radius:8px;background:#ffc93c;color:#0a1633;display:flex;align-items:center;justify-content:center;flex:none}
-  .jai-hd .ic svg{width:20px;height:20px}.jai-hd b{display:block;font-size:15px}.jai-hd span{font-size:12px;color:#9fb0d4}
+  .jai-hd{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line,#e8e8e8);background:#0a0a0a;color:#fff}
+  .jai-hd .ic{width:34px;height:34px;border-radius:8px;background:#ffc93c;color:#0a0a0a;display:flex;align-items:center;justify-content:center;flex:none}
+  .jai-hd .ic svg{width:20px;height:20px}.jai-hd b{display:block;font-size:15px}.jai-hd span{font-size:12px;color:#b0b0b0}
   .jai-hd .sp{flex:1}.jai-hd button{background:rgba(255,255,255,.1);border:0;color:#fff;width:34px;height:34px;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center}
   .jai-hd button:hover{background:rgba(255,255,255,.2)}.jai-hd button svg{width:18px;height:18px}
-  .jai-body{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:14px;background:var(--bg,#f4f7fd)}
-  .jai-hi h3{margin:6px 0 4px;font:700 20px var(--display,system-ui)}.jai-hi p{margin:0 0 14px;color:var(--muted,#667085);font-size:14px;line-height:1.5}
-  .jai-sug{display:flex;flex-direction:column;gap:8px}.jai-sug button{text-align:left;padding:11px 14px;border-radius:12px;border:1px solid var(--line,#e4e7ec);background:var(--card,#fff);color:var(--ink,#101828);font:600 14px var(--body,system-ui);cursor:pointer}
-  .jai-sug button:hover{border-color:var(--brand,#2f6fed)}
+  .jai-body{flex:1;overflow-y:auto;padding:18px 16px;display:flex;flex-direction:column;gap:14px;background:var(--bg,#f5f5f5)}
+  .jai-hi h3{margin:6px 0 4px;font:700 20px var(--display,system-ui)}.jai-hi p{margin:0 0 14px;color:var(--muted,#767676);font-size:14px;line-height:1.5}
+  .jai-sug{display:flex;flex-direction:column;gap:8px}.jai-sug button{text-align:left;padding:11px 14px;border-radius:12px;border:1px solid var(--line,#e8e8e8);background:var(--card,#fff);color:var(--ink,#1c1c1c);font:600 14px var(--body,system-ui);cursor:pointer}
+  .jai-sug button:hover{border-color:var(--brand,#111111)}
   .jai-m{max-width:88%;font-size:14.5px;line-height:1.55;word-wrap:break-word}
-  .jai-m.u{align-self:flex-end;background:var(--brand,#2f6fed);color:#fff;padding:10px 14px;border-radius:16px 16px 4px 16px;white-space:pre-wrap}
-  .jai-m.a{align-self:flex-start;background:var(--card,#fff);border:1px solid var(--line,#e4e7ec);padding:12px 14px;border-radius:16px 16px 16px 4px}
+  .jai-m.u{align-self:flex-end;background:var(--brand,#111111);color:var(--brand-ink, #fff);padding:10px 14px;border-radius:16px 16px 4px 16px;white-space:pre-wrap}
+  .jai-m.a{align-self:flex-start;background:var(--card,#fff);border:1px solid var(--line,#e8e8e8);padding:12px 14px;border-radius:16px 16px 16px 4px}
   .jai-m.a p{margin:0 0 8px}.jai-m.a p:last-child{margin:0}.jai-m.a ul,.jai-m.a ol{margin:4px 0 8px;padding-left:20px}.jai-m.a li{margin:2px 0}
-  .jai-m.a code{background:var(--line2,#eef0f3);padding:1px 5px;border-radius:5px;font-size:13px}.jai-m.a a{color:var(--brand,#2f6fed)}
+  .jai-m.a code{background:var(--line2,#f0f0f0);padding:1px 5px;border-radius:5px;font-size:13px}.jai-m.a a{color:var(--brand,#111111)}
   .jai-m.err{align-self:flex-start;color:var(--err,#d92d20);font-size:14px}
-  .jai-steps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.jai-steps span{font-size:12px;font-weight:600;color:var(--muted,#667085);background:var(--line2,#eef0f3);padding:3px 9px;border-radius:999px}
-  .jai-card{margin-top:10px;border:1px solid var(--line,#e4e7ec);border-radius:12px;padding:12px;background:var(--bg,#f4f7fd)}
+  .jai-steps{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.jai-steps span{font-size:12px;font-weight:600;color:var(--muted,#767676);background:var(--line2,#f0f0f0);padding:3px 9px;border-radius:999px}
+  .jai-card{margin-top:10px;border:1px solid var(--line,#e8e8e8);border-radius:12px;padding:12px;background:var(--bg,#f5f5f5)}
   .jai-card .ad{font-weight:700;font-size:14px;margin-bottom:8px}.jai-card .g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .jai-card .g div{background:var(--card,#fff);border-radius:9px;padding:8px 10px}.jai-card .g small{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#667085)}
-  .jai-card .g b{font-size:17px;font-variant-numeric:tabular-nums}.jai-card a.go{display:inline-block;margin-top:10px;font-weight:700;font-size:13px;color:var(--brand,#2f6fed);text-decoration:none}
-  .jai-card .tag{float:right;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px}.tag.Hot{background:var(--hot-bg,#fef3f2);color:var(--hot,#b42318)}.tag.Warm{background:var(--warn-bg,#fffaeb);color:var(--warn,#93370d)}.tag.Cold{background:var(--brand-soft,#eaf1ff);color:var(--brand,#2f6fed)}
-  .jai-ph{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--line2,#eef0f3);font-size:14px}.jai-ph:first-of-type{border-top:0}
-  .jai-ph a{color:var(--ink,#101828);font-weight:700;text-decoration:none;font-variant-numeric:tabular-nums}.jai-ph .dnc{color:var(--err,#d92d20);font-size:12px;font-weight:700}
-  .jai-think{align-self:flex-start;display:flex;align-items:center;gap:10px;color:var(--muted,#667085);font-size:13px;font-weight:600}
-  .jai-think i{width:7px;height:7px;border-radius:50%;background:var(--brand,#2f6fed);animation:jaiB 1s infinite}.jai-think i:nth-child(2){animation-delay:.15s}.jai-think i:nth-child(3){animation-delay:.3s}
+  .jai-card .g div{background:var(--card,#fff);border-radius:9px;padding:8px 10px}.jai-card .g small{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#767676)}
+  .jai-card .g b{font-size:17px;font-variant-numeric:tabular-nums}.jai-card a.go{display:inline-block;margin-top:10px;font-weight:700;font-size:13px;color:var(--brand,#111111);text-decoration:none}
+  .jai-card .tag{float:right;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px}.tag.Hot{background:var(--hot-bg,#fef3f2);color:var(--hot,#b42318)}.tag.Warm{background:var(--warn-bg,#fffaeb);color:var(--warn,#93370d)}.tag.Cold{background:var(--brand-soft,#f0f0f0);color:var(--brand,#111111)}
+  .jai-ph{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--line2,#f0f0f0);font-size:14px}.jai-ph:first-of-type{border-top:0}
+  .jai-ph a{color:var(--ink,#1c1c1c);font-weight:700;text-decoration:none;font-variant-numeric:tabular-nums}.jai-ph .dnc{color:var(--err,#d92d20);font-size:12px;font-weight:700}
+  .jai-think{align-self:flex-start;display:flex;align-items:center;gap:10px;color:var(--muted,#767676);font-size:13px;font-weight:600}
+  .jai-think i{width:7px;height:7px;border-radius:50%;background:var(--brand,#111111);animation:jaiB 1s infinite}.jai-think i:nth-child(2){animation-delay:.15s}.jai-think i:nth-child(3){animation-delay:.3s}
   @keyframes jaiB{0%,80%,100%{opacity:.25}40%{opacity:1}}
-  .jai-ft{border-top:1px solid var(--line,#e4e7ec);padding:12px;background:var(--card,#fff)}
-  .jai-in{display:flex;align-items:flex-end;gap:8px;border:1px solid var(--line,#e4e7ec);border-radius:14px;padding:6px 6px 6px 12px;background:var(--input,#fff)}
-  .jai-in:focus-within{border-color:var(--brand,#2f6fed);box-shadow:0 0 0 3px var(--brand-soft,#eaf1ff)}
-  .jai-in textarea{flex:1;border:0!important;outline:0;box-shadow:none!important;border-radius:0!important;resize:none;background:transparent!important;width:auto!important;margin:0!important;color:var(--ink,#101828);font:400 15px/1.45 var(--body,system-ui);max-height:140px;padding:6px 0!important;min-height:24px}
-  .jai-in button{flex:none;width:38px;height:38px;border:0;border-radius:10px;background:var(--brand,#2f6fed);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .jai-ft{border-top:1px solid var(--line,#e8e8e8);padding:12px;background:var(--card,#fff)}
+  .jai-in{display:flex;align-items:flex-end;gap:8px;border:1px solid var(--line,#e8e8e8);border-radius:14px;padding:6px 6px 6px 12px;background:var(--input,#fff)}
+  .jai-in:focus-within{border-color:var(--brand,#111111);box-shadow:0 0 0 3px var(--brand-soft,#f0f0f0)}
+  .jai-in textarea{flex:1;border:0!important;outline:0;box-shadow:none!important;border-radius:0!important;resize:none;background:transparent!important;width:auto!important;margin:0!important;color:var(--ink,#1c1c1c);font:400 15px/1.45 var(--body,system-ui);max-height:140px;padding:6px 0!important;min-height:24px}
+  .jai-in button{flex:none;width:38px;height:38px;border:0;border-radius:10px;background:var(--brand,#111111);color:var(--brand-ink, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center}
   .jai-in button:disabled{opacity:.4;cursor:default}.jai-in button svg{width:18px;height:18px}
-  .jai-ft small{display:block;margin-top:6px;font-size:11.5px;color:var(--muted,#667085);text-align:center}
+  .jai-ft small{display:block;margin-top:6px;font-size:11.5px;color:var(--muted,#767676);text-align:center}
   @media (max-width:640px){.jai{inset:0;width:auto;max-width:none;border-radius:0;border:0}.jai-fab{right:14px;bottom:14px;height:52px;width:52px;padding:0;justify-content:center}.jai-fab span{display:none}}
   @media print{.jai,.jai-fab{display:none!important}}`;
   const SPARK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.9L19 9.7l-5.2 1.8L12 16.5l-1.8-5L5 9.7l5.2-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>';

@@ -55,7 +55,7 @@ export default async function handler(req, res) {
       await sendPlainEmail(u.email, 'Your JStar Pro affiliate link', `You're in. Share ${link} and earn ${AFF.rate * 100}% of what every customer you send pays for their first ${AFF.months} months.\n\nTrack clicks, signups and earnings any time: ${BASE()}/app#affiliate\n\nJStar Pro`,
         layout({ preheader: `Earn ${AFF.rate * 100}% for ${AFF.months} months on every customer you send.`, eyebrow: 'Affiliate program', title: "You're in. Here's your link.",
           body: P(`Share your link anywhere: YouTube, Instagram, TikTok, your coaching group or your buyers list. When someone signs up through it and pays, you earn <b>${AFF.rate * 100}%</b> of every payment for their first <b>${AFF.months} months</b>.`)
-            + rows([['Your link', `<a href="${link}" style="color:#2f6fed;text-decoration:none">${E(link.replace('https://', ''))}</a>`], ['Commission', `${AFF.rate * 100}% for ${AFF.months} months`], ['Paid to', `${E(p.payout.method)} · ${E(p.payout.handle)}`]])
+            + rows([['Your link', `<a href="${link}" style="color:#111111;text-decoration:none">${E(link.replace('https://', ''))}</a>`], ['Commission', `${AFF.rate * 100}% for ${AFF.months} months`], ['Paid to', `${E(p.payout.method)} · ${E(p.payout.handle)}`]])
             + button(`${BASE()}/app#affiliate`, 'See your affiliate dashboard'),
           footer: 'You received this because you joined the JStar Pro affiliate program.' })).catch(() => {});
       return out(n);
