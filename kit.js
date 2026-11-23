@@ -385,6 +385,8 @@
     fetch('/api/auth?action=me&usage=1', { credentials: 'same-origin' }).then(r => r.ok ? r.json() : null).then(j => {
       if (!j?.user || j.plan?.tier === 'trial') return;
       me = j; const a = document.getElementById('jkAva'); if (a) { a.textContent = K.initials(j.user.name); }
+      // Logged in: show the account links (Leads, Buyers, Funnel...) even when this page was opened with the owner PIN
+      document.body.classList.add('acct'); const ws = document.getElementById('ws'); if (ws && /^(Owner)?$/.test(ws.textContent.trim())) ws.textContent = j.user.company || j.user.name;
       meterbox(j.usage);
     }).catch(() => {});
   };
