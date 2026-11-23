@@ -2,7 +2,7 @@
 // Keep claims to what the app actually does today. Limits must match lib/plan.js.
 
 export const GROUPS = [
-  { name: 'Find leads', items: ['seller-funnel', 'owner-lists', 'driving-for-dollars', 'skip-tracing'] },
+  { name: 'Find leads', items: ['seller-funnel', 'owner-lists', 'agent-offers', 'driving-for-dollars', 'skip-tracing'] },
   { name: 'Run deals', items: ['deal-analyzer', 'photo-to-arv', 'deal-pipeline'] },
   { name: 'Close & sell', items: ['contracts', 'cash-buyers'] },
   { name: 'Automate', items: ['jstar-ai', 'gohighlevel'] },
@@ -59,6 +59,33 @@ export const FEATURES = {
       ['How does stacking work?', 'Save two or more lists, like absentee owners, owned 20+ years and your driving list. Stacking shows the owners who appear on at least the number of lists you pick.'],
     ],
     related: ['skip-tracing', 'driving-for-dollars', 'deal-analyzer'],
+  },
+
+  'agent-offers': {
+    name: 'Agent offers', short: 'Cash offers to hundreds of listing agents', isNew: true,
+    title: 'Send Cash Offers to Listing Agents in Bulk', desc: 'Search any ZIP or city, underwrite every active listing, and email each listing agent a personalized cash offer from your own address. Sends are paced daily and replies go to your inbox.',
+    h1: 'Make an offer on every listing <em>in a ZIP.</em>',
+    lead: 'Pick a ZIP or city, or upload your own list. JStar Pro runs comps on every active listing, prices your offer from the ARV and repairs, and emails each listing agent a personal cash offer from your own address. Agents reply straight to your inbox.',
+    visual: { type: 'shot', src: '/media/site/c-offers.jpg', alt: 'Agent offers: active listings with list price, listing agent, ARV from comps and an editable cash offer for each' },
+    how: [['Find listings', 'Search a ZIP or city, filter by price, days on market and beds. Or upload a CSV.'], ['Underwrite all of them', 'Comps, ARV and repairs on every house. Your offer = ARV × your % − repairs.'], ['Send and get replies', 'Each agent gets a personal email from you@getjstarpro.com, a set number a day.']],
+    details: [
+      ['Your own sending address', 'Pick yourname@getjstarpro.com. Agents see your name, and every reply goes to your real inbox.'],
+      ['Real underwriting', 'The same comps, ARV and repair math as Run an address, run on every listing.'],
+      ['Your numbers, your rules', 'Set the % of ARV, the condition to assume, a cap at a % of list price, and skip anything that comes in too low.'],
+      ['Edit any offer', 'Change a number on any row before you send.'],
+      ['Personalized emails', 'Agent name, street, your offer and closing timeline filled into a message you can edit.'],
+      ['Paced sending', 'Send 25 to 300 a day. The rest go out each morning so you stay out of spam folders.'],
+      ['No double offers', 'Listings you already sent an offer on are marked, and agents can unsubscribe in one click.'],
+    ],
+    limits: [['Starter', '150/mo'], ['Pro', '500/mo'], ['Team', '1,500/mo'], ['Trial', '20']],
+    swap: { was: 'A separate agent offer tool', wasPrice: 'another monthly bill', now: 'built in' },
+    faq: [
+      ['Where do the listings come from?', 'Active for-sale listings with the listing agent\'s contact info. Only listings with an agent email on file show up. You can also upload your own CSV of addresses and agent emails.'],
+      ['Whose email does it come from?', 'Your own address on our domain, like jayden@getjstarpro.com, with your name. Agent replies go to whatever inbox you choose, like your Gmail.'],
+      ['Are these binding offers?', 'No. The email asks if the seller is open to your number and offers to send a written offer. Nothing is binding until you both sign a contract.'],
+      ['How many go out a day?', 'You choose, from 25 to 300. The first batch goes out right away and the rest each morning at 7am Central until the list is done. You can pause any campaign.'],
+    ],
+    related: ['deal-analyzer', 'owner-lists', 'contracts'],
   },
 
   'driving-for-dollars': {

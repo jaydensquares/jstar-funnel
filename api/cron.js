@@ -7,6 +7,8 @@ import { isActive, isOperator } from '../lib/plan.js';
 import { layout, p as P, small, h3, button, stats, items, callout } from '../lib/email.js';
 import { bizOf } from '../lib/auth.js';
 import { sendStep, advance, stopReason } from '../lib/followup.js';
+import { sendDue } from '../lib/agentoffers.js';
+import { getUserById } from '../lib/auth.js';
 
 export const maxDuration = 300;
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -110,5 +112,14 @@ export default async function handler(req, res) {
       }
     } catch (e) { console.error('cron followup', u.id, e.message); fu.push({ uid: u.id, error: e.message }); }
   }
-  return res.status(200).json({ ok: true, today, users: users.length, sent: out, followups: fu });
+  // Agent offers: each account's daily share of queued offer emails
+  const ao = [];
+  for (const a of await listDocs('aoactive').catch(() => [])) {
+    try {
+      if (a.scope) { const u = await getUserById(a.scope); if (!u || u.disabled || !(isActive(u) || isOperator(u))) continue; }
+      if (dry) { ao.push({ scope: a.scope, dry: true }); continue; }
+      const r = await sendDue(a.scope, base); ao.push({ scope: a.scope, sent: r.sent });
+    } catch (e) { console.error('cron agent offers', a.scope, e); }
+  }
+  return res.status(200).json({ ok: true, today, users: users.length, sent: out, followups: fu, agentOffers: ao });
 }

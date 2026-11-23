@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Agent offers | JStar Acquisitions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
+<style>
+  .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
+  .ltabs { display:inline-flex; gap:4px; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:4px; margin-bottom:16px; }
+  .ltabs button { border:0; background:none; font:600 14px var(--body); color:var(--muted); padding:8px 14px; border-radius:8px; cursor:pointer; }
+  .ltabs button.on { background:var(--brand); color:var(--brand-ink); }
+  .step { margin-bottom:16px; } .sh2 { display:flex; align-items:center; gap:10px; margin-bottom:14px; } .sh2 h2 { margin:0; }
+  .sh2 .n { width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font:700 13px var(--body); background:var(--ink); color:var(--card); flex:none; }
+  .sh2 .rs { margin-left:auto; color:var(--muted); font-size:14px; }
+  .step.done .sh2 .n { background:var(--ok); color:#fff; }
+  .sline { display:flex; align-items:center; gap:12px; justify-content:space-between; } .sline b { display:block; font-size:16px; } .sline small { color:var(--muted); font-size:13px; }
+  .handle { display:flex; align-items:stretch; border:1px solid var(--line); border-radius:var(--r1); background:var(--input); overflow:hidden; margin-bottom:12px; }
+  .handle input { border:0; margin:0; flex:1; min-width:0; background:transparent; box-shadow:none !important; }
+  .handle span { display:flex; align-items:center; padding:0 12px; color:var(--muted); font-size:15px; border-left:1px solid var(--line); background:var(--bg); white-space:nowrap; }
+  .handle:focus-within { border-color:var(--brand); box-shadow:0 0 0 4px var(--brand-soft); }
+  .chip input { position:absolute; opacity:0; pointer-events:none; }
+  .opt { color:var(--muted); font-weight:400; font-size:12px; margin-left:4px; }
+  .hint { color:var(--muted); font-size:13px; margin:6px 0 12px; } .hint code { font-size:12px; background:var(--bg); border:1px solid var(--line2); border-radius:5px; padding:1px 5px; }
+  .acts { display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-top:8px; } .acts .hint { margin:0 auto 0 0; }
+  .acts .btn { width:auto; }
+  .btn.sm { padding:8px 12px; font-size:13px; width:auto; } .btn.del { color:var(--hot); }
+  .seg { display:inline-flex; gap:4px; background:var(--bg); border-radius:10px; padding:3px; margin-bottom:16px; }
+  .seg button { border:0; background:none; font:600 13.5px var(--body); color:var(--muted); padding:7px 12px; border-radius:7px; cursor:pointer; } .seg button.on { background:var(--card); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.08); }
+  .row3 { display:grid; gap:12px; grid-template-columns:1fr 1.4fr .6fr; } .row4 { display:grid; gap:12px; grid-template-columns:repeat(4, 1fr); } .row5 { display:grid; gap:12px; grid-template-columns:repeat(5, 1fr); }
+  .row3 > *, .row4 > *, .row5 > * { min-width:0; }
+  .drop { display:grid; place-items:center; border:1.5px dashed var(--line); border-radius:12px; padding:28px; text-align:center; color:var(--muted); cursor:pointer; } .drop input { display:none; } .drop b { color:var(--ink); }
+  .drop.over { border-color:var(--brand); background:var(--brand-soft); }
+  .tw { overflow:auto; max-height:560px; border:1px solid var(--line); border-radius:10px; margin-top:4px; }
+  #rTab thead th { position:sticky; top:0; z-index:1; } #rTab tbody tr { cursor:default; } #rTab td { vertical-align:top; }
+  #rTab td.ck, #rTab th.ck { width:34px; padding-right:0; } #rTab input[type=checkbox] { width:17px; height:17px; margin:2px 0 0; accent-color:var(--ink); }
+  #rTab .oin { width:112px; margin:0; padding:6px 8px; text-align:right; font-variant-numeric:tabular-nums; }
+  .pct { display:inline-block; font:600 11.5px var(--body); padding:2px 6px; border-radius:6px; background:var(--bg); color:var(--ink2); margin-top:4px; }
+  .skip { color:var(--muted); font-size:12.5px; } .asent { margin-top:4px; display:inline-block; font:600 11px var(--body); padding:2px 6px; border-radius:6px; background:var(--bg); color:var(--muted); }
+  .pbar { height:6px; background:var(--line2); border-radius:6px; overflow:hidden; margin-top:12px; } .pbar i { display:block; height:100%; width:0; background:var(--ink); transition:width .3s; }
+  .mgrid { display:grid; grid-template-columns:1.1fr 1fr; gap:20px; } .mgrid textarea { font:14px/1.55 var(--body); resize:vertical; }
+  .pv { border:1px solid var(--line); border-radius:12px; overflow:hidden; align-self:start; background:var(--card); }
+  .pvh { display:flex; justify-content:space-between; align-items:center; padding:9px 14px; background:var(--bg); border-bottom:1px solid var(--line); font:600 12px var(--body); color:var(--muted); text-transform:uppercase; letter-spacing:.06em; } .pvh small { text-transform:none; letter-spacing:0; font-weight:500; }
+  .pvm { padding:14px 16px; } .pvf { font-size:13px; color:var(--muted); } .pvs { font-weight:650; margin:6px 0 12px; font-size:15px; }
+  .pvm pre { white-space:pre-wrap; font:14px/1.55 var(--body); margin:0; color:var(--ink2); }
+  .camp { margin-bottom:12px; } .ctop { display:flex; align-items:center; gap:14px; flex-wrap:wrap; } .ctop .cm { flex:1; min-width:200px; } .ctop b { font-size:16px; } .ctop small { display:block; color:var(--muted); font-size:13px; }
+  .st { font:600 12px var(--body); padding:3px 8px; border-radius:6px; } .st.sending { background:var(--ok-bg); color:var(--ok); } .st.paused { background:var(--warn-bg); color:var(--warn); } .st.done { background:var(--bg); color:var(--muted); }
+  .cbar { height:6px; background:var(--line2); border-radius:6px; overflow:hidden; margin:12px 0 4px; } .cbar i { display:block; height:100%; background:var(--ok); }
+  .cbtns { display:flex; gap:8px; } .cdet { margin-top:12px; }
+  .empty { text-align:center; color:var(--muted); padding:40px 20px; }
+  #rTab tbody tr:hover td, .cdet .dt tbody tr:hover td { background:none; box-shadow:none; } .cdet .dt tbody tr { cursor:default; }
+  @media (max-width:760px) {
+    #rTab tr { grid-template-columns:24px minmax(0,1fr) minmax(0,auto); gap:4px 10px; padding:12px; } #rTab { width:100%; } #rTab td small { overflow-wrap:anywhere; }
+    #rTab td { padding:0 !important; background:none !important; box-shadow:none !important; }
+    #rTab td.ck { grid-row:1 / span 3; } #rTab td:not(.ck):not(.r) { grid-column:2; } #rTab td.r { grid-column:3; }
+    #rTab .oin { width:96px; padding:6px; } .tw { max-height:none; overflow-x:hidden; } #rTab .skip, #rTab .pct { font-size:11.5px; }
+    .cdet .dt td { padding:0 !important; } .cdet .dt tr { grid-template-columns:1fr auto; }
+  }
+  @media (max-width:900px) { .row5 { grid-template-columns:1fr 1fr; } .mgrid { grid-template-columns:1fr; } .row4 { grid-template-columns:1fr 1fr; } }
+  @media (max-width:560px) { .row3 { grid-template-columns:1fr 1fr; } .row3 > :first-child { grid-column:1 / -1; } }
+</style>
+<link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/kit.css">
+<script src="/kit.js"></script>
+<script src="/acct.js"></script>
+</head>
+<body class="shell">
+<aside class="side"><div class="brandbox"><a class="logo" href="/app">JStar <span>Pro</span></a><div class="ws" id="ws">Owner</div></div>
+<nav class="snav" aria-label="Main"><a class="acct-only" href="/app#leads" data-t="leads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13L21 13v6H3v-6z"/></svg>Leads</a><a href="/underwriting"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V4.5h7V7"/><path d="M3 12.5h18"/></svg>Deals</a><a class="acct-only" href="/app#buyers" data-t="buyers"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5.5 6.5-5.5s5.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5c1.6.8 2.6 2.6 3 5.5"/></svg>Buyers</a><span class="sh">Analyze</span><a href="/operator"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Run an address</a><a href="/batch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Batch</a><a href="/photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo estimate</a><a class="on" href="/list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Owner lists</a><a href="/drive"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14M6 17l1.5-5h9L18 17"/><path d="M7.5 12l1.5-4h6l1.5 4"/><circle cx="8" cy="18.5" r="1.5"/><circle cx="16" cy="18.5" r="1.5"/></svg>Driving for dollars</a><a href="/offers" data-p="offers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/></svg>Agent offers</a><span class="sh acct-only">Funnel</span><a class="acct-only" href="/app#funnel" data-t="funnel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Funnel &amp; business</a><a class="acct-only" href="/app#ads" data-t="ads"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Ad tracking</a><a class="acct-only" href="/app#domain" data-t="domain"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>Domain</a></nav>
+<div class="foot snav"><a class="acct-only" href="/app#account" data-t="account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Plan &amp; account</a></div></aside>
+
+<main class="wrap page">
+  <div class="ph"><div><h1>Agent offers</h1><p>Find active listings, underwrite every one, and email each listing agent a cash offer from your own address. Sends are spread over days so they land in the inbox, and agents reply straight to you.</p></div></div>
+  <section id="gate" class="card">
+    <h1>Operator access</h1>
+    <p class="sub">Enter your PIN to send agent offers.</p>
+    <form id="pinForm" autocomplete="off">
+      <label class="f" for="pin">PIN</label>
+      <input type="password" id="pin" inputmode="numeric" autocomplete="current-password" required>
+      <div class="err" id="pinErr" role="alert"></div>
+      <button class="btn" id="pinBtn" type="submit">Unlock</button>
+    </form>
+    <p class="sub" style="margin-top:12px">Have an account? <a href="/login">Log in</a></p>
+  </section>
+
+  <div class="ltabs" id="tabs" hidden role="tablist"><button type="button" data-t="new" class="on">New campaign</button><button type="button" data-t="camps">Campaigns <span id="campCount"></span></button></div>
+
+  <div id="newView" hidden>
+    <section class="card step" id="sCard">
+      <div class="sh2"><span class="n">1</span><h2>Your sending email</h2></div>
+      <div id="sShow" hidden><div class="sline"><div><b id="sEmail"></b><small id="sMeta"></small></div><button type="button" class="btn ghost sm" id="sEdit">Edit</button></div></div>
+      <form id="sForm" hidden autocomplete="off">
+        <p class="sub">Offers go out from your own address on our domain. When an agent replies, it lands in your normal inbox.</p>
+        <label class="f" for="sHandle">Your address</label>
+        <div class="handle"><input type="text" id="sHandle" maxlength="30" required placeholder="yourname" autocapitalize="off" spellcheck="false"><span>@<b id="sDomain">getjstarpro.com</b></span></div>
+        <div class="row">
+          <div><label class="f" for="sName">Name agents see</label><input type="text" id="sName" maxlength="60" required placeholder="Jayden Squares"></div>
+          <div><label class="f" for="sReply">Replies go to</label><input id="sReply" type="email" required placeholder="you@gmail.com"></div>
+        </div>
+        <div class="row">
+          <div><label class="f" for="sCompany">Company <span class="opt">optional</span></label><input type="text" id="sCompany" maxlength="80"></div>
+          <div><label class="f" for="sPhone">Phone <span class="opt">optional</span></label><input type="tel" id="sPhone" maxlength="30"></div>
+        </div>
+        <label class="f" for="sAddr">Business mailing address</label>
+        <input type="text" id="sAddr" maxlength="160" required placeholder="123 Main St, Dallas, TX 75201">
+        <p class="hint">Shown small at the bottom of every email. The CAN-SPAM Act requires it.</p>
+        <div class="err" id="sErr" role="alert"></div>
+        <div class="acts"><button class="btn" id="sSave" type="submit">Save my address</button></div>
+      </form>
+    </section>
+
+    <section class="card step" id="fCard">
+      <div class="sh2"><span class="n">2</span><h2>Find listings</h2></div>
+      <div class="seg" id="srcSeg"><button type="button" class="on" data-s="search">Search MLS listings</button><button type="button" data-s="upload">Upload my own list</button></div>
+      <form id="qForm" autocomplete="off">
+        <div class="row3">
+          <div><label class="f" for="qZip">ZIP</label><input type="text" id="qZip" inputmode="numeric" maxlength="5" placeholder="75217"></div>
+          <div><label class="f" for="qCity">or City</label><input type="text" id="qCity" maxlength="60" placeholder="Dallas"></div>
+          <div><label class="f" for="qState">State</label><input type="text" id="qState" maxlength="2" placeholder="TX" style="text-transform:uppercase"></div>
+        </div>
+        <div class="row4">
+          <div><label class="f" for="qMin">Min price</label><input type="text" id="qMin" data-money inputmode="numeric" placeholder="$75,000"></div>
+          <div><label class="f" for="qMax">Max price</label><input type="text" id="qMax" data-money inputmode="numeric" placeholder="$400,000"></div>
+          <div><label class="f" for="qDom">Days on market</label><select id="qDom"><option value="">Any</option><option value="30">30+</option><option value="60">60+</option><option value="90">90+</option><option value="120">120+</option></select></div>
+          <div><label class="f" for="qBeds">Beds</label><select id="qBeds"><option value="">Any</option><option value="2">2+</option><option value="3">3+</option><option value="4">4+</option></select></div>
+        </div>
+        <div class="chips"><label class="chip"><input type="checkbox" name="types" value="sfr" checked><span>Houses / townhomes</span></label><label class="chip"><input type="checkbox" name="types" value="condo"><span>Condos</span></label><label class="chip"><input type="checkbox" name="types" value="multi"><span>Multi-family</span></label><label class="chip"><input type="checkbox" name="types" value="mobile"><span>Mobile homes</span></label></div>
+        <div class="err" id="qErr" role="alert"></div>
+        <div class="acts"><button class="btn" id="qBtn" type="submit">Find listings</button></div>
+      </form>
+      <div id="upBox" hidden>
+        <p class="sub">A CSV with columns for address, city, state, ZIP, list price, agent name and agent email. Column names don't have to match exactly.</p>
+        <label class="drop"><input type="file" id="upFile" accept=".csv,text/csv"><span><b>Choose a CSV</b> or drop it here</span></label>
+        <div class="err" id="upErr" role="alert"></div>
+      </div>
+    </section>
+
+    <section class="card step" id="rCard" hidden>
+      <div class="sh2"><span class="n">3</span><h2>Underwrite</h2><span class="rs" id="rSum"></span></div>
+      <div class="row5">
+        <div><label class="f" for="pPct">Offer at % of ARV</label><select id="pPct"></select></div>
+        <div><label class="f" for="pTier">Assume condition</label><select id="pTier"><option value="turnkey">Move-in ready</option><option value="cosmetic" selected>Cosmetic</option><option value="moderate">Updates</option><option value="heavy">Major repairs</option><option value="gut">Full gut</option></select></div>
+        <div><label class="f" for="pMax">Never above</label><select id="pMax"><option value="90">90% of list</option><option value="95" selected>95% of list</option><option value="100">List price</option></select></div>
+        <div><label class="f" for="pMin">Skip if under</label><select id="pMin"><option value="0">Never skip</option><option value="40">40% of list</option><option value="50" selected>50% of list</option><option value="60">60% of list</option><option value="70">70% of list</option></select></div>
+        <div><label class="f" for="pClose">Close in</label><select id="pClose"><option value="7">7 days</option><option value="10">10 days</option><option value="14" selected>14 days</option><option value="21">21 days</option><option value="30">30 days</option></select></div>
+      </div>
+      <p class="hint">Offer = ARV × your % − repairs for that condition, capped at your max of list price. Uses the same comps and repair math as Run an address.</p>
+      <div class="tw"><table class="dt" id="rTab"><thead></thead><tbody></tbody></table></div>
+      <div class="pbar" id="uBar" hidden><i></i></div>
+      <div class="err" id="uErr" role="alert"></div>
+      <div class="acts"><span class="hint" id="uNote"></span><button class="btn" id="uBtn" type="button">Underwrite</button></div>
+    </section>
+
+    <section class="card step" id="mCard" hidden>
+      <div class="sh2"><span class="n">4</span><h2>Message and send</h2></div>
+      <div class="mgrid">
+        <div>
+          <label class="f" for="mSubj">Subject</label><input type="text" id="mSubj" maxlength="140">
+          <label class="f" for="mBody">Message</label><textarea id="mBody" rows="13"></textarea>
+          <p class="hint">Fill-ins: <code>{agent_first}</code> <code>{street}</code> <code>{offer}</code> <code>{list_price}</code> <code>{close_days}</code> <code>{my_name}</code> <code>{company}</code> <code>{phone}</code></p>
+        </div>
+        <div class="pv"><div class="pvh"><span>Preview</span><small id="pvWho"></small></div><div class="pvm"><div class="pvf" id="pvFrom"></div><div class="pvs" id="pvSubj"></div><pre id="pvText"></pre></div></div>
+      </div>
+      <div class="row">
+        <div><label class="f" for="mName">Campaign name</label><input type="text" id="mName" maxlength="80"></div>
+        <div><label class="f" for="mCap">Send up to</label><select id="mCap"><option value="25">25 a day</option><option value="50">50 a day</option><option value="100" selected>100 a day</option><option value="200">200 a day</option><option value="300">300 a day</option></select></div>
+      </div>
+      <p class="hint" id="mPace"></p>
+      <div class="err" id="mErr" role="alert"></div>
+      <div class="acts"><button class="btn" id="mBtn" type="button">Send offers</button></div>
+    </section>
+  </div>
+
+  <div id="campView" hidden>
+    <div id="campList"></div>
+  </div>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const money = v => v ? '$' + Math.round(v).toLocaleString() : '';
+  const numOf = v => { const n = Number(String(v ?? '').replace(/[^\d.]/g, '')); return Number.isFinite(n) && n > 0 ? Math.round(n) : null; };
+  const r500 = n => Math.round(n / 500) * 500;
+  let pin = ''; try { pin = sessionStorage.getItem('opPin') || ''; } catch {}
+  const api = body => fetch('/api/offers', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, ...body }) })
+    .then(async r => { const j = await r.json().catch(() => ({})); if (r.status === 401 && window.acctExpired && acctExpired()) return { ok: false, j }; return { ok: r.ok, status: r.status, j }; })
+    .catch(() => ({ ok: false, j: { error: 'Connection problem. Try again.' } }));
+
+  let sender = null, defs = null, listings = [], src = 'search';
+  // ── Unlock ──
+  const unlock = async () => {
+    $('gate').hidden = true; $('tabs').hidden = false; show('new');
+    const r = await api({ action: 'sender' }); if (!r.ok) return;
+    defs = r.j.defaults; $('sDomain').textContent = r.j.domain;
+    sender = r.j.sender; renderSender(r.j.suggest);
+    $('mSubj').value = defs.subject; $('mBody').value = defs.message;
+    $('pPct').innerHTML = [60, 65, 70, 75, 80, 85].map(p => `<option value="${p}" ${p === defs.pct ? 'selected' : ''}>${p}%</option>`).join('');
+    loadCamps();
+  };
+  $('pinForm').addEventListener('submit', async e => {
+    e.preventDefault(); pin = $('pin').value.trim(); $('pinErr').textContent = ''; $('pinBtn').disabled = true;
+    const r = await fetch('/api/analyze', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, checkOnly: true }) }).catch(() => null);
+    $('pinBtn').disabled = false;
+    if (!r || !r.ok) { $('pinErr').textContent = 'Wrong PIN.'; return; }
+    try { sessionStorage.setItem('opPin', pin); } catch {} unlock();
+  });
+  document.querySelectorAll('[data-money]').forEach(i => i.addEventListener('input', () => { const d = i.value.replace(/\D/g, ''); i.value = d ? '$' + Number(d).toLocaleString() : ''; }));
+  function show(t) { document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); $('newView').hidden = t !== 'new'; $('campView').hidden = t !== 'camps'; if (t === 'camps') loadCamps(); }
+  document.querySelectorAll('#tabs button').forEach(b => b.onclick = () => show(b.dataset.t));
+
+  // ── 1. Sender ──
+  function renderSender(sug) {
+    const has = !!sender;
+    $('sShow').hidden = !has; $('sForm').hidden = has; $('sCard').classList.toggle('done', has);
+    if (has) { $('sEmail').textContent = sender.email; $('sMeta').textContent = `Agents see "${sender.name}" · replies go to ${sender.replyTo}`; }
+    const v = sender || sug || {};
+    $('sHandle').value = v.handle || ''; $('sName').value = v.name || ''; $('sReply').value = v.replyTo || ''; $('sCompany').value = v.company || ''; $('sPhone').value = v.phone || ''; $('sAddr').value = v.address || '';
+  }
+  $('sEdit').onclick = () => { $('sShow').hidden = true; $('sForm').hidden = false; };
+  $('sHandle').addEventListener('input', () => { $('sHandle').value = $('sHandle').value.toLowerCase().replace(/[^a-z0-9.-]/g, ''); });
+  $('sForm').addEventListener('submit', async e => {
+    e.preventDefault(); $('sErr').textContent = ''; $('sSave').disabled = true;
+    const r = await api({ action: 'saveSender', handle: $('sHandle').value, name: $('sName').value, replyTo: $('sReply').value, company: $('sCompany').value, phone: $('sPhone').value, address: $('sAddr').value });
+    $('sSave').disabled = false;
+    if (!r.ok) { $('sErr').textContent = r.j.error || 'Couldn\'t save.'; return; }
+    sender = r.j.sender; renderSender(); preview();
+  });
+
+  // ── 2. Find ──
+  $('srcSeg').querySelectorAll('button').forEach(b => b.onclick = () => { src = b.dataset.s; $('srcSeg').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); $('qForm').hidden = src !== 'search'; $('upBox').hidden = src !== 'upload'; });
+  $('qForm').addEventListener('submit', async e => {
+    e.preventDefault(); $('qErr').textContent = ''; $('qBtn').disabled = true; $('qBtn').textContent = 'Searching…';
+    const r = await api({ action: 'search', zip: $('qZip').value, city: $('qCity').value, state: $('qState').value, minPrice: numOf($('qMin').value), maxPrice: numOf($('qMax').value), minDom: numOf($('qDom').value), minBeds: numOf($('qBeds').value), types: [...document.querySelectorAll('[name=types]:checked')].map(i => i.value) });
+    $('qBtn').disabled = false; $('qBtn').textContent = 'Find listings';
+    if (!r.ok) { $('qErr').textContent = r.j.error || 'Search failed.'; return; }
+    if (!r.j.listings.length) { $('qErr').textContent = r.j.matched ? `Found ${r.j.matched} listings, but none had an agent email on file. Try another area.` : 'No active listings matched. Widen the price range or try another area.'; return; }
+    setListings(r.j.listings, `${r.j.listings.length} listings with an agent email (of ${r.j.total} active)`);
+  });
+  function parseCSV(t) {
+    const rows = []; let row = [], f = '', q = false;
+    for (let i = 0; i < t.length; i++) { const c = t[i];
+      if (q) { if (c === '"' && t[i + 1] === '"') { f += '"'; i++; } else if (c === '"') q = false; else f += c; }
+      else if (c === '"') q = true; else if (c === ',') { row.push(f); f = ''; } else if (c === '\n' || c === '\r') { if (c === '\r' && t[i + 1] === '\n') i++; row.push(f); rows.push(row); row = []; f = ''; } else f += c; }
+    if (f || row.length) { row.push(f); rows.push(row); } return rows.filter(r => r.some(x => x.trim()));
+  }
+  function fromCSV(text) {
+    const rows = parseCSV(text); if (rows.length < 2) return [];
+    const h = rows[0].map(x => x.trim().toLowerCase());
+    const col = (...res) => h.findIndex(x => res.some(re => re.test(x)));
+    const iA = col(/^(property )?address|street|^property$/), iC = col(/^city/), iS = col(/^state|^st$/), iZ = col(/zip|postal/), iP = col(/list.*price|^price|asking/),
+      iE = col(/agent.*e-?mail|^e-?mail|email/), iN = col(/agent.*name|^agent$|listing agent|^name$/), iO = col(/office|brokerage|broker/), iSq = col(/sq.*f|square/), iB = col(/^beds?|bedrooms/);
+    if (iA < 0 || iE < 0) return null;
+    return rows.slice(1).map((r, k) => { const g = i => (i >= 0 ? String(r[i] || '').trim() : '');
+      const street = g(iA), city = g(iC), st = g(iS).toUpperCase().slice(0, 2), zip = g(iZ).slice(0, 5);
+      const address = city ? [street, city, [st, zip].filter(Boolean).join(' ')].filter(Boolean).join(', ') : street;
+      return { lid: 'csv' + k + ':' + address.toLowerCase(), address, street: street.split(',')[0], city, state: st, zip, list: numOf(g(iP)), sqft: numOf(g(iSq)), beds: numOf(g(iB)), agent: { name: g(iN), email: g(iE).toLowerCase() }, office: g(iO) };
+    }).filter(x => x.address.length > 6 && /@/.test(x.agent.email));
+  }
+  const readFile = f => { if (!f) return; const rd = new FileReader(); rd.onload = () => { $('upErr').textContent = ''; const L = fromCSV(String(rd.result || ''));
+    if (L === null) { $('upErr').textContent = 'Couldn\'t find an address column and an agent email column in that file.'; return; }
+    if (!L.length) { $('upErr').textContent = 'No rows had both an address and an agent email.'; return; }
+    setListings(L.slice(0, 1000), `${L.length} listings from ${f.name}`); }; rd.readAsText(f); };
+  $('upFile').onchange = e => readFile(e.target.files[0]);
+  const drop = document.querySelector('.drop');
+  ['dragover', 'dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => readFile(e.dataTransfer.files[0]));
+
+  // ── 3. Underwrite ──
+  const S = () => ({ pct: +$('pPct').value, tier: $('pTier').value, maxOfList: +$('pMax').value, minOfList: +$('pMin').value, closeDays: +$('pClose').value, dailyCap: +$('mCap').value, subject: $('mSubj').value, message: $('mBody').value });
+  function price(l) {
+    if (!l.uw || l.custom) return;
+    const s = S(), rep = l.repairsBy?.[s.tier];
+    if (!l.arv || rep == null) { l.offer = null; l.skip = l.skip0 || 'No value data'; return; }
+    let o = r500(l.arv * s.pct / 100 - rep); l.repairs = rep; l.skip = null;
+    if (l.list && o > l.list * s.maxOfList / 100) o = r500(l.list * s.maxOfList / 100);
+    if (o <= 0) { l.offer = null; l.skip = 'Numbers don\'t work'; return; }
+    if (l.list && o < l.list * s.minOfList / 100) l.skip = `Under ${s.minOfList}% of list`;
+    l.offer = o;
+  }
+  function setListings(L, sum) {
+    listings = L.map(l => ({ ...l, sel: !l.already }));
+    $('rCard').hidden = false; $('rSum').textContent = sum; $('mCard').hidden = true; renderTable();
+    $('rCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function renderTable() {
+    listings.forEach(price);
+    const any = listings.some(l => l.uw);
+    $('rTab').tHead.innerHTML = `<tr><th class="ck"><input type="checkbox" id="ckAll" ${listings.every(l => l.sel) ? 'checked' : ''} aria-label="Select all"></th><th>Property</th><th class="r">List</th><th>Agent</th>${any ? '<th class="r">ARV</th><th class="r hm">Repairs</th><th class="r">Your offer</th>' : '<th class="r">On market</th>'}</tr>`;
+    $('rTab').tBodies[0].innerHTML = listings.map((l, i) => `<tr class="${l.sel ? '' : 'dim'}"><td class="ck"><input type="checkbox" data-i="${i}" ${l.sel ? 'checked' : ''}></td>
+      <td><b>${esc(l.street || l.address)}</b><small>${esc([l.city, l.state].filter(Boolean).join(', '))}${l.beds ? ' · ' + l.beds + ' bd' : ''}${l.sqft ? ' · ' + l.sqft.toLocaleString() + ' sf' : ''}</small>${l.already ? '<span class="asent">Already sent</span>' : ''}</td>
+      <td class="r">${money(l.list)}</td><td><b>${esc(l.agent.name || '—')}</b><small>${esc(l.agent.email)}</small></td>
+      ${any ? (l.uw ? `<td class="r">${money(l.arv) || '—'}<small>${l.comps ? l.comps + ' comps' : ''}</small></td><td class="r hm">${money(l.repairs)}</td><td class="r">${l.offer ? `<input type="text" class="oin" data-o="${i}" value="${money(l.offer)}" inputmode="numeric">${l.list ? `<div><span class="pct">${Math.round(l.offer / l.list * 100)}% of list</span></div>` : ''}` : ''}${l.skip ? `<div class="skip">${esc(l.skip)}</div>` : ''}</td>` : '<td class="r"></td><td class="r hm"></td><td class="r"><span class="skip">Not underwritten</span></td>') : `<td class="r">${l.dom != null ? l.dom + ' days' : ''}</td>`}</tr>`).join('');
+    $('ckAll').onchange = e => { listings.forEach(l => l.sel = e.target.checked); renderTable(); };
+    $('rTab').querySelectorAll('[data-i]').forEach(c => c.onchange = () => { listings[+c.dataset.i].sel = c.checked; c.closest('tr').classList.toggle('dim', !c.checked); summary(); });
+    $('rTab').querySelectorAll('[data-o]').forEach(c => c.onchange = () => { const l = listings[+c.dataset.o]; l.offer = numOf(c.value); l.custom = true; l.skip = null; c.value = money(l.offer); summary(); });
+    summary();
+  }
+  function summary() {
+    const todo = listings.filter(l => l.sel && !l.uw).length, ready = sendable().length;
+    $('uBtn').hidden = !todo; $('uBtn').textContent = `Underwrite ${todo} listing${todo === 1 ? '' : 's'}`;
+    $('uNote').textContent = todo ? `Uses ${todo} agent offer${todo === 1 ? '' : 's'} from your plan. Listings with no value data are refunded.` : '';
+    $('mCard').hidden = !ready; if (ready) { pace(); $('mBtn').textContent = `Send ${ready} offer${ready === 1 ? '' : 's'}`; preview(); }
+  }
+  const sendable = () => listings.filter(l => l.sel && l.uw && l.offer && !l.skip);
+  ['pPct', 'pTier', 'pMax', 'pMin'].forEach(id => $(id).onchange = renderTable);
+  $('pClose').onchange = preview;
+  $('uBtn').onclick = async () => {
+    const todo = listings.filter(l => l.sel && !l.uw); if (!todo.length) return;
+    $('uErr').textContent = ''; $('uBtn').disabled = true; $('uBar').hidden = false; let done = 0;
+    for (let i = 0; i < todo.length; i += 20) {
+      const chunk = todo.slice(i, i + 20);
+      $('uBtn').textContent = `Underwriting ${Math.min(i + 20, todo.length)} of ${todo.length}…`;
+      const r = await api({ action: 'underwrite', items: chunk, settings: S() });
+      if (!r.ok) { $('uErr').textContent = r.j.error || 'Underwriting stopped. Try again.'; break; }
+      r.j.items.forEach(x => { const l = listings.find(y => y.lid === x.lid); if (l) Object.assign(l, x, { uw: true, skip0: x.skip, sel: l.sel }); });
+      done += chunk.length; $('uBar').firstElementChild.style.width = Math.round(done / todo.length * 100) + '%';
+      renderTable();
+    }
+    $('uBtn').disabled = false; setTimeout(() => { $('uBar').hidden = true; $('uBar').firstElementChild.style.width = 0; }, 600); summary();
+  };
+
+  // ── 4. Message ──
+  function pace() { const n = sendable().length, cap = +$('mCap').value, d = Math.ceil(n / cap);
+    $('mPace').textContent = n <= cap ? `All ${n} go out now.` : `The first ${cap} go out now and ${cap} more each morning at 7am Central. Done in about ${d} days.`;
+    if (!$('mName').value) $('mName').value = `${$('qZip').value || $('qCity').value || 'Offers'} · ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`; }
+  $('mCap').onchange = pace;
+  let pt; function preview() { clearTimeout(pt); pt = setTimeout(async () => {
+    const it = sendable()[0]; if (!it) return;
+    const r = await api({ action: 'preview', item: it, settings: S() }); if (!r.ok) return;
+    $('pvFrom').textContent = 'From: ' + r.j.from + (r.j.replyTo ? '  ·  Replies to ' + r.j.replyTo : ''); $('pvSubj').textContent = r.j.subject; $('pvText').textContent = r.j.text; $('pvWho').textContent = 'To ' + (it.agent.name || it.agent.email);
+  }, 250); }
+  ['mSubj', 'mBody'].forEach(id => $(id).addEventListener('input', preview));
+  $('mBtn').onclick = async () => {
+    $('mErr').textContent = '';
+    if (!sender) { $('mErr').textContent = 'Set up your sending email in step 1 first.'; $('sCard').scrollIntoView({ behavior: 'smooth' }); return; }
+    const items = sendable(); if (!items.length) return;
+    if (!confirm(`Send ${items.length} offer${items.length === 1 ? '' : 's'} to listing agents from ${sender.email}?`)) return;
+    $('mBtn').disabled = true; $('mBtn').textContent = 'Sending…';
+    const r = await api({ action: 'create', name: $('mName').value, settings: S(), items });
+    $('mBtn').disabled = false;
+    if (!r.ok) { $('mErr').textContent = r.j.error || 'Couldn\'t start the campaign.'; summary(); return; }
+    listings.forEach(l => { if (items.includes(l)) { l.already = true; l.sel = false; } });
+    $('rCard').hidden = true; $('mCard').hidden = true; $('mName').value = '';
+    show('camps');
+  };
+
+  // ── Campaigns ──
+  const STL = { sending: 'Sending', paused: 'Paused', done: 'Done' };
+  async function loadCamps() {
+    const r = await api({ action: 'list' }); if (!r.ok) return;
+    const C = r.j.campaigns; $('campCount').textContent = C.length ? `(${C.length})` : '';
+    $('campList').innerHTML = C.length ? C.map(c => { const sent = c.counts.sent || 0, q = c.counts.queued || 0;
+      return `<section class="card camp" data-id="${c.id}"><div class="ctop"><div class="cm"><b>${esc(c.name)}</b><small>${new Date(c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · ${sent} of ${c.total} sent${q ? ` · ${c.today} today, up to ${c.dailyCap} a day` : ''}${c.counts.optout ? ` · ${c.counts.optout} opted out` : ''}${c.counts.failed ? ` · ${c.counts.failed} failed` : ''}</small></div>
+        <span class="st ${c.status}">${STL[c.status] || c.status}</span><div class="cbtns">${c.status === 'sending' ? '<button class="btn ghost sm" data-a="pause">Pause</button>' : ''}${c.status === 'paused' ? '<button class="btn ghost sm" data-a="resume">Resume</button>' : ''}<button class="btn ghost sm" data-a="view">Details</button><button class="btn ghost sm del" data-a="delete">Delete</button></div></div>
+        <div class="cbar"><i style="width:${Math.round(sent / c.total * 100)}%"></i></div><div class="cdet" hidden></div></section>`; }).join('')
+      : '<div class="card empty">No campaigns yet. Start one from New campaign.</div>';
+    $('campList').querySelectorAll('[data-a]').forEach(b => b.onclick = async () => {
+      const card = b.closest('.camp'), id = card.dataset.id, a = b.dataset.a;
+      if (a === 'view') { const d = card.querySelector('.cdet'); if (!d.hidden) { d.hidden = true; return; }
+        const r = await api({ action: 'get', id }); if (!r.ok) return; d.hidden = false;
+        d.innerHTML = `<div class="tw"><table class="dt"><thead><tr><th>Property</th><th>Agent</th><th class="r">List</th><th class="r">Offer</th><th>Status</th></tr></thead><tbody>${r.j.campaign.items.map(i => `<tr><td><b>${esc(i.street || i.address)}</b><small>${esc(i.city || '')}</small></td><td><b>${esc(i.agent.name || '')}</b><small>${esc(i.agent.email)}</small></td><td class="r">${money(i.list)}</td><td class="r">${money(i.offer)}</td><td>${{ sent: 'Sent' + (i.sentAt ? ' ' + new Date(i.sentAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''), queued: 'Queued', optout: 'Opted out', failed: 'Failed' }[i.status] || i.status}</td></tr>`).join('')}</tbody></table></div>`; return; }
+      if (a === 'delete' && !confirm('Delete this campaign? Queued offers won\'t send.')) return;
+      b.disabled = true; await api({ action: a, id }); loadCamps();
+    });
+  }
+
+  if (pin) unlock(); else acctUnlock(unlock);
+})();
+</script>
+</body>
+</html>

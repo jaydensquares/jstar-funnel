@@ -65,7 +65,7 @@ export function home({ ICON, TRIAL, url, visual, finalCta, FEATURES, GROUPS, esc
 <section class="hero"><div class="w">
   <div>
     <h1>Find, run and assign more <em>wholesale deals</em> from one login.</h1>
-    <p class="lead">Seller funnel, owner lists, skip tracing, comps and max offers, photo repair estimates, contracts and buyer blasts, plus an AI assistant that writes your offers and follows up for you.</p>
+    <p class="lead">Seller funnel, owner lists, bulk offers to listing agents, skip tracing, comps and max offers, photo repair estimates, contracts and buyer blasts, plus an AI assistant that writes your offers and follows up for you.</p>
     <div class="ctas"><a class="btn go lg" href="${TRIAL}">Start my 3-day free trial</a><a class="btn ghost lg" href="#vsl-vsl" data-watch="vsl-vsl">Watch the 2½-min demo</a></div>
     <ul class="checks"><li>${ICON.check}3 days free</li><li>${ICON.check}From $89/mo after</li><li>${ICON.check}Cancel anytime</li><li>${ICON.check}Every tool on every plan</li></ul>
   </div>
@@ -73,7 +73,7 @@ export function home({ ICON, TRIAL, url, visual, finalCta, FEATURES, GROUPS, esc
 </div></section>
 
 <section class="facts" aria-label="At a glance"><div class="w">
-  <div><b>11 tools</b><span>in one login</span></div>
+  <div><b>12 tools</b><span>in one login</span></div>
   <div><b>~10 sec</b><span>from address to max offer</span></div>
   <div><b>$${STACK_TOTAL}/mo</b><span>of separate tools replaced</span></div>
   <div><b>AI included</b><span>offers, replies and follow-up</span></div>
@@ -204,7 +204,7 @@ ${finalCta('Get your funnel live today.', 'Sign up, add your business name and p
 </div>`;
   return {
     title: 'JStar Pro | Wholesaling software: leads, comps, contracts and AI in one login',
-    desc: 'Seller funnel, owner lists, skip tracing, comps and max offers, photo repair estimates with AI after-repair renders, contracts and buyer blasts, plus an AI assistant. 3 days free, from $89/mo.',
+    desc: 'Seller funnel, owner lists, bulk offers to listing agents, skip tracing, comps and max offers, photo repair estimates with AI after-repair renders, contracts and buyer blasts, plus an AI assistant. 3 days free, from $89/mo.',
     image: '/media/vsl.jpg',
     extraHead: faqLd + `<style>
   .offer[hidden] { display:none; }
