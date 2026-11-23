@@ -45,7 +45,7 @@ function head({ title, desc, canonical, image = '/media/vsl.jpg', extra = '' }) 
 <link rel="icon" href="${FAVICON}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/site.css?v=${V}">
 ${extra}</head>
 <body>
