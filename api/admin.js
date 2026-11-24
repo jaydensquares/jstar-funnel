@@ -3,7 +3,7 @@ import { pinMatches } from '../lib/pin.js';
 import { getDoc, putDoc, deleteDoc, deleteTree, listDocs, countDocs } from '../lib/db.js';
 import { getUserById, getUserByEmail, getUserBySlug, saveUser, resetToken, sha, createUser, sessionCookie, OWNER_BIZ } from '../lib/auth.js';
 import crypto from 'node:crypto';
-import { PLANS, DOMAIN_ADDON_PRICE, tierOf } from '../lib/plan.js';
+import { PLANS, DOMAIN_ADDON_PRICE, tierOf, inTrial } from '../lib/plan.js';
 import { stripe } from '../lib/stripe.js';
 import { listSubs, arrFrom } from '../lib/arr.js';
 import { meterKey, allowances } from '../lib/meter.js';
@@ -20,6 +20,7 @@ function row(u, usage, leads) {
   const paying = !!u.stripeSubId && tier !== 'trial';
   const mrr = (paying ? PLANS[tier].price : 0) + (u.plan?.domainSubId && u.plan?.customDomain ? DOMAIN_ADDON_PRICE : 0);
   return {
+    inTrial: inTrial(u), listsUnlocked: (u.plan?.trialUnlocked || []).includes('listCalls'),
     id: u.id, name: u.name, email: u.email, company: u.company || '', slug: u.slug, phone: u.phone || '',
     createdAt: u.createdAt, disabled: !!u.disabled, tier, comp: !!u.plan?.comp, paying, operator: !!u.operator,
     domainAddon: !!u.plan?.customDomain, domain: u.domain ? { name: u.domain.name, status: u.domain.status } : null,
@@ -121,6 +122,13 @@ export default async function handler(req, res) {
     const u = await getUserById(b.id);
     if (!u) return res.status(404).json({ error: 'Account not found.' });
 
+    if (b.action === 'unlockLists' || b.action === 'lockLists') {
+      // Give a trial account its plan's full monthly owner lists now, instead of the trial cap
+      const set = new Set(u.plan?.trialUnlocked || []);
+      b.action === 'unlockLists' ? set.add('listCalls') : set.delete('listCalls');
+      await saveUser({ ...u, plan: { ...(u.plan || {}), trialUnlocked: [...set] } });
+      return res.status(200).json({ ok: true, listCalls: PLANS[tierOf(u)].limits.listCalls });
+    }
     if (b.action === 'plan') {
       if (!PLANS[b.tier]) return res.status(400).json({ error: 'Bad plan.' });
       // A manual (comp) plan. A Stripe subscription change later will overwrite it.
