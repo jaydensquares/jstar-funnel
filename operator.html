@@ -223,7 +223,7 @@
       <button class="btn ghost" id="cpEmail" type="button">Copy buyer email</button>
       <button class="btn ghost" id="cpText" type="button">Copy buyer text</button>
     </div>
-    <button class="btn" id="saveDealBtn" type="button" style="margin-bottom:14px">Save to deals</button>
+    <div class="row" style="margin-bottom:14px"><button class="btn" id="sendBuyersBtn" type="button">Send to buyers</button><button class="btn ghost" id="saveDealBtn" type="button">Save to deals</button></div>
     <div class="sheet" id="sheet"></div>
     <div class="row" style="margin-top:14px">
       <button class="btn ghost" id="editBtn" type="button">Edit this property</button>
@@ -321,7 +321,7 @@
     $('snap').innerHTML = snap;
     $('sheet').innerHTML = r.j.html;
     pitch = r.j.pitch || null; $('pitchBtns').hidden = !pitch;
-    lastRun = { body, j: r.j }; $('saveDealBtn').disabled = false; $('saveDealBtn').textContent = 'Save to deals';
+    lastRun = { body, j: r.j }; $('saveDealBtn').disabled = false; $('saveDealBtn').textContent = 'Save to deals'; $('sendBuyersBtn').disabled = false; $('sendBuyersBtn').textContent = 'Send to buyers';
     $('prop').hidden = true; $('results').hidden = false;
     if (snap) J.mountSnapshot($('snap'));
     if (J) { const address = { street: body.street, city: body.city, state: body.state, zip: body.zip }; J.skipCard($('skipCard'), { target: { address }, skip: null, pin });
@@ -362,23 +362,28 @@
     if (!x.skip) box.querySelector('[data-sk]')?.click();
   });
   // Save this run as a deal in the pipeline (Underwriting)
-  $('saveDealBtn').addEventListener('click', async () => {
+  // Save to deals, or (dispo) save it quietly and jump straight to sending it to buyers
+  const toDeal = async dispo => {
     if (!lastRun) return;
+    const btn = $(dispo ? 'sendBuyersBtn' : 'saveDealBtn'), label = btn.textContent;
     const { body: b, j } = lastRun, br = j.brief || {};
     const deal = {
-      status: 'lead', propertyType: b.propertyType,
+      status: dispo ? 'contract' : 'lead', propertyType: b.propertyType,
       address: { street: b.street, city: b.city, state: b.state, zip: b.zip },
-      numbers: { arv: br.value, repairs: br.land ? 0 : br.repairs, contractPrice: br.opening, assignmentFee: 10000, buyerCostPct: 10, asking: br.asking },
+      numbers: dispo ? { arv: br.value, repairs: br.land ? 0 : br.repairs, contractPrice: br.asking || null, assignmentFee: 0, buyerCostPct: 10, asking: br.asking }
+        : { arv: br.value, repairs: br.land ? 0 : br.repairs, contractPrice: br.opening, assignmentFee: 10000, buyerCostPct: 10, asking: br.asking },
       analysis: { summary: j.summary, mao: br.mao, opening: br.opening, call: br.call, confidence: br.confidence, label: br.label },
       notes: b.notes || '', terms: { optionDays: 10, emDays: 3 },
     };
     Object.keys(deal.numbers).forEach(k => deal.numbers[k] == null && delete deal.numbers[k]);
-    $('saveDealBtn').disabled = true; $('saveDealBtn').textContent = 'Saving…';
+    btn.disabled = true; btn.textContent = dispo ? 'Opening…' : 'Saving…';
     const r = await fetch('/api/deals', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, action: 'save', deal }) })
       .then(async x => ({ ok: x.ok, j: await x.json().catch(() => ({})) })).catch(() => ({ ok: false, j: {} }));
-    if (!r.ok) { $('saveDealBtn').disabled = false; $('saveDealBtn').textContent = r.j.error || 'Could not save. Tap to retry.'; return; }
-    location.href = '/underwriting#' + r.j.deal.id;
-  });
+    if (!r.ok) { btn.disabled = false; btn.textContent = r.j.error || 'Could not save. Tap to retry.'; setTimeout(() => { btn.textContent = label; }, 3000); return; }
+    location.href = '/underwriting' + (dispo ? '?dispo=1' : '') + '#' + r.j.deal.id;
+  };
+  $('saveDealBtn').addEventListener('click', () => toDeal(false));
+  $('sendBuyersBtn').addEventListener('click', () => toDeal(true));
   const copy = async (btn, txt, label) => {
     try { await navigator.clipboard.writeText(txt); }
     catch { const t = document.createElement('textarea'); t.value = txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }

@@ -153,6 +153,9 @@
   .bpo .st { font:600 11.5px var(--body); padding:2px 7px; border-radius:6px; background:var(--bg); color:var(--muted); } .bpo .st.accepted { background:var(--ok-bg); color:var(--ok); } .bpo .st.new { background:var(--warn-bg); color:var(--warn); }
   .bpo.top { border-color:var(--ok); }
   @media (max-width:560px) { .grid4 { grid-template-columns:1fr 1fr; } }
+  #ed.dspmode .nodispo { display:none !important; }
+  .dmbar { display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; background:var(--card); border:1px solid var(--line); border-left:0; border-radius:12px; padding:14px 16px; margin:0 0 14px; }
+  .dmbar b { display:block; font-size:15px; } .dmbar span { color:var(--muted); font-size:13.5px; } .dmbar .btn { width:auto; padding:9px 14px; font-size:13.5px; }
 </style>
 <link rel="stylesheet" href="/ui.css">
 <link rel="stylesheet" href="/kit.css">
@@ -200,6 +203,7 @@
       <button class="btn" id="saveBtn" type="submit">Save</button>
     </div>
     <div class="err" id="edErr" role="alert"></div>
+    <div class="dmbar" id="dmBar" hidden><div><b>Send this deal to your buyers</b><span>Set the price, check who gets it, and send. You can also share the buyer page link below.</span></div><button type="button" class="btn ghost" id="dmFull">Show full deal</button></div>
 
     <section class="card">
       <h2>Property</h2>
@@ -213,7 +217,7 @@
       <label class="f" for="legal">Legal description <span class="opt">(from county CAD or title)</span></label><input type="text" id="legal" data-f="address.legal" placeholder="Lot 12, Block 3, Oak Forest Sec 4">
     </section>
 
-    <section class="card">
+    <section class="card nodispo">
       <h2>Seller</h2>
       <div class="grid2">
         <div><label class="f">Name (on title)</label><input type="text" data-f="seller.name"></div>
@@ -225,7 +229,7 @@
       </div>
     </section>
 
-    <section class="card" id="skipCard" hidden></section>
+    <section class="card nodispo" id="skipCard" hidden></section>
 
     <section class="card">
       <h2>Underwriting: numbers</h2>
@@ -246,7 +250,7 @@
       <button type="button" class="btn ghost" id="signBtn" style="margin-top:10px">Sign off on these numbers</button>
     </section>
 
-    <section class="card">
+    <section class="card nodispo">
       <h2>Terms &amp; title</h2>
       <div class="grid2">
         <div><label class="f">Contract date</label><input type="date" data-f="terms.contractDate"></div>
@@ -268,7 +272,7 @@
       <label class="f">Additional terms</label><textarea data-f="terms.extra" placeholder="Anything extra you agreed to"></textarea>
     </section>
 
-    <section class="card">
+    <section class="card nodispo">
       <h2>Buyer (assignee)</h2>
       <div class="grid2">
         <div><label class="f">Buyer name</label><input type="text" data-f="buyer.name"></div>
@@ -285,7 +289,7 @@
       </div>
     </section>
 
-    <section class="card">
+    <section class="card nodispo">
       <h2>Contracts</h2>
       <p class="note" style="margin-top:0">Pre-filled from this deal with the Texas wholesaling disclosures. Save first, then open, print or save as PDF. Templates only: have a Texas real estate attorney review them before you use them.</p>
       <div class="grid2">
@@ -338,9 +342,9 @@
       </div>
     </section>
 
-    <section class="card checks" id="checks"><h2>Underwriting checklist <span id="ckCount" style="text-transform:none;letter-spacing:0;font-weight:400"></span></h2></section>
+    <section class="card nodispo checks" id="checks"><h2>Underwriting checklist <span id="ckCount" style="text-transform:none;letter-spacing:0;font-weight:400"></span></h2></section>
 
-    <section class="card">
+    <section class="card nodispo">
       <h2>Notes</h2>
       <textarea data-f="notes" style="min-height:110px" placeholder="Call notes, seller situation, buyer feedback…"></textarea>
       <div id="analysisBox" class="note" style="margin-top:10px"></div>
@@ -790,14 +794,19 @@
     if (!pin && !window.ACCT) { $('gate').hidden = false; return; }
     const h = location.hash.slice(1);
     window.scrollTo({ top: 0 });
-    if (!h) { $('ed').hidden = true; $('pipe').hidden = false; return loadList(); }
+    if (!h) { $('ed').hidden = true; $('ed').classList.remove('dspmode'); $('dmBar').hidden = true; $('pipe').hidden = false; return loadList(); }
     $('pipe').hidden = true; $('ed').hidden = false; $('edErr').textContent = '';
     if (h === 'new') return fill({ status: 'lead', address: { state: 'TX' }, numbers: { buyerCostPct: 10 }, terms: { optionDays: 10, emDays: 3 } });
     let d = deals.find(x => x.id === h);
     if (!d) { const r = await api({ action: 'get', id: h }); if (r.status === 401) return lock('PIN expired or changed. Enter it again.'); d = r.j.deal; }
     if (!d) { $('edErr').textContent = 'Deal not found.'; return fill({ status: 'lead', address: {}, numbers: {} }); }
     fill(d);
+    // ?dispo=1 (from Run an address → Send to buyers): a short view with just the property, numbers and sending
+    const dm = new URLSearchParams(location.search).has('dispo');
+    $('ed').classList.toggle('dspmode', dm); $('dmBar').hidden = !dm;
+    if (dm) { history.replaceState(null, '', location.pathname + location.hash); if (!$('dispoBtn').hidden) await $('dispoBtn').onclick(); setTimeout(() => $('dispoCard').scrollIntoView({ behavior: 'smooth', block: 'start' }), 200); }
   }
+  $('dmFull').onclick = () => { $('ed').classList.remove('dspmode'); $('dmBar').hidden = true; };
   window.addEventListener('hashchange', () => { if (pin || window.ACCT) route(); });
   window.addEventListener('beforeunload', e => { if (dirty && !$('ed').hidden) { e.preventDefault(); e.returnValue = ''; } });
   if (pin) { $('gate').hidden = true; route(); } else acctUnlock(() => { $('gate').hidden = true; route(); });
