@@ -81,7 +81,7 @@ export default async function handler(req, res) {
     payload.biz = bizOf(tenant);
     const id = newId(), source = leadSource(lead.tracking);
     let html = '';
-    try { html = dealSheetHtml(payload); } catch (e) { console.error('sheet', e); }
+    try { html = dealSheetHtml(payload, { app: true }); } catch (e) { console.error('sheet', e); }
     try {
       await putDoc(`t/${tenant.id}/leads/${id}`, {
         id, createdAt: Date.now(), status: 'new', source, lead, brief: payload.error ? null : brief(payload),
@@ -102,7 +102,7 @@ export default async function handler(req, res) {
     const op = await getDoc('idx/operator').catch(() => null);
     if (op?.uid) {
       const id = newId(); let html = '';
-      try { html = dealSheetHtml(payload); } catch {}
+      try { html = dealSheetHtml(payload, { app: true }); } catch {}
       await putDoc(`t/${op.uid}/leads/${id}`, { id, createdAt: Date.now(), status: 'new', source: leadSource(lead.tracking), lead,
         brief: payload.error ? null : brief(payload), summary: payload.error ? `Analysis failed: ${payload.error}` : smsText(payload), html });
     }

@@ -90,7 +90,7 @@ export default async function handler(req, res) {
     r.forEach(x => x.status === 'rejected' && console.error('operator notify', x.reason));
   }
 
-  const out = { html: dealSheetHtml(payload), summary: smsText(payload), brief: brief(payload), pitch: investorPitch(payload) };
+  const out = { html: dealSheetHtml(payload, { app: true }), summary: smsText(payload), brief: brief(payload), pitch: investorPitch(payload) };
   try {
     const key = lead.address.toLowerCase().replace(/[^a-z0-9]/g, '');
     const old = (await listDocs(RK).catch(() => [])).sort((x, y) => y.at - x.at);
