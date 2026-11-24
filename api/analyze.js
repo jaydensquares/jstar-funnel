@@ -5,7 +5,7 @@ import { getDoc, putDoc, deleteDoc, listDocs, newId } from '../lib/db.js';
 import { useQuota } from '../lib/usage.js';
 import { brief } from '../lib/brief.js';
 import { analyzeLead } from '../lib/pipeline.js';
-import { dealSheetHtml, smsText, sendEmail, sendPush, investorPitch } from '../lib/notify.js';
+import { dealSheetHtml, appifySheet, smsText, sendEmail, sendPush, investorPitch } from '../lib/notify.js';
 
 export const maxDuration = 30;
 
@@ -40,7 +40,7 @@ export default async function handler(req, res) {
   if (b.recent === 'get') {
     if (!/^[a-z0-9]{6,32}$/.test(String(b.id || ''))) return res.status(400).json({ error: 'Bad id.' });
     const d = await getDoc(`${RK}/${b.id}`).catch(() => null);
-    return d ? res.status(200).json({ body: d.body, ...d.out, savedAt: d.at }) : res.status(404).json({ error: 'That search expired. Run it again.' });
+    return d ? res.status(200).json({ body: d.body, ...d.out, html: appifySheet(d.out?.html), savedAt: d.at }) : res.status(404).json({ error: 'That search expired. Run it again.' });
   }
   const over = await useQuota(actor, 'runs');
   if (over) return res.status(429).json({ error: over });

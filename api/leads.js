@@ -3,6 +3,7 @@ import { getActor } from '../lib/auth.js';
 import { getDoc, putDoc, deleteDoc, listDocs } from '../lib/db.js';
 import { saveDeal } from '../lib/store.js';
 import { getUsage } from '../lib/usage.js';
+import { appifySheet } from '../lib/notify.js';
 
 export const maxDuration = 30;
 const ID = /^[a-z0-9]{6,32}$/;
@@ -27,7 +28,7 @@ export default async function handler(req, res) {
     const lead = await getDoc(key(b.id));
     if (!lead) return res.status(404).json({ error: 'Lead not found.' });
 
-    if (b.action === 'get') return res.status(200).json({ lead });
+    if (b.action === 'get') return res.status(200).json({ lead: lead && { ...lead, html: appifySheet(lead.html) } });
     if (b.action === 'status') {
       if (!STAT.includes(b.status)) return res.status(400).json({ error: 'Bad status.' });
       return res.status(200).json({ lead: await putDoc(key(b.id), { ...lead, status: b.status, updatedAt: Date.now() }) });
