@@ -13,13 +13,13 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 const strip = s => String(s).replace(/<[^>]+>/g, '');
 
 export const ICON = {
-  star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.2 6.6.7-5 4.5 1.4 6.6L12 17.2l-5.9 3.3 1.4-6.6-5-4.5 6.6-.7z"/></svg>',
+  star: '<svg viewBox="12 2 76 98" aria-hidden="true"><polygon points="50,4 60,43 50,53" fill="#ffc93c"/><polygon points="50,4 50,53 40,43" fill="#c48f00"/><polygon points="88,53 60,63 50,53" fill="#ffc93c"/><polygon points="88,53 50,53 60,43" fill="#c48f00"/><polygon points="50,98 40,63 50,53" fill="#ffc93c"/><polygon points="50,98 50,53 60,63" fill="#c48f00"/><polygon points="12,53 40,43 50,53" fill="#ffc93c"/><polygon points="12,53 50,53 40,63" fill="#c48f00"/></svg>',
   chev: '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5L6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   menu: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
   play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4l15 8-15 8z"/></svg>',
   check: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.4l2.8 2.8 6.2-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
 };
-const FAVICON = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#ffc93c"/><path transform="translate(4 4)" fill="#0a0a0a" d="M12 2.5l2.9 6.2 6.6.7-5 4.5 1.4 6.6L12 17.2l-5.9 3.3 1.4-6.6-5-4.5 6.6-.7z"/></svg>')}`;
+const FAVICON = '/favicon.svg';
 
 export const TRIAL = '/signup?plan=pro';
 export const url = slug => `/features/${slug}`;
@@ -44,7 +44,9 @@ function head({ title, desc, canonical, image = '/media/vsl.jpg', extra = '' }) 
 <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
 <script>try{var t=localStorage.getItem('jtheme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
-<link rel="icon" href="${FAVICON}">
+<link rel="icon" href="${FAVICON}" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">

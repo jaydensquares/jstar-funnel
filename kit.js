@@ -263,7 +263,7 @@
     const navTo = () => { const nav = side.querySelector('nav.snav'), on = nav?.querySelector('a.on'); if (nav && on && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = Math.max(0, on.getBoundingClientRect().left - nav.getBoundingClientRect().left + nav.scrollLeft - 24); };
     requestAnimationFrame(navTo); document.fonts?.ready.then(() => setTimeout(navTo, 50)); window.addEventListener('load', () => setTimeout(navTo, 50), { once: true });
     if (bb && !bb.querySelector('.mark')) {
-      bb.insertAdjacentHTML('afterbegin', '<span class="mark"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.9 6 6.6.8-4.9 4.5 1.3 6.5L12 17l-5.9 3.3 1.3-6.5L2.5 9.3l6.6-.8z"/></svg></span>');
+      bb.insertAdjacentHTML('afterbegin', '<span class="mark"><svg viewBox="12 2 76 98" aria-hidden="true"><polygon points="50,4 60,43 50,53" fill="#ffc93c"/><polygon points="50,4 50,53 40,43" fill="#c48f00"/><polygon points="88,53 60,63 50,53" fill="#ffc93c"/><polygon points="88,53 50,53 60,43" fill="#c48f00"/><polygon points="50,98 40,63 50,53" fill="#ffc93c"/><polygon points="50,98 50,53 60,63" fill="#c48f00"/><polygon points="12,53 40,43 50,53" fill="#ffc93c"/><polygon points="12,53 50,53 40,63" fill="#c48f00"/></svg></span>');
       const logo = bb.querySelector('.logo'), ws = bb.querySelector('.ws'); const box = document.createElement('div'); box.className = 'bt'; bb.appendChild(box); if (logo) box.appendChild(logo); if (ws) box.appendChild(ws);
     }
     if (!main.querySelector('.topbar')) {
