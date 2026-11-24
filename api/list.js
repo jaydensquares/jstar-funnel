@@ -8,7 +8,7 @@
 //   drive           add a driving-for-dollars property (photo, tags, notes) to the "Driving for dollars" list
 import crypto from 'node:crypto';
 import { getActor } from '../lib/auth.js';
-import { useQuota } from '../lib/usage.js';
+import { useQuota, refundQuota, getUsage } from '../lib/usage.js';
 import { meter } from '../lib/meter.js';
 import { getDoc, putDoc, deleteDoc, newId } from '../lib/db.js';
 
@@ -174,12 +174,19 @@ export default async function handler(req, res) {
     if (!/^\d{5}$/.test(zip)) return res.status(400).json({ error: 'ZIP needs 5 digits.' });
     const types = (Array.isArray(b.types) && b.types.length ? b.types : action === 'buyers' ? ['sfr', 'multi'] : ['sfr', 'land']).flatMap(t => TYPES[t] || []);
     if (!types.length) return res.status(400).json({ error: 'Pick at least one property type.' });
-    const maxCalls = Math.min(Math.max(Number(b.maxCalls) || 4, 1), 10);
+    let maxCalls = Math.min(Math.max(Number(b.maxCalls) || 4, 1), 10);
+    // Scan only as many pages as the account has left this month (a 2,000-record scan is 4 pages; trials get 2)
+    let trimmed = false;
+    if (!actor.owner && actor.user) {
+      const u = await getUsage(actor.user).catch(() => null), lim = u?.limits?.listCalls;
+      if (lim != null) { const left = Math.max(0, lim - (u.listCalls || 0)) + (u.credits?.listCalls || 0); if (left >= 1 && left < maxCalls) { maxCalls = left; trimmed = true; } }
+    }
     const over = await useQuota(actor, 'listCalls', maxCalls);
     if (over) return res.status(429).json({ error: over });
     const params = { zipCode: zip, propertyType: types.join('|') };
     if (action === 'buyers') { const months = Math.min(Math.max(Number(b.months) || 12, 1), 36); params.saleDateRange = String(Math.round(months * 30.4)); }
     const { all, calls, err } = await pullPages(params, maxCalls, key);
+    if (calls < maxCalls || (err && !all.length)) await refundQuota(actor, 'listCalls', err && !all.length ? maxCalls : maxCalls - calls).catch(() => {}); // only pay for pages that came back
     if (err && !all.length) return res.status(502).json({ error: err === 429 ? 'Property records are busy. Try again in a minute.' : 'Couldn\'t pull property records for that ZIP. Try again.' });
     const more = all.length >= maxCalls * 500;
 
@@ -201,7 +208,7 @@ export default async function handler(req, res) {
         g.buys.sort((a, z) => z.date.localeCompare(a.date));
         return { ...g, count: g.buys.length, last: g.buys[0].date, minPrice: prices[0] || null, maxPrice: prices.at(-1) || null, k: crypto.createHash('sha1').update((g.name + g.mail).toUpperCase()).digest('hex').slice(0, 12) };
       }).sort((a, z) => z.count - a.count || z.last.localeCompare(a.last)).slice(0, 150);
-      return res.status(200).json({ buyers, scanned: all.length, calls, more, months });
+      return res.status(200).json({ buyers, scanned: all.length, calls, more, months, trimmed });
     }
 
     // Filters
@@ -237,7 +244,7 @@ export default async function handler(req, res) {
     }
     for (const r of kept) { r.owned = owners.get(r._ok); delete r._ok; if (r.owned >= 3) r.tags.push(`Owns ${r.owned} here`); }
     kept.sort((a, z) => z.tags.length - a.tags.length || (z.yrs ?? 99) - (a.yrs ?? 99));
-    return res.status(200).json({ records: kept.slice(0, MAX_LIST), scanned: all.length, kept: kept.length, calls, more, filters: f });
+    return res.status(200).json({ records: kept.slice(0, MAX_LIST), scanned: all.length, kept: kept.length, calls, more, filters: f, trimmed });
   } catch (e) {
     console.error('list', e);
     return res.status(500).json({ error: 'Something went wrong. Try again.' });
