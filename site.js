@@ -58,3 +58,13 @@
     const rf = q.get('ref'); if (rf && /^[a-z0-9-]{3,30}$/i.test(rf)) localStorage.setItem('jsRef', rf.toLowerCase());
   } catch {}
 })();
+
+// Light / dark switch: follows the device until the visitor picks one, then remembers it
+(() => {
+  const b = document.getElementById('themeBtn'); if (!b) return;
+  const root = document.documentElement, mq = matchMedia('(prefers-color-scheme: dark)');
+  b.addEventListener('click', () => {
+    const cur = root.dataset.theme || (mq.matches ? 'dark' : 'light'), next = cur === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next; try { localStorage.setItem('jtheme', next); } catch {}
+  });
+})();

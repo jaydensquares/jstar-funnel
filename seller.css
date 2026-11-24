@@ -72,7 +72,7 @@ label.f { display:block; font-size:13px; font-weight:600; margin:14px 0 7px; col
 label.f .opt-tag { font-weight:400; color:var(--muted); }
 input[type=text], input[type=tel], input[type=email], input[type=number], select, textarea {
   width:100%; font:inherit; font-size:16px; padding:14px 15px; border:1.5px solid var(--line); border-radius:12px; background:var(--input); color:var(--ink); transition:border-color .15s, box-shadow .15s; }
-select { appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364708a' stroke-width='2.2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; background-size:18px; padding-right:38px; }
+select { appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236b6b6b' stroke-width='2.2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; background-size:18px; padding-right:38px; }
 textarea { resize:vertical; min-height:88px; line-height:1.45; }
 input::placeholder, textarea::placeholder { color:var(--muted); opacity:.7; }
 input:focus, select:focus, textarea:focus { outline:none; border-color:var(--brand); box-shadow:0 0 0 4px var(--brand-soft); }
@@ -169,7 +169,7 @@ section.blk { padding-block:72px 8px; }
 .faq details { background:var(--card); border:1px solid var(--line); border-radius:16px; box-shadow:var(--sh1); }
 .faq summary { list-style:none; cursor:pointer; padding:18px 20px; font-weight:700; font-size:16px; display:flex; justify-content:space-between; align-items:center; gap:16px; }
 .faq summary::-webkit-details-marker { display:none; }
-.faq summary::after { content:""; width:28px; height:28px; flex:none; border-radius:50%; background:var(--brand-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232f6fed' stroke-width='2.6'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center/14px no-repeat; transition:transform .2s; }
+.faq summary::after { content:""; width:28px; height:28px; flex:none; border-radius:50%; background:var(--brand-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23111111' stroke-width='2.6'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E") center/14px no-repeat; transition:transform .2s; }
 .faq details[open] summary::after { transform:rotate(45deg); }
 .faq details p { margin:0; padding:0 20px 18px; color:var(--muted); line-height:1.6; font-size:15px; }
 

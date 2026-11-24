@@ -41,7 +41,9 @@ function head({ title, desc, canonical, image = '/media/vsl.jpg', extra = '' }) 
 <meta property="og:url" content="${ORIGIN}${canonical}">
 <meta property="og:image" content="${ORIGIN}${image}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)">
+<script>try{var t=localStorage.getItem('jtheme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="icon" href="${FAVICON}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,7 +64,7 @@ function nav() {
     <a href="/#compare">Compare</a>
     <a href="/support?topic=call">Talk to the founder</a>
   </nav>
-  <div class="right"><a class="login" href="/login">Log in</a><a class="btn go" href="${TRIAL}">Start free trial</a><button type="button" class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="mega">${ICON.menu}</button></div>
+  <div class="right"><button type="button" class="themebtn" id="themeBtn" aria-label="Switch between light and dark mode" title="Light / dark"><svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><a class="login" href="/login">Log in</a><a class="btn go" href="${TRIAL}">Start free trial</a><button type="button" class="burger" id="burger" aria-label="Menu" aria-expanded="false" aria-controls="mega">${ICON.menu}</button></div>
 </div>
 <div class="mega" id="mega" hidden><div class="w">
   ${cols}

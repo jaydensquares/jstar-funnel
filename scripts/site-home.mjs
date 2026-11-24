@@ -105,7 +105,7 @@ export function home({ ICON, TRIAL, url, visual, finalCta, FEATURES, GROUPS, esc
       <li><b>Handles pushback.</b> Paste what the seller said and get replies that hold your number.</li>
       <li><b>Follows up for 30 days.</b> Five check-ins that stop the moment you take over.</li>
     </ul>
-    <div class="rowlinks"><a class="btn go" href="${TRIAL}">Try JStar AI free</a><a class="arrow" style="color:var(--sun)" href="${url('jstar-ai')}">How JStar AI works</a></div>
+    <div class="rowlinks"><a class="btn go" href="${TRIAL}">Try JStar AI free</a><a class="arrow" href="${url('jstar-ai')}">How JStar AI works</a></div>
   </div>
   <div>${visual({ type: 'vsl', src: '/media/ai-vsl.mp4', poster: '/media/ai-vsl.jpg', cap: 'See JStar AI work a lead', sub: '1 minute. Real app, no actors.' })}</div>
 </div></section>
