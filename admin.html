@@ -62,6 +62,13 @@
   .sbtn.opon { background:#111111; color:#fff; border-color:#111111; }
   .pill.opr { background:linear-gradient(90deg,#111111,#7a5af8); color:#fff; }
 .enter { display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-bottom:22px; } .enter > div { flex:1; min-width:240px; } .enter h2 { margin:0 0 4px; } .enter .note { margin:0; }
+  .arrc { margin:16px 0; } .arrtop { display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; align-items:flex-end; }
+  .arrbig { font-size:40px; font-weight:750; letter-spacing:-.03em; font-variant-numeric:tabular-nums; line-height:1.1; } .arrsub { color:var(--muted); font-size:14px; margin-top:4px; }
+  .arrsub .up { color:var(--ok); font-weight:600; } .arrsub .dn { color:var(--hot); font-weight:600; }
+  .arrk { display:grid; grid-template-columns:repeat(4, auto); gap:6px 22px; text-align:right; } .arrk b { display:block; font-size:18px; font-variant-numeric:tabular-nums; } .arrk span { font-size:12px; color:var(--muted); }
+  .arrchart { margin:18px 0 6px; } .arrchart svg { width:100%; height:200px; display:block; } .arrchart text { font:11px var(--body); fill:var(--muted); }
+  .arrt { width:100%; border-collapse:collapse; font-size:13.5px; margin-top:10px; font-variant-numeric:tabular-nums; } .arrt th { text-align:right; font-size:11.5px; color:var(--muted); font-weight:600; padding:6px 8px; border-bottom:1px solid var(--line); } .arrt th:first-child, .arrt td:first-child { text-align:left; } .arrt td { text-align:right; padding:7px 8px; border-bottom:1px solid var(--line2, var(--line)); } .arrt .g { color:var(--ok); } .arrt .r { color:var(--hot); }
+  @media (max-width:700px) { .arrk { grid-template-columns:repeat(2, auto); text-align:left; } .arrbig { font-size:32px; } }
 </style>
 <link rel="stylesheet" href="/ui.css">
 <meta name="robots" content="noindex">
@@ -84,6 +91,8 @@
     <section class="card enter"><div><h2>Your own JStar Pro</h2><p class="note">Every tool a paid user gets (leads, deals, buyers, skip tracing, run an address, batch, photos, lists, funnel and ads) with no limits. Your own funnel's leads land in this inbox.</p></div><button class="btn" id="enterApp" type="button">Open the full app</button><p class="err" id="enterErr" role="alert"></p></section>
     <h1 style="margin-bottom:14px">Accounts</h1>
     <div class="stat4 eight" id="stats"></div>
+    <section class="card arrc" id="arrCard"><div class="arrtop"><div><h2>ARR</h2><div class="arrbig" id="arrBig">…</div><div class="arrsub" id="arrSub"></div></div><div class="arrk" id="arrK"></div></div>
+      <div id="arrChart" class="arrchart"></div><div id="arrTbl"></div><p class="note" id="arrNote"></p></section>
     <div class="admgrid">
       <section class="card"><h2>Data usage this month</h2><div id="dataUse"></div>
         <p class="note">Calls JStar Pro made to your data providers, all accounts combined. Repeat addresses come from the 30-day cache and don't count. Set your plan sizes in Vercel with RENTCAST_MONTHLY_CALLS and REALIE_MONTHLY_CALLS.</p></section>
@@ -203,11 +212,37 @@
     $('refresh').disabled = false;
     if (r.status === 401) { sessionStorage.removeItem('jsPin'); $('dash').hidden = true; $('gate').hidden = false; $('pinErr').textContent = 'Wrong PIN.'; return false; }
     if (!r.ok) { $('err').textContent = r.j.error || 'Could not load.'; return true; }
-    rows = r.j.rows; stats(r.j.totals); render(); dataUse(r.j.data); costs(r.j.totals, r.j.vendor, r.j.units); support(r.j.support || []); loadAffs();
+    rows = r.j.rows; stats(r.j.totals); render(); dataUse(r.j.data); costs(r.j.totals, r.j.vendor, r.j.units); support(r.j.support || []); loadAffs(); loadArr();
     $('asof').textContent = 'Updated ' + new Date().toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
     return true;
   }
   const usd = n => '$' + (Number(n) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  async function loadArr() {
+    const r = await call({ action: 'arr' });
+    if (!r.ok || r.j.error) { $('arrBig').textContent = '—'; $('arrSub').textContent = r.j?.error || 'Couldn\'t load ARR.'; return; }
+    const M = r.j.months || [], now = r.j.now || { arr: 0, mrr: 0, subs: 0 }, last = M.length > 1 ? M[M.length - 2] : null, cur = M[M.length - 1] || { new: 0, churn: 0 };
+    const $$ = n => '$' + Math.round(n || 0).toLocaleString();
+    const g = last && last.arr ? Math.round((now.arr - last.arr) / last.arr * 1000) / 10 : null;
+    $('arrBig').textContent = $$(now.arr);
+    $('arrSub').innerHTML = `${$$(now.mrr)} MRR × 12 · ${now.subs} paying subscription${now.subs === 1 ? '' : 's'}` + (g != null ? ` · <span class="${g >= 0 ? 'up' : 'dn'}">${g >= 0 ? '▲' : '▼'} ${Math.abs(g)}%</span> vs end of last month` : '');
+    const netNew = cur.new - cur.churn, avg = now.subs ? now.mrr / now.subs : 0;
+    $('arrK').innerHTML = [[$$(cur.new), 'New MRR this month'], [$$(cur.churn), 'Churned MRR'], [(netNew >= 0 ? '+' : '−') + $$(Math.abs(netNew)).slice(0), 'Net new MRR'], [$$(avg), 'Avg per customer / mo']].map(([b, s]) => `<div><b>${b}</b><span>${s}</span></div>`).join('');
+    // Chart: ARR at the end of each month
+    const P = M.slice(-12);
+    if (P.length) {
+      const W = 800, H = 200, pl = 52, pr = 12, pt = 12, pb = 24, max = Math.max(1000, ...P.map(p => p.arr)) * 1.1;
+      const x = i => pl + (P.length === 1 ? (W - pl - pr) / 2 : i * (W - pl - pr) / (P.length - 1)), y = v => pt + (H - pt - pb) * (1 - v / max);
+      const step = Math.pow(10, Math.floor(Math.log10(max / 3))), tick = Math.ceil(max / 4 / step) * step;
+      const grid = []; for (let v = 0; v <= max; v += tick) grid.push(`<line x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}" stroke="currentColor" opacity=".12"/><text x="${pl - 8}" y="${y(v) + 4}" text-anchor="end">${v >= 1000 ? '$' + Math.round(v / 1000) + 'k' : '$' + v}</text>`);
+      const pts = P.map((p, i) => `${x(i)},${y(p.arr)}`).join(' ');
+      const mn = m => new Date(m + '-15').toLocaleDateString('en-US', { month: 'short' });
+      $('arrChart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="ARR by month" style="color:var(--ink)">${grid.join('')}
+        <polygon points="${x(0)},${y(0)} ${pts} ${x(P.length - 1)},${y(0)}" fill="#ffc93c" opacity=".22"/><polyline points="${pts}" fill="none" stroke="#e0a800" stroke-width="2.5" vector-effect="non-scaling-stroke"/>
+        ${P.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.arr)}" r="3.5" fill="#e0a800"><title>${mn(p.m)}: ${$$(p.arr)} ARR</title></circle><text x="${x(i)}" y="${H - 6}" text-anchor="middle">${mn(p.m)}</text>`).join('')}</svg>`;
+    } else $('arrChart').innerHTML = '';
+    $('arrTbl').innerHTML = M.length ? `<div style="overflow-x:auto"><table class="arrt"><thead><tr><th>Month</th><th>ARR</th><th>MRR</th><th>New</th><th>Churned</th><th>Subs</th></tr></thead><tbody>${M.slice(-6).reverse().map(p => `<tr><td>${new Date(p.m + '-15').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</td><td><b>${$$(p.arr)}</b></td><td>${$$(p.mrr)}</td><td class="g">${p.new ? '+' + $$(p.new) : '—'}</td><td class="r">${p.churn ? '−' + $$(p.churn) : '—'}</td><td>${p.subs}</td></tr>`).join('')}</tbody></table></div>` : '<p class="note">No paid subscriptions yet.</p>';
+    $('arrNote').textContent = 'From Stripe at list price: counts each subscription from its first payment (after any free trial) until it cancels. Coupons and referral credits aren\'t subtracted.' + (r.j.manual ? ` ${r.j.manual} comped or manual plan${r.j.manual === 1 ? ' isn\'t' : 's aren\'t'} in Stripe and aren't counted.` : '');
+  }
   async function loadAffs() {
     const r = await call({ action: 'affiliates' }); if (!r.ok) return;
     const L = r.j.affiliates, S = r.j.sums;

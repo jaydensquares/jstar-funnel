@@ -5,6 +5,7 @@ import { getUserById, getUserByEmail, getUserBySlug, saveUser, resetToken, sha, 
 import crypto from 'node:crypto';
 import { PLANS, DOMAIN_ADDON_PRICE, tierOf } from '../lib/plan.js';
 import { stripe } from '../lib/stripe.js';
+import { listSubs, arrFrom } from '../lib/arr.js';
 import { meterKey, allowances } from '../lib/meter.js';
 import { accountCost, vendorSpend, unitCosts, KINDS } from '../lib/costs.js';
 import { getAff, saveAff, totals, payOut, publicAff } from '../lib/affiliate.js';
@@ -61,6 +62,19 @@ export default async function handler(req, res) {
       const [cur, last] = await Promise.all([getDoc(meterKey(m)).catch(() => null), getDoc(meterKey(prev.toISOString().slice(0, 7).replace('-', ''))).catch(() => null)]);
       const support = (await listDocs('support').catch(() => [])).sort((a, z) => z.at - a.at).slice(0, 10);
       return res.status(200).json({ rows, totals, month: m, data: { cur: cur || {}, last: last || {}, allow: allowances() }, vendor: { cur: vendorSpend(cur || {}), last: vendorSpend(last || {}) }, units: unitCosts(), support });
+    }
+
+    if (b.action === 'arr') {
+      // ARR from Stripe; comped and manual Agency plans aren't in Stripe so they're listed separately
+      try {
+        const r = arrFrom(await listSubs());
+        const users = await listDocs('users').catch(() => []);
+        const manual = users.filter(u => !u.stripeSubId && u.plan?.tier && !['trial'].includes(u.plan.tier) && !u.operator).length;
+        return res.status(200).json({ ...r, manual });
+      } catch (e) {
+        console.error('admin arr', e.message);
+        return res.status(200).json({ error: /permission|restricted|rak_/i.test(e.message) ? 'Your Stripe key can\'t read subscriptions. In Stripe, give the restricted key Subscriptions: Read.' : 'Couldn\'t load Stripe data: ' + e.message });
+      }
     }
 
     // Affiliates: who's owed what, mark payouts sent, void a refunded line, ban
