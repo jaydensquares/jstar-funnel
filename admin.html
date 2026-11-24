@@ -224,7 +224,7 @@
     const $$ = n => '$' + Math.round(n || 0).toLocaleString();
     const g = last && last.arr ? Math.round((now.arr - last.arr) / last.arr * 1000) / 10 : null;
     $('arrBig').textContent = $$(now.arr);
-    $('arrSub').innerHTML = `${$$(now.mrr)} MRR × 12 · ${now.subs} paying subscription${now.subs === 1 ? '' : 's'}` + (g != null ? ` · <span class="${g >= 0 ? 'up' : 'dn'}">${g >= 0 ? '▲' : '▼'} ${Math.abs(g)}%</span> vs end of last month` : '');
+    $('arrSub').innerHTML = `${$$(now.mrr)} MRR × 12 · ${now.subs} subscription${now.subs === 1 ? '' : 's'}${now.trials ? ` (${now.trials} in free trial, ${$$(now.trialMrr * 12)} of the ARR)` : ''}` + (g != null ? ` · <span class="${g >= 0 ? 'up' : 'dn'}">${g >= 0 ? '▲' : '▼'} ${Math.abs(g)}%</span> vs end of last month` : '');
     const netNew = cur.new - cur.churn, avg = now.subs ? now.mrr / now.subs : 0;
     $('arrK').innerHTML = [[$$(cur.new), 'New MRR this month'], [$$(cur.churn), 'Churned MRR'], [(netNew >= 0 ? '+' : '−') + $$(Math.abs(netNew)).slice(0), 'Net new MRR'], [$$(avg), 'Avg per customer / mo']].map(([b, s]) => `<div><b>${b}</b><span>${s}</span></div>`).join('');
     // Chart: ARR at the end of each month
@@ -241,7 +241,7 @@
         ${P.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.arr)}" r="3.5" fill="#e0a800"><title>${mn(p.m)}: ${$$(p.arr)} ARR</title></circle><text x="${x(i)}" y="${H - 6}" text-anchor="middle">${mn(p.m)}</text>`).join('')}</svg>`;
     } else $('arrChart').innerHTML = '';
     $('arrTbl').innerHTML = M.length ? `<div style="overflow-x:auto"><table class="arrt"><thead><tr><th>Month</th><th>ARR</th><th>MRR</th><th>New</th><th>Churned</th><th>Subs</th></tr></thead><tbody>${M.slice(-6).reverse().map(p => `<tr><td>${new Date(p.m + '-15').toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</td><td><b>${$$(p.arr)}</b></td><td>${$$(p.mrr)}</td><td class="g">${p.new ? '+' + $$(p.new) : '—'}</td><td class="r">${p.churn ? '−' + $$(p.churn) : '—'}</td><td>${p.subs}</td></tr>`).join('')}</tbody></table></div>` : '<p class="note">No paid subscriptions yet.</p>';
-    $('arrNote').textContent = 'From Stripe at list price: counts each subscription from its first payment (after any free trial) until it cancels. Coupons and referral credits aren\'t subtracted.' + (r.j.manual ? ` ${r.j.manual} comped or manual plan${r.j.manual === 1 ? ' isn\'t' : 's aren\'t'} in Stripe and aren't counted.` : '');
+    $('arrNote').textContent = 'From Stripe at list price: counts each subscription from sign-up until it cancels, free trials included. Coupons and referral credits aren\'t subtracted.' + (r.j.manual ? ` ${r.j.manual} comped or manual plan${r.j.manual === 1 ? ' isn\'t' : 's aren\'t'} in Stripe and aren't counted.` : '');
   }
   async function loadAffs() {
     const r = await call({ action: 'affiliates' }); if (!r.ok) return;
