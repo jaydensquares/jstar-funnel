@@ -151,7 +151,7 @@
         <td>${r.leads}</td>
         <td><a href="/f/${esc(r.slug)}" target="_blank" rel="noopener">/f/${esc(r.slug)}</a>${r.domain ? `<small>${esc(r.domain.name)} · ${esc(r.domain.status || '')}</small>` : r.domainAddon ? '<small>Domain paid, not set up</small>' : ''}</td>
         <td>${date(r.createdAt)}</td>
-        <td><div class="act"><button class="sbtn ${r.operator ? 'opon' : ''}" data-act="${r.operator ? 'unoperator' : 'operator'}" type="button" title="Operator: every feature, no limits, your own funnel's leads land in this inbox">${r.operator ? 'Operator ✓' : 'Make operator'}</button><button class="sbtn" data-act="resetLink" type="button">Reset link</button>
+        <td><div class="act"><button class="sbtn ${r.operator ? 'opon' : ''}" data-act="${r.operator ? 'unoperator' : 'operator'}" type="button" title="Operator: every feature, no limits, your own funnel's leads land in this inbox">${r.operator ? 'Operator ✓' : 'Make operator'}</button><button class="sbtn" data-act="email" type="button">Change email</button><button class="sbtn" data-act="resetLink" type="button">Reset link</button>
           <button class="sbtn ${r.disabled ? '' : 'warn'}" data-act="${r.disabled ? 'enable' : 'disable'}" type="button">${r.disabled ? 'Enable' : 'Disable'}</button>${r.paying || r.operator ? '' : '<button class="sbtn warn" data-act="delete" type="button" title="Permanently delete this account and all its data">Delete</button>'}</div></td>
       </tr>`).join('');
   }
@@ -250,10 +250,13 @@
     const id = btn.closest('tr').dataset.id, act = btn.dataset.act, r0 = rows.find(r => r.id === id);
     if (act === 'delete' && btn.dataset.sure !== '1') { btn.dataset.sure = '1'; btn.textContent = 'Click again: delete forever'; setTimeout(() => { if (btn.isConnected) { btn.dataset.sure = ''; btn.textContent = 'Delete'; } }, 4000); return; }
     if (act === 'disable' && btn.dataset.sure !== '1') { btn.dataset.sure = '1'; btn.textContent = 'Click again to disable'; setTimeout(() => { if (btn.isConnected) { btn.dataset.sure = ''; btn.textContent = 'Disable'; } }, 4000); return; }
+    let extra = {};
+    if (act === 'email') { const v = prompt(`New email for ${r0.name}:`, r0.email || ''); if (!v || v.trim().toLowerCase() === String(r0.email || '').toLowerCase()) return; extra = { email: v.trim() }; }
     btn.disabled = true;
-    const r = await call({ action: act, id });
+    const r = await call({ action: act, id, ...extra });
     btn.disabled = false;
     if (!r.ok) { $('err').textContent = r.j.error || 'Could not do that.'; return; }
+    if (act === 'email') $('err').textContent = r.j.note ? 'Email changed.' + r.j.note : '';
     if (act === 'resetLink') {
       $('linkbox').hidden = false; $('linkFor').textContent = `For ${r0.name} (${r0.email}). Expires in ${r.j.expires}.`;
       $('linkOut').value = r.j.link; $('linkOut').select(); $('linkbox').scrollIntoView({ behavior:'smooth', block:'center' });

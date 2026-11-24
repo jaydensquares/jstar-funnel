@@ -4,6 +4,7 @@ import { getDoc, putDoc, deleteDoc, deleteTree, listDocs, countDocs } from '../l
 import { getUserById, getUserByEmail, getUserBySlug, saveUser, resetToken, sha, createUser, sessionCookie, OWNER_BIZ } from '../lib/auth.js';
 import crypto from 'node:crypto';
 import { PLANS, DOMAIN_ADDON_PRICE, tierOf } from '../lib/plan.js';
+import { stripe } from '../lib/stripe.js';
 import { meterKey, allowances } from '../lib/meter.js';
 import { accountCost, vendorSpend, unitCosts, KINDS } from '../lib/costs.js';
 import { getAff, saveAff, totals, payOut, publicAff } from '../lib/affiliate.js';
@@ -140,6 +141,20 @@ export default async function handler(req, res) {
       const n = await deleteTree(`t/${u.id}`);
       await deleteDoc(`users/${u.id}`);
       return res.status(200).json({ ok: true, removed: n });
+    }
+    if (b.action === 'email') {
+      // Fix a typo'd sign-up email: moves the login index, updates the account and the Stripe customer
+      const email = String(b.email || '').trim().toLowerCase();
+      if (!/^[^\s@,;<>]+@[^\s@,;<>]+\.[a-z]{2,}$/.test(email)) return res.status(400).json({ error: 'That email doesn\'t look right.' });
+      const taken = await getUserByEmail(email).catch(() => null);
+      if (taken && taken.id !== u.id) return res.status(400).json({ error: 'Another account already uses that email.' });
+      const oldKey = `idx/email/${sha(String(u.email || '').toLowerCase())}`;
+      await putDoc(`idx/email/${sha(email)}`, { uid: u.id });
+      const prev = await getDoc(oldKey).catch(() => null); if (prev?.uid === u.id && String(u.email || '').toLowerCase() !== email) await deleteDoc(oldKey);
+      await saveUser({ ...u, email, ...(u.settings?.notifyEmail === u.email ? { settings: { ...u.settings, notifyEmail: email } } : {}) });
+      let stripeNote = '';
+      if (u.stripeCustomerId) await stripe('POST', `customers/${u.stripeCustomerId}`, { email }).catch(e => { stripeNote = ' Stripe customer email wasn\'t updated; change it in Stripe.'; console.error('admin email stripe', e.message); });
+      return res.status(200).json({ ok: true, email, note: stripeNote });
     }
     if (b.action === 'resetLink') {
       if (u.disabled) return res.status(400).json({ error: 'Enable the account first.' });
