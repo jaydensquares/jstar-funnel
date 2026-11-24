@@ -111,7 +111,7 @@
     </div>
     <div class="err" id="err" role="alert"></div>
     <div class="tbl"><table>
-      <thead><tr><th>Account</th><th>Plan</th><th>Analyses this month</th><th>Photos</th><th>Cost / margin</th><th>Leads</th><th>Funnel / domain</th><th>Joined</th><th></th></tr></thead>
+      <thead><tr><th>Account</th><th>Plan</th><th>Analyses this month</th><th>Photos</th><th>Cost this month</th><th>Leads</th><th>Funnel / domain</th><th>Joined</th><th></th></tr></thead>
       <tbody id="rows"></tbody>
     </table></div>
     <div class="card linkbox" id="linkbox" hidden>
@@ -168,8 +168,9 @@
   const KL = { runs: 'Deal analyses', photos: 'Photo reports', renders: 'After-repair renders', listCalls: 'List pages (500 records)', skips: 'Skip trace hits', agent: 'JStar AI messages' };
   function costCell(r) {
     const c = r.cost, tip = Object.entries(c.parts).filter(([, v]) => v > 0).map(([k, v]) => `${KL[k]} ${usd2(v)}`).concat(c.stripe ? [`Stripe ${usd2(c.stripe)}`] : [], c.affiliate ? [`Affiliate ${usd2(c.affiliate)}`] : []).join(' · ') || 'No usage yet';
-    const m = c.margin == null ? '' : `<small class="${c.margin < 50 ? 'lo' : 'okm'}">${c.margin}% margin · ${usd2(c.profit)} profit</small>`;
-    return `<span title="${esc(tip)}">${usd2(c.cost)}</span>${m}`;
+    const m = c.margin == null ? '' : `<small class="${c.margin < 50 ? 'lo' : 'okm'}">${c.trial ? 'in trial · ' : ''}${c.margin}% margin · ${usd2(c.profit)} profit</small>`;
+    const per = r.usage.runs ? ` · ${usd2((c.parts.runs || 0) / r.usage.runs)}/analysis` : '';
+    return `<span title="${esc(tip)}">${usd2(c.cost)}</span><small>${esc(tip)}${per}</small>${m}`;
   }
   function costs(t, v, units) {
     $('costSum').textContent = t.margin == null ? `Est. cost ${usd2(t.cost)} · no paying revenue yet` : `Revenue ${money(t.mrr)} · est. cost ${usd2(t.cost)} · profit ${usd2(t.profit)} · ${t.margin}% margin`;
