@@ -8,6 +8,14 @@
     {
       "source": "/f/:slug/:page(privacy|terms)",
       "destination": "/api/funnel?slug=:slug&page=:page"
+    },
+    {
+      "source": "/d/:t/:img",
+      "destination": "/api/dealpage?t=:t&img=:img"
+    },
+    {
+      "source": "/d/:t",
+      "destination": "/api/dealpage?t=:t"
     }
   ],
   "functions": {

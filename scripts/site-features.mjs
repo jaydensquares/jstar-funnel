@@ -236,6 +236,7 @@ export const FEATURES = {
     how: [['Bring your buyers', 'Import a CSV from Salesforce or a spreadsheet, or find cash buyers by ZIP.'], ['Set buy boxes', 'Flipper, landlord or builder, where they buy and their price range.'], ['Hit Send to buyers', 'Every buyer the deal fits is picked for you.']],
     split: { h: 'The right buyers are already checked.', p: 'Open a deal, hit Send to buyers and everyone whose buy box fits is selected. Email them all, or text them with their first name dropped in.', img: { type: 'shot', wide: true, src: '/media/site/c-send.jpg', alt: 'Send to buyers panel with four matching buyers selected' } },
     details: [
+      ['Buyer deal page', 'A link for every deal with photos, numbers and the potential profit. Buyers make an offer or request a showing, and you see every offer side by side.'],
       ['Import CSV', 'Bring buyers over from Salesforce, a CRM export or a spreadsheet.'],
       ['Find cash buyers', 'Investors who recently bought in a ZIP, ready to add to your list.'],
       ['Buy boxes', 'Flipper, landlord or builder, areas they buy in, and their price range.'],

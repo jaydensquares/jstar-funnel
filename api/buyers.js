@@ -137,13 +137,15 @@ export default async function handler(req, res) {
       const replyTo = (actor.member?.email || biz.email || actor.user?.email || process.env.NOTIFY_EMAIL || '').split(',')[0];
       const mailAddr = actor.user?.settings?.address || '';
       const rows = [['Price', price && $$(price)], ['ARV', n.arv && $$(n.arv)], ['Repairs (est.)', n.repairs && $$(n.repairs)], ['Potential spread', spread > 0 && $$(spread)], ['Property', deal.propertyType], ['Showings', showing]].filter(([, v]) => v);
+      const dpg = await getDoc(`${sc ? 't/' + sc : 'owner'}/dpage/${deal.id}`).catch(() => null);
+      const pageLink = dpg?.on && dpg.token ? `https://${req.headers['x-forwarded-host'] || req.headers.host}/d/${dpg.token}` : '';
       const body = x => {
         const unsub = `https://${req.headers['x-forwarded-host'] || req.headers.host}/api/buyers?u=${unsubToken(sc, x.id)}`;
         const hi = `Hi ${esc((x.name || '').split(' ')[0] || 'there')},`;
         return {
           from: `${biz.company || 'JStar Pro'} <${fromAddr}>`, to: [x.email], subject, ...(replyTo ? { reply_to: replyTo } : {}),
           headers: { 'List-Unsubscribe': `<${unsub}>` },
-          text: `${hi.replace(/&amp;/g, '&')}\n\nNew off-market deal: ${addr}\n\n${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}${note ? '\n\n' + note : ''}\n\nReply to this email or call ${biz.phone || ''} to lock it up. First come, first served.\n\n${biz.company || ''}${mailAddr ? '\n' + mailAddr : ''}\nUnsubscribe: ${unsub}`,
+          text: `${hi.replace(/&amp;/g, '&')}\n\nNew off-market deal: ${addr}\n\n${rows.map(([k, v]) => `${k}: ${v}`).join('\n')}${note ? '\n\n' + note : ''}${pageLink ? '\n\nPhotos and offers: ' + pageLink : ''}\n\nReply to this email or call ${biz.phone || ''} to lock it up. First come, first served.\n\n${biz.company || ''}${mailAddr ? '\n' + mailAddr : ''}\nUnsubscribe: ${unsub}`,
           html: layout({ brand: { name: biz.company || 'Off-market deals', sub: biz.phone ? `Call or text ${biz.phone}` : '' }, legal: false,
             preheader: `${price ? $$(price) + ' · ' : ''}${spread > 0 ? $$(spread) + ' potential spread · ' : ''}${addr}`,
             eyebrow: 'New off-market deal', title: esc(addr),
@@ -151,7 +153,7 @@ export default async function handler(req, res) {
               + R(rows.map(([k, v]) => [k, esc(v)]))
               + (note ? callout(esc(note).replace(/\n/g, '<br>'), 'info') : '')
               + P(`Reply to this email${biz.phone ? ` or call <b>${esc(biz.phone)}</b>` : ''} to lock it up. First come, first served.`)
-              + (replyTo ? button(`mailto:${replyTo}?subject=${encodeURIComponent('Re: ' + subject)}`, "I'm interested") : ''),
+              + (pageLink ? button(pageLink, 'See photos and make an offer') : replyTo ? button(`mailto:${replyTo}?subject=${encodeURIComponent('Re: ' + subject)}`, "I'm interested") : ''),
             footer: `${esc(biz.company || '')}${mailAddr ? '<br>' + esc(mailAddr) : ''}<br>You're receiving this because you're on our cash buyers list. <a href="${unsub}" style="color:#a5a5a5;text-decoration:underline">Unsubscribe</a>` }),
         };
       };
