@@ -115,7 +115,11 @@ Always answer by calling the report tool exactly once. Do not reply with plain t
   const out = j.content?.find(c => c.type === 'tool_use')?.input;
   if (!out) return res.status(502).json({ error: 'AI returned no report. Try again.' });
 
-  const repairs = (out.repairs || []).map(x => ({
+  // The model sometimes returns the list as a JSON string; accept either
+  let rawRepairs = out.repairs;
+  if (typeof rawRepairs === 'string') { try { rawRepairs = JSON.parse(rawRepairs); } catch { rawRepairs = []; } }
+  if (!Array.isArray(rawRepairs)) rawRepairs = [];
+  const repairs = rawRepairs.map(x => ({
     item: String(x.item || '').slice(0, 60), low: Math.round(x.low || 0), high: Math.round(Math.max(x.high || 0, x.low || 0)),
     why: String(x.why || ''), photos: Array.isArray(x.photos) ? x.photos.filter(Number.isInteger) : [],
   })).filter(x => x.item && x.high > 0);
