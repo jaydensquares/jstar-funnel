@@ -67,6 +67,7 @@ function renderPage({ deal, page, biz, origin, offersCount }) {
   const street = streetShown(page, deal), place = [a.city, [a.state, a.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
   const title = page.headline || `${street}${a.city ? ', ' + a.city : ''}`;
   const photos = (page.photos || []).map(id => `/d/${page.token}/${id}.jpg`);
+  const aiSet = new Set(page.ai || []), aiFlags = (page.photos || []).map(id => aiSet.has(id));
   const facts = [page.beds && `${page.beds} bd`, page.baths && `${page.baths} ba`, page.sqft && `${page.sqft.toLocaleString()} sf`, page.yearBuilt && `Built ${page.yearBuilt}`, page.lot && `Lot ${page.lot}`, OCC_L[page.occupancy]].filter(Boolean);
   const stats = [['Price', $$(price)], ['ARV', $$(arv)], ['Est. repairs', $$(rep)], ['Potential profit', spread > 0 ? $$(spread) : '']].filter(([, v]) => v);
   const company = biz.company || biz.signer || 'Off-market deal', phone = fmtPh(biz.phone);
@@ -87,6 +88,7 @@ header b{font-size:17px;letter-spacing:-.02em}header a.call{display:inline-flex;
 main{padding:28px 0 60px}.grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:28px;align-items:start}
 .gal{display:grid;gap:8px}.gal .main{aspect-ratio:3/2;border-radius:14px;overflow:hidden;background:var(--line);position:relative}.gal .main img{width:100%;height:100%;object-fit:cover;display:block}
 .gal .th{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.gal .th button{flex:none;width:92px;height:64px;border:2px solid transparent;border-radius:8px;overflow:hidden;padding:0;cursor:pointer;background:none}.gal .th button.on{border-color:var(--ink)}.gal .th img{width:100%;height:100%;object-fit:cover;display:block}
+.gal .aib{position:absolute;left:12px;top:12px;background:#ffc93c;color:#111;font:700 12px Inter,sans-serif;padding:5px 9px;border-radius:6px}.gal .aib[hidden]{display:none}
 .gal .nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:20px;cursor:pointer}.gal .prev{left:12px}.gal .next{right:12px}.gal .cnt{position:absolute;right:12px;bottom:12px;background:rgba(0,0,0,.6);color:#fff;font-size:12.5px;font-weight:600;padding:4px 9px;border-radius:99px}
 .nophoto{aspect-ratio:3/2;border-radius:14px;background:repeating-linear-gradient(135deg,var(--card),var(--card) 12px,var(--bg) 12px,var(--bg) 24px);border:1px solid var(--line);display:grid;place-items:center;color:var(--mut);font-size:14px}
 .tag{display:inline-block;font:700 11.5px/1 Inter,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:var(--acc);color:#111;padding:6px 9px;border-radius:6px}
@@ -112,7 +114,7 @@ input:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}.tw
 </style></head><body>
 <header><div class="w"><b>${esc(company)}</b>${phone ? `<a class="call" href="tel:${esc(String(biz.phone).replace(/[^\d+]/g, ''))}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg><span>Call</span> ${esc(phone)}</a>` : ''}</div></header>
 <main><div class="w grid"><div>
-${photos.length ? `<div class="gal"><div class="main"><img id="gm" src="${photos[0]}" alt="${esc(street)}">${photos.length > 1 ? `<button class="nav prev" id="gp" aria-label="Previous photo">‹</button><button class="nav next" id="gn" aria-label="Next photo">›</button><span class="cnt" id="gc">1 / ${photos.length}</span>` : ''}</div>${photos.length > 1 ? `<div class="th">${photos.map((s, i) => `<button class="${i ? '' : 'on'}" data-i="${i}" aria-label="Photo ${i + 1}"><img src="${s}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}</div>` : '<div class="nophoto">Photos on request</div>'}
+${photos.length ? `<div class="gal"><div class="main"><img id="gm" src="${photos[0]}" alt="${esc(street)}"><span class="aib" id="gai"${aiFlags[0] ? '' : ' hidden'}>AI concept: after repairs</span>${photos.length > 1 ? `<button class="nav prev" id="gp" aria-label="Previous photo">‹</button><button class="nav next" id="gn" aria-label="Next photo">›</button><span class="cnt" id="gc">1 / ${photos.length}</span>` : ''}</div>${photos.length > 1 ? `<div class="th">${photos.map((s, i) => `<button class="${i ? '' : 'on'}" data-i="${i}" aria-label="Photo ${i + 1}"><img src="${s}" alt="" loading="lazy"></button>`).join('')}</div>` : ''}</div>` : '<div class="nophoto">Photos on request</div>'}
 <div style="margin-top:22px"><span class="tag">Off-market</span></div>
 <h1>${esc(title)}</h1>${page.headline ? `<p class="place">${esc([street, place].filter(Boolean).join(', '))}</p>` : `<p class="place">${esc(place)}</p>`}
 ${facts.length ? `<p class="facts">${esc(facts.join(' · '))}</p>` : ''}
@@ -141,8 +143,8 @@ ${price && !closed ? `<div class="mbar"><b>${$$(price)}</b><a href="#box">Make a
 <footer><div class="w">${esc(company)}${phone ? ' · ' + esc(phone) : ''} · <a href="https://getjstarpro.com/?ref=deal" rel="nofollow">Powered by JStar Pro</a></div></footer>
 <script>
 (() => {
-  const P = ${JSON.stringify(photos)}; let i = 0; const m = document.getElementById('gm');
-  const go = k => { if (!m) return; i = (k + P.length) % P.length; m.src = P[i]; const c = document.getElementById('gc'); if (c) c.textContent = (i + 1) + ' / ' + P.length; document.querySelectorAll('.th button').forEach((b, j) => b.classList.toggle('on', j === i)); };
+  const P = ${JSON.stringify(photos)}, AI = ${JSON.stringify(aiFlags)}; let i = 0; const m = document.getElementById('gm');
+  const go = k => { if (!m) return; i = (k + P.length) % P.length; m.src = P[i]; const ga = document.getElementById('gai'); if (ga) ga.hidden = !AI[i]; const c = document.getElementById('gc'); if (c) c.textContent = (i + 1) + ' / ' + P.length; document.querySelectorAll('.th button').forEach((b, j) => b.classList.toggle('on', j === i)); };
   document.querySelectorAll('.th button').forEach(b => b.onclick = () => go(+b.dataset.i));
   const gp = document.getElementById('gp'), gn = document.getElementById('gn'); if (gp) { gp.onclick = () => go(i - 1); gn.onclick = () => go(i + 1); }
   const f = document.getElementById('of'); if (!f) return; let kind = 'offer';
@@ -263,14 +265,14 @@ export default async function handler(req, res) {
       const id = pid();
       await putDoc(`dpimg/${pg.token}/${id}`, { data, at: Date.now() }, { keep: 1 });
       const cur = await loadPage(sc, dealId);
-      const next = { ...cur, photos: [...(cur.photos || []), id].slice(0, MAX_PHOTOS), updatedAt: Date.now() };
+      const next = { ...cur, photos: [...(cur.photos || []), id].slice(0, MAX_PHOTOS), ai: b.ai ? [...(cur.ai || []), id] : (cur.ai || []), updatedAt: Date.now() };
       await putDoc(`${base(sc)}/dpage/${dealId}`, next, { keep: 2 });
       return res.status(200).json({ page: next });
     }
     if (b.action === 'removePhoto' || b.action === 'movePhoto') {
       const pg = await ensurePage(sc, dealId), id = String(b.id || '');
       let photos = [...(pg.photos || [])];
-      if (b.action === 'removePhoto') { photos = photos.filter(x => x !== id); if (PID.test(id)) await deleteDoc(`dpimg/${pg.token}/${id}`).catch(() => {}); }
+      if (b.action === 'removePhoto') { photos = photos.filter(x => x !== id); pg.ai = (pg.ai || []).filter(x => x !== id); if (PID.test(id)) await deleteDoc(`dpimg/${pg.token}/${id}`).catch(() => {}); }
       else { const i = photos.indexOf(id); if (i > 0) { photos.splice(i, 1); photos.unshift(id); } }
       const next = { ...pg, photos, updatedAt: Date.now() };
       await putDoc(`${base(sc)}/dpage/${dealId}`, next, { keep: 2 });

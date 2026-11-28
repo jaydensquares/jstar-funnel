@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Dispo desk | JStar Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&display=swap" rel="stylesheet">
+<style>
+  .acct-only { display:none !important; } body.acct .acct-only { display:inline !important; } body.acct .owner-only { display:none !important; }
+  .pv { display:inline-block; font:700 11px var(--body); letter-spacing:.08em; text-transform:uppercase; background:var(--warn-bg); color:var(--warn); padding:3px 8px; border-radius:6px; vertical-align:middle; margin-left:8px; }
+  .dstats { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px; margin-bottom:16px; }
+  .dstats div { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:14px 16px; } .dstats b { display:block; font-size:24px; letter-spacing:-.02em; font-variant-numeric:tabular-nums; } .dstats span { color:var(--muted); font-size:13px; }
+  .dgrid { display:grid; grid-template-columns:340px minmax(0,1fr); gap:16px; align-items:start; }
+  .dlist { padding:0; overflow:hidden; } .dlh { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:14px 16px; border-bottom:1px solid var(--line); } .dlh h2 { margin:0; font-size:16px; } .dlh .btn { width:auto; padding:8px 12px; font-size:13px; }
+  .dfilt { display:flex; gap:4px; padding:8px 12px; border-bottom:1px solid var(--line); } .dfilt button { border:0; background:none; font:600 12.5px var(--body); color:var(--muted); padding:6px 10px; border-radius:7px; cursor:pointer; } .dfilt button.on { background:var(--bg); color:var(--ink); }
+  .ditem { display:block; width:100%; text-align:left; border:0; border-bottom:1px solid var(--line); background:none; padding:13px 16px; cursor:pointer; font:inherit; color:inherit; }
+  .ditem:hover { background:var(--bg); } .ditem.on { background:var(--bg); box-shadow:inset 3px 0 0 var(--ink); }
+  .ditem b { display:block; font-size:14.5px; } .ditem small { display:block; color:var(--muted); font-size:12.5px; margin-top:2px; }
+  .ditem .chips { display:flex; gap:6px; margin-top:7px; flex-wrap:wrap; } .chip2 { font:600 11px var(--body); padding:2px 7px; border-radius:6px; background:var(--bg); color:var(--ink2); } .chip2.g { background:var(--ok-bg); color:var(--ok); } .chip2.y { background:var(--warn-bg); color:var(--warn); }
+  .dempty { padding:28px 18px; text-align:center; color:var(--muted); font-size:14px; }
+  .ws-h { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; flex-wrap:wrap; } .ws-h h2 { margin:0 0 2px; font-size:20px; letter-spacing:-.02em; } .ws-h p { margin:0; color:var(--muted); font-size:14px; }
+  .ws-h select { width:auto; margin:0; padding:8px 10px; font-size:13.5px; }
+  .nums { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); border:1px solid var(--line); border-radius:12px; margin:16px 0; overflow:hidden; }
+  .nums div { padding:12px 14px; border-left:1px solid var(--line); } .nums div:first-child { border-left:0; } .nums small { display:block; color:var(--muted); font-size:12px; } .nums b { font-size:19px; font-variant-numeric:tabular-nums; } .nums .g b { color:var(--ok); }
+  .wtabs { display:flex; gap:4px; border-bottom:1px solid var(--line); margin:0 0 16px; overflow-x:auto; }
+  .wtabs button { border:0; background:none; font:600 14px var(--body); color:var(--muted); padding:10px 12px; border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap; } .wtabs button.on { color:var(--ink); border-bottom-color:var(--ink); }
+  .wtabs .n { font:600 11px var(--body); background:var(--bg); padding:1px 6px; border-radius:99px; margin-left:4px; } .wtabs .n.hot { background:var(--ok-bg); color:var(--ok); }
+  .g2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; } .g3 { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:12px; } .g2 > *, .g3 > * { min-width:0; }
+  .acts { display:flex; justify-content:flex-end; gap:8px; margin-top:10px; flex-wrap:wrap; } .acts .btn { width:auto; }
+  .note2 { color:var(--muted); font-size:13px; margin:6px 0 0; }
+  .linkrow { display:flex; gap:8px; align-items:center; padding:12px; background:var(--bg); border-radius:10px; flex-wrap:wrap; } .linkrow input { flex:1; min-width:180px; margin:0; font-size:13.5px; } .linkrow .btn { width:auto; padding:9px 12px; font-size:13px; }
+  .sw { display:flex; align-items:center; gap:10px; cursor:pointer; margin:0; font-weight:600; } .sw input { position:absolute; opacity:0; } .sw span { width:40px; height:24px; border-radius:99px; background:var(--line); position:relative; flex:none; transition:background .15s; }
+  .sw span::after { content:''; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:#fff; transition:transform .15s; box-shadow:0 1px 2px rgba(0,0,0,.25); } .sw input:checked + span { background:var(--ok); } .sw input:checked + span::after { transform:translateX(16px); }
+  .phs { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:10px; }
+  .pht { position:relative; border-radius:10px; overflow:hidden; background:var(--line); aspect-ratio:4/3; } .pht img { width:100%; height:100%; object-fit:cover; display:block; }
+  .pht .pa { position:absolute; left:6px; right:6px; bottom:6px; display:flex; gap:4px; } .pht .pa button { flex:1; border:0; border-radius:6px; background:rgba(0,0,0,.7); color:#fff; font:600 11.5px var(--body); padding:6px 4px; cursor:pointer; }
+  .pht .tag { position:absolute; top:6px; left:6px; font:700 10.5px var(--body); background:rgba(0,0,0,.7); color:#fff; padding:2px 6px; border-radius:5px; } .pht .tag.ai { background:#ffc93c; color:#111; }
+  .pht .x { position:absolute; top:6px; right:6px; width:24px; height:24px; border:0; border-radius:50%; background:rgba(0,0,0,.7); color:#fff; cursor:pointer; }
+  .addph { border:1.5px dashed var(--line); border-radius:10px; aspect-ratio:4/3; display:grid; place-items:center; text-align:center; color:var(--muted); font-size:13px; cursor:pointer; margin:0; } .addph input { display:none; }
+  .rend { margin-top:16px; border:1px solid var(--line); border-radius:12px; overflow:hidden; } .rend .ba { display:grid; grid-template-columns:1fr 1fr; } .rend .ba figure { margin:0; position:relative; } .rend .ba img { width:100%; display:block; aspect-ratio:4/3; object-fit:cover; } .rend figcaption { position:absolute; top:8px; left:8px; font:700 11px var(--body); background:rgba(0,0,0,.7); color:#fff; padding:3px 8px; border-radius:6px; }
+  .rend .rb { display:flex; gap:8px; justify-content:space-between; align-items:center; padding:12px 14px; flex-wrap:wrap; } .rend .rb .btn { width:auto; }
+  .seg { display:inline-flex; gap:4px; background:var(--bg); border-radius:10px; padding:3px; } .seg button { border:0; background:none; font:600 13.5px var(--body); color:var(--muted); padding:7px 12px; border-radius:7px; cursor:pointer; } .seg button.on { background:var(--card); color:var(--ink); box-shadow:0 1px 2px rgba(0,0,0,.08); }
+  .blist { border:1px solid var(--line); border-radius:10px; max-height:340px; overflow:auto; margin:10px 0; }
+  .brow { display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid var(--line); margin:0; font-weight:400; cursor:pointer; } .brow:last-child { border-bottom:0; } .brow input { width:17px; height:17px; margin:0; flex:none; accent-color:var(--ink); }
+  .brow .bm { flex:1; min-width:0; } .brow b { display:block; font-size:14px; } .brow small { display:block; color:var(--muted); font-size:12.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .brow .fit { font:600 11px var(--body); color:var(--ok); background:var(--ok-bg); padding:2px 6px; border-radius:6px; flex:none; } .brow .done { font:600 11px var(--body); color:var(--muted); flex:none; } .brow a.btn { width:auto; padding:6px 10px; font-size:12.5px; flex:none; }
+  .bhead { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; } .bhead .lnk { border:0; background:none; color:var(--ink2); font:600 13px var(--body); cursor:pointer; text-decoration:underline; padding:4px; }
+  textarea.msg { min-height:120px; font:14px/1.5 var(--body); }
+  .off { border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-bottom:10px; display:grid; grid-template-columns:1fr auto; gap:4px 12px; } .off.top { border-color:var(--ok); }
+  .off .pr { font-size:22px; font-weight:750; letter-spacing:-.02em; font-variant-numeric:tabular-nums; } .off small { display:block; color:var(--muted); font-size:13px; } .off .who { font-weight:600; }
+  .off .st { font:600 11.5px var(--body); padding:3px 8px; border-radius:6px; background:var(--bg); color:var(--muted); justify-self:end; align-self:start; } .off .st.accepted { background:var(--ok-bg); color:var(--ok); } .off .st.new { background:var(--warn-bg); color:var(--warn); }
+  .off .oa { grid-column:1 / -1; display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; } .off .oa .btn { width:auto; padding:7px 11px; font-size:13px; }
+  .pbar { height:6px; background:var(--line); border-radius:6px; overflow:hidden; margin-top:10px; } .pbar i { display:block; height:100%; width:0; background:var(--ink); transition:width .3s; }
+  #addCard { margin-bottom:16px; }
+  @media (max-width:980px) { .dgrid { grid-template-columns:1fr; } .dgrid > * { min-width:0; } .dstats { grid-template-columns:1fr 1fr; } }
+  @media (max-width:560px) { .nums { grid-template-columns:1fr 1fr; } .nums div:nth-child(3) { border-left:0; } .nums div:nth-child(n+3) { border-top:1px solid var(--line); } .g3 { grid-template-columns:1fr 1fr; } .rend .ba { grid-template-columns:1fr; } }
+</style>
+
+<link rel="stylesheet" href="/ui.css">
+<link rel="stylesheet" href="/kit.css">
+<script src="/kit.js"></script>
+<script src="/acct.js"></script>
+</head>
+<body class="shell">
+<aside class="side"><div class="brandbox"><a class="logo" href="/app">JStar <span>Pro</span></a><div class="ws" id="ws">Owner</div></div>
+<nav class="snav" aria-label="Main"><a class="acct-only" href="/app#leads" data-t="leads"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 13h5l2 3h4l2-3h5"/><path d="M5.5 5h13L21 13v6H3v-6z"/></svg>Leads</a><a href="/underwriting"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8.5 7V4.5h7V7"/><path d="M3 12.5h18"/></svg>Deals</a><a class="acct-only" href="/app#buyers" data-t="buyers"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5.5 6.5-5.5s5.5 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18.5 14.5c1.6.8 2.6 2.6 3 5.5"/></svg>Buyers</a><span class="sh">Analyze</span><a href="/operator"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Run an address</a><a href="/batch"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>Batch</a><a href="/photos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Photo estimate</a><a class="on" href="/list"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Owner lists</a><a href="/drive"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17h14M6 17l1.5-5h9L18 17"/><path d="M7.5 12l1.5-4h6l1.5 4"/><circle cx="8" cy="18.5" r="1.5"/><circle cx="16" cy="18.5" r="1.5"/></svg>Driving for dollars</a><a href="/offers" data-p="offers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/></svg>Agent offers</a><span class="sh acct-only">Funnel</span><a class="acct-only" href="/app#funnel" data-t="funnel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg>Funnel &amp; business</a><a class="acct-only" href="/app#ads" data-t="ads"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>Ad tracking</a><a class="acct-only" href="/app#domain" data-t="domain"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></svg>Domain</a></nav>
+<div class="foot snav"><a class="acct-only" href="/app#account" data-t="account"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>Plan &amp; account</a></div></aside>
+
+<main class="wrap page">
+  <div class="ph"><div><h1>Dispo desk <span class="pv">Preview</span></h1><p>Everything for selling deals in one place: add the deal, build the buyer page and AI renders, blast your buyers by email and text, and take offers.</p></div></div>
+
+  <section class="card" id="dgate" style="max-width:420px">
+    <h2>Owner preview</h2>
+    <p class="sub">The Dispo desk isn't released yet. Enter your owner PIN to test it.</p>
+    <form id="pinForm" autocomplete="off">
+      <label class="f" for="pin">PIN</label>
+      <input type="password" id="pin" inputmode="numeric" autocomplete="current-password" required>
+      <div class="err" id="pinErr" role="alert"></div>
+      <button class="btn" id="pinBtn" type="submit">Open Dispo desk</button>
+    </form>
+  </section>
+
+  <div id="appv" hidden>
+    <div class="dstats" id="stats"></div>
+
+    <section class="card" id="addCard" hidden>
+      <h2>Add a deal</h2>
+      <p class="note2" style="margin:-4px 0 12px">A deal you're selling for yourself or a partner. Only the address and your price are required.</p>
+      <form id="addForm" autocomplete="off">
+        <label class="f" for="aStreet">Street address</label><input type="text" id="aStreet" required placeholder="1207 Shady Oaks Dr">
+        <div class="g3"><div><label class="f" for="aCity">City</label><input type="text" id="aCity" required></div><div><label class="f" for="aState">State</label><input type="text" id="aState" maxlength="2" required placeholder="TX" style="text-transform:uppercase"></div><div><label class="f" for="aZip">ZIP</label><input type="text" id="aZip" inputmode="numeric" maxlength="5" required></div></div>
+        <div class="g3"><div><label class="f" for="aPrice">Price to buyers</label><input type="text" id="aPrice" data-money inputmode="numeric" required placeholder="$"></div><div><label class="f" for="aArv">ARV <span class="opt">(optional)</span></label><input type="text" id="aArv" data-money inputmode="numeric" placeholder="$"></div><div><label class="f" for="aRep">Repairs <span class="opt">(optional)</span></label><input type="text" id="aRep" data-money inputmode="numeric" placeholder="$"></div></div>
+        <div class="g3"><div><label class="f" for="aBeds">Beds</label><input type="text" id="aBeds" inputmode="numeric"></div><div><label class="f" for="aBaths">Baths</label><input type="text" id="aBaths" inputmode="decimal"></div><div><label class="f" for="aSqft">Sq ft</label><input type="text" id="aSqft" inputmode="numeric"></div></div>
+        <label class="ckl" style="display:flex;gap:8px;align-items:center;margin:12px 0 0;font-weight:400"><input type="checkbox" id="aComps" checked style="width:16px;height:16px;margin:0"> Fill in ARV and repairs from comps if I leave them blank (uses 1 analysis)</label>
+        <div class="err" id="aErr" role="alert"></div>
+        <div class="acts"><button type="button" class="btn ghost" id="aCancel">Cancel</button><button type="submit" class="btn" id="aGo">Add deal</button></div>
+      </form>
+    </section>
+
+    <div class="dgrid">
+      <section class="card dlist">
+        <div class="dlh"><h2>Your deals</h2><button type="button" class="btn" id="addBtn">+ Add deal</button></div>
+        <div class="dfilt" role="tablist"><button type="button" class="on" data-f="selling">Selling</button><button type="button" data-f="sold">Sold</button><button type="button" data-f="all">All</button></div>
+        <div id="dl"><div class="dempty">Loading…</div></div>
+      </section>
+
+      <section class="card" id="ws">
+        <div class="dempty" id="wsEmpty">Pick a deal on the left, or add one, to build its buyer page and send it out.</div>
+        <div id="wsBody" hidden>
+          <div class="ws-h"><div><h2 id="wTitle"></h2><p id="wSub"></p></div>
+            <select id="wStatus" aria-label="Deal status"><option value="contract">Selling</option><option value="offer">Under offer</option><option value="assigned">Sold (assigned)</option><option value="closed">Closed</option><option value="dead">Dead</option></select></div>
+          <div class="nums" id="wNums"></div>
+          <div class="wtabs" role="tablist"><button type="button" class="on" data-t="ov">Buyer page</button><button type="button" data-t="ph">Photos <span class="n" id="nPh">0</span></button><button type="button" data-t="send">Send to buyers</button><button type="button" data-t="off">Offers <span class="n" id="nOff">0</span></button></div>
+
+          <div data-p="ov">
+            <div class="linkrow"><label class="sw"><input type="checkbox" id="pgOn"><span></span><b id="pgState">Off</b></label><input type="text" id="pgUrl" readonly aria-label="Buyer page link"><button type="button" class="btn ghost" id="pgCopy">Copy link</button><a class="btn ghost" id="pgOpen" target="_blank" rel="noopener">Open</a></div>
+            <p class="note2">Buyers see the photos, numbers and potential profit, and can make an offer or ask for a showing. Every email and text you send includes this link.</p>
+            <div class="g3" style="margin-top:8px"><div><label class="f" for="pPrice">Price to buyers</label><input type="text" id="pPrice" data-money inputmode="numeric"></div><div><label class="f" for="pArv">ARV</label><input type="text" id="pArv" data-money inputmode="numeric"></div><div><label class="f" for="pRep">Repairs</label><input type="text" id="pRep" data-money inputmode="numeric"></div></div>
+            <div class="g3"><div><label class="f" for="pBeds">Beds</label><input type="text" id="pBeds" inputmode="numeric"></div><div><label class="f" for="pBaths">Baths</label><input type="text" id="pBaths" inputmode="decimal"></div><div><label class="f" for="pSqft">Sq ft</label><input type="text" id="pSqft" inputmode="numeric"></div></div>
+            <div class="g3"><div><label class="f" for="pEmd">Earnest money</label><input type="text" id="pEmd" data-money inputmode="numeric" placeholder="$5,000"></div><div><label class="f" for="pClose">Close by</label><input type="text" id="pClose" placeholder="Dec 19"></div><div><label class="f" for="pOcc">Occupancy</label><select id="pOcc"><option value="unknown">Not listed</option><option value="vacant">Vacant</option><option value="tenant">Tenant occupied</option><option value="owner">Owner occupied</option></select></div></div>
+            <label class="f" for="pShow">Showings</label><input type="text" id="pShow" placeholder="Lockbox. Call or text for the code.">
+            <label class="f" for="pDesc">About the property</label><textarea id="pDesc" placeholder="Roof 2019. Needs paint, flooring and a kitchen refresh. Flips on this street sold for $255k–$270k."></textarea>
+            <label style="display:flex;gap:8px;align-items:center;margin:10px 0 0;font-weight:400;font-size:14px"><input type="checkbox" id="pHide" style="width:16px;height:16px;margin:0"> Hide the house number on the page</label>
+            <div class="err" id="pErr" role="alert"></div>
+            <div class="acts"><button type="button" class="btn" id="pSave">Save</button></div>
+          </div>
+
+          <div data-p="ph" hidden>
+            <div class="phs" id="phGrid"></div>
+            <p class="note2">First photo is the cover. <b>AI after repairs</b> turns any photo into a concept of the finished rehab; add it to the page and it's labeled "AI concept" for buyers.</p>
+            <div class="err" id="phErr" role="alert"></div>
+            <div class="rend" id="rend" hidden><div class="ba"><figure><img id="rBefore" alt="Before"><figcaption>Now</figcaption></figure><figure><img id="rAfter" alt="AI concept after repairs"><figcaption>AI concept: after repairs</figcaption></figure></div>
+              <div class="rb"><span class="note2" style="margin:0">Concept only. Use it to show buyers the potential.</span><div style="display:flex;gap:8px"><button type="button" class="btn ghost" id="rAgain">Try again</button><a class="btn ghost" id="rDl" download="after-repairs.jpg">Download</a><button type="button" class="btn" id="rAdd">Add to buyer page</button></div></div></div>
+          </div>
+
+          <div data-p="send" hidden>
+            <div class="bhead"><div class="seg" role="tablist"><button type="button" class="on" data-m="email">Email</button><button type="button" data-m="text">Text</button></div><div><button type="button" class="lnk" id="bAll">Select all</button><button type="button" class="lnk" id="bFit">Only matches</button></div></div>
+            <div class="blist" id="bl"></div>
+            <div id="mEmail">
+              <label class="f" for="eNote">Note to buyers <span class="opt">(optional)</span></label><textarea id="eNote" placeholder="Won't last. First to send proof of funds gets it."></textarea>
+              <p class="note2">Each buyer gets a clean deal email with the numbers, photos link and a button to make an offer. Unsubscribes are handled for you.</p>
+              <div class="err" id="eErr" role="alert"></div>
+              <div class="acts"><button type="button" class="btn" id="eSend">Email buyers</button></div>
+            </div>
+            <div id="mText" hidden>
+              <label class="f" for="tMsg">Text message</label><textarea class="msg" id="tMsg"></textarea>
+              <p class="note2" id="tHow"></p>
+              <div class="pbar" id="tBar" hidden><i></i></div>
+              <div class="err" id="tErr" role="alert"></div>
+              <div class="acts" id="tActs"></div>
+            </div>
+          </div>
+
+          <div data-p="off" hidden><div id="offs"></div></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const esc = v => String(v ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const money = v => v ? '$' + Math.round(v).toLocaleString() : '';
+  const num = v => { const n = Number(String(v ?? '').replace(/[^\d.]/g, '')); return Number.isFinite(n) && n > 0 ? Math.round(n) : null; };
+  const toast = m => window.JK?.toast ? window.JK.toast(m) : null;
+  let pin = ''; try { pin = sessionStorage.getItem('opPin') || sessionStorage.getItem('jsPin') || ''; } catch {}
+  const call = (url, body) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pin, ...body }) })
+    .then(async r => ({ ok: r.ok, status: r.status, j: await r.json().catch(() => ({})) })).catch(() => ({ ok: false, j: { error: 'Connection problem. Try again.' } }));
+  document.querySelectorAll('[data-money]').forEach(i => i.addEventListener('input', () => { const d = i.value.replace(/\D/g, ''); i.value = d ? '$' + Number(d).toLocaleString() : ''; }));
+  const shrink = (src, max = 1600, q = .84) => new Promise(res => { const img = new Image(); img.crossOrigin = 'anonymous'; img.onload = () => { const s = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight)); const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * s); c.height = Math.round(img.naturalHeight * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); res(c.toDataURL('image/jpeg', q)); }; img.onerror = () => res(null); img.src = src; });
+  const fileUrl = f => URL.createObjectURL(f);
+
+  // ── Owner PIN (preview only) ──
+  $('pinForm').addEventListener('submit', async e => {
+    e.preventDefault(); pin = $('pin').value.trim(); $('pinErr').textContent = ''; $('pinBtn').disabled = true;
+    const r = await call('/api/analyze', { checkOnly: true }); $('pinBtn').disabled = false;
+    if (!r.ok) { $('pinErr').textContent = 'Wrong PIN.'; return; }
+    try { sessionStorage.setItem('opPin', pin); } catch {} start();
+  });
+
+  let deals = [], buyers = [], filt = 'selling', cur = null, pg = null, tab = 'ov', ghl = null;
+  const SELLING = ['contract', 'offer'], SOLD = ['assigned', 'closed'];
+  async function start() {
+    $('dgate').hidden = true; $('appv').hidden = false;
+    await Promise.all([loadDeals(), loadBuyers()]);
+    const h = location.hash.slice(1); if (h && deals.some(d => d.id === h)) open(h);
+  }
+  async function loadDeals() {
+    const r = await call('/api/deals', { action: 'list' });
+    if (r.status === 401) { $('appv').hidden = true; $('dgate').hidden = false; $('pinErr').textContent = 'Enter your PIN again.'; return; }
+    deals = (r.j.deals || []).filter(d => [...SELLING, ...SOLD, 'dead'].includes(d.status)).sort((a, z) => (z.updatedAt || z.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
+    drawList(); drawStats();
+  }
+  async function loadBuyers() { const r = await call('/api/buyers', { action: 'list' }); buyers = r.j.buyers || []; drawStats(); }
+  const priceOf = d => { const n = d.numbers || {}; return (d === cur && pg?.price) || ((n.contractPrice || 0) + (n.assignmentFee || 0)) || null; };
+  const profitOf = (d, price) => { const n = d.numbers || {}; return n.arv && price ? n.arv - price - (n.repairs || 0) - Math.round(n.arv * (n.buyerCostPct ?? 10) / 100) : null; };
+  function drawStats() {
+    const sell = deals.filter(d => SELLING.includes(d.status)).length, sold = deals.filter(d => SOLD.includes(d.status)).length;
+    const em = buyers.filter(b => b.email && !b.unsub).length, ph = buyers.filter(b => String(b.phone || '').replace(/\D/g, '').length >= 10).length;
+    $('stats').innerHTML = [[sell, 'Deals selling'], [buyers.length, 'Buyers'], [`${em} · ${ph}`, 'Can email · can text'], [sold, 'Sold']].map(([b, s]) => `<div><b>${b}</b><span>${s}</span></div>`).join('');
+  }
+  document.querySelectorAll('.dfilt button').forEach(b => b.onclick = () => { filt = b.dataset.f; document.querySelectorAll('.dfilt button').forEach(x => x.classList.toggle('on', x === b)); drawList(); });
+  const STL = { contract: ['Selling', 'y'], offer: ['Under offer', 'g'], assigned: ['Sold', 'g'], closed: ['Closed', ''], dead: ['Dead', ''] };
+  function drawList() {
+    const L = deals.filter(d => filt === 'all' || (filt === 'selling' ? SELLING.includes(d.status) : SOLD.includes(d.status)));
+    $('dl').innerHTML = L.length ? L.map(d => { const a = d.address || {}, p = priceOf(d), n = d.numbers || {}, [sl, sc] = STL[d.status] || ['', ''];
+      return `<button type="button" class="ditem ${cur?.id === d.id ? 'on' : ''}" data-id="${d.id}"><b>${esc(a.street || 'Deal')}</b><small>${esc([a.city, a.state].filter(Boolean).join(', '))}</small>
+        <div class="chips"><span class="chip2 ${sc}">${sl}</span>${p ? `<span class="chip2">${money(p)}</span>` : ''}${n.arv ? `<span class="chip2">ARV ${money(n.arv)}</span>` : ''}</div></button>`; }).join('')
+      : `<div class="dempty">${filt === 'selling' ? 'No deals yet. Tap <b>+ Add deal</b> to add the first one, or hit Send to buyers after running an address.' : 'Nothing here yet.'}</div>`;
+    $('dl').querySelectorAll('.ditem').forEach(b => b.onclick = () => open(b.dataset.id));
+  }
+
+  // ── Add a deal ──
+  $('addBtn').onclick = () => { $('addCard').hidden = false; $('aStreet').focus(); $('addCard').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+  $('aCancel').onclick = () => { $('addCard').hidden = true; $('addForm').reset(); $('aErr').textContent = ''; };
+  $('addForm').addEventListener('submit', async e => {
+    e.preventDefault(); $('aErr').textContent = '';
+    const address = { street: $('aStreet').value.trim(), city: $('aCity').value.trim(), state: $('aState').value.trim().toUpperCase(), zip: $('aZip').value.trim() };
+    const price = num($('aPrice').value); let arv = num($('aArv').value), repairs = num($('aRep').value);
+    if (!price) { $('aErr').textContent = 'Add your price to buyers.'; return; }
+    $('aGo').disabled = true;
+    if ($('aComps').checked && (!arv || repairs == null)) {
+      $('aGo').textContent = 'Pulling comps… about 15 seconds';
+      const r = await call('/api/analyze', { ...address, sqft: $('aSqft').value, beds: $('aBeds').value, baths: $('aBaths').value, propertyType: 'single_family' });
+      if (r.ok) { const br = r.j.brief || {}; arv = arv || br.value || null; if (repairs == null) repairs = br.land ? 0 : (br.repairs ?? null); }
+      else $('aErr').textContent = (r.j.error || 'Couldn\'t pull comps') + '. Added without them; you can type ARV and repairs in.';
+    }
+    $('aGo').textContent = 'Adding…';
+    const s = await call('/api/deals', { action: 'save', deal: { status: 'contract', address, propertyType: 'single_family', numbers: { arv, repairs, contractPrice: price, assignmentFee: 0, buyerCostPct: 10 } } });
+    if (!s.ok) { $('aGo').disabled = false; $('aGo').textContent = 'Add deal'; $('aErr').textContent = s.j.error || 'Couldn\'t add it.'; return; }
+    const id = s.j.deal.id;
+    await call('/api/dealpage', { action: 'get', dealId: id });
+    await call('/api/dealpage', { action: 'save', dealId: id, page: { on: true, price, beds: $('aBeds').value, baths: $('aBaths').value, sqft: $('aSqft').value, occupancy: 'unknown' } });
+    $('aGo').disabled = false; $('aGo').textContent = 'Add deal'; $('addCard').hidden = true; $('addForm').reset();
+    toast('Deal added. Its buyer page is live.');
+    await loadDeals(); filt = 'selling'; open(id); tabTo('ph');
+  });
+
+  // ── Workspace ──
+  async function open(id) {
+    const [d, p] = await Promise.all([call('/api/deals', { action: 'get', id }), call('/api/dealpage', { action: 'get', dealId: id })]);
+    if (!d.ok) { toast(d.j.error || 'Couldn\'t open that deal.'); return; }
+    cur = d.j.deal; pg = p.ok ? p.j : null; history.replaceState(null, '', '#' + id);
+    $('wsEmpty').hidden = true; $('wsBody').hidden = false; drawList(); drawHead(); fillPage(); drawPhotos(); drawOffers(); drawBuyers(true); setMode(mode);
+    if (innerWidth < 980) $('ws').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function drawHead() {
+    const a = cur.address || {}, n = cur.numbers || {}, p = priceOf(cur), pr = profitOf(cur, p);
+    $('wTitle').textContent = a.street || 'Deal'; $('wSub').textContent = [a.city, [a.state, a.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+    $('wStatus').value = cur.status;
+    $('wNums').innerHTML = [['Price to buyers', money(p) || '—'], ['ARV', money(n.arv) || '—'], ['Repairs', money(n.repairs) || '—'], ['Buyer\'s profit', pr > 0 ? money(pr) : '—', 'g']].map(([k, v, c]) => `<div class="${c || ''}"><small>${k}</small><b>${v}</b></div>`).join('');
+  }
+  async function saveDeal(patch) {
+    const r = await call('/api/deals', { action: 'save', deal: { ...cur, ...patch, numbers: { ...(cur.numbers || {}), ...(patch.numbers || {}) } } });
+    if (r.ok) { cur = r.j.deal; const i = deals.findIndex(x => x.id === cur.id); if (i >= 0) deals[i] = cur; drawList(); drawStats(); drawHead(); }
+    return r;
+  }
+  $('wStatus').onchange = async () => { const r = await saveDeal({ status: $('wStatus').value }); toast(r.ok ? 'Status updated' : (r.j.error || 'Couldn\'t update')); };
+  function tabTo(t) { tab = t; document.querySelectorAll('.wtabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); document.querySelectorAll('#wsBody [data-p]').forEach(p => p.hidden = p.dataset.p !== t); }
+  document.querySelectorAll('.wtabs button').forEach(b => b.onclick = () => tabTo(b.dataset.t));
+
+  // Buyer page settings
+  function fillPage() {
+    const p = pg?.page || {}, n = cur.numbers || {};
+    $('pgOn').checked = !!p.on; $('pgState').textContent = p.on ? 'Live' : 'Off'; $('pgUrl').value = pg?.url || ''; $('pgOpen').href = pg?.url || '#';
+    $('pPrice').value = money(priceOf(cur)); $('pArv').value = money(n.arv); $('pRep').value = money(n.repairs);
+    $('pBeds').value = p.beds || ''; $('pBaths').value = p.baths || ''; $('pSqft').value = p.sqft || ''; $('pEmd').value = money(p.emd); $('pClose').value = p.closeBy || ''; $('pOcc').value = p.occupancy || 'unknown';
+    $('pShow').value = p.showing || ''; $('pDesc').value = p.desc || ''; $('pHide').checked = !!p.hideNumber;
+  }
+  const pageBody = () => ({ on: $('pgOn').checked, price: num($('pPrice').value), emd: num($('pEmd').value), beds: $('pBeds').value, baths: $('pBaths').value, sqft: $('pSqft').value, closeBy: $('pClose').value, occupancy: $('pOcc').value, showing: $('pShow').value, desc: $('pDesc').value, hideNumber: $('pHide').checked, headline: pg?.page?.headline || '', yearBuilt: pg?.page?.yearBuilt || '', lot: pg?.page?.lot || '' });
+  async function savePage(msg) {
+    $('pErr').textContent = ''; $('pSave').disabled = true;
+    const r = await call('/api/dealpage', { action: 'save', dealId: cur.id, page: pageBody() });
+    const arv = num($('pArv').value), rep = num($('pRep').value), n = cur.numbers || {};
+    if (r.ok && (arv !== (n.arv || null) || rep !== (n.repairs ?? null))) await saveDeal({ numbers: { arv, repairs: rep } });
+    $('pSave').disabled = false;
+    if (!r.ok) { $('pErr').textContent = r.j.error || 'Couldn\'t save.'; return false; }
+    pg = { ...pg, page: { ...pg.page, ...r.j.page }, price: r.j.price }; $('pgState').textContent = pg.page.on ? 'Live' : 'Off'; drawHead(); drawList(); if (mode === 'text' && !tEdited) $('tMsg').value = smsDefault();
+    if (msg) toast(msg); return true;
+  }
+  $('pSave').onclick = () => savePage('Saved');
+  $('pgOn').onchange = () => savePage($('pgOn').checked ? 'Buyer page is live' : 'Buyer page turned off');
+  $('pgCopy').onclick = async () => { if (!$('pgOn').checked) { $('pgOn').checked = true; await savePage(); } try { await navigator.clipboard.writeText(pg.url); toast('Link copied'); } catch { $('pgUrl').select(); } };
+
+  // Photos + AI after-repair renders
+  function drawPhotos() {
+    const ph = pg?.page?.photos || [], ai = new Set(pg?.page?.ai || []); $('nPh').textContent = ph.length;
+    $('phGrid').innerHTML = ph.map((id, i) => `<div class="pht"><img src="/d/${pg.page.token}/${id}.jpg" alt="" loading="lazy">${ai.has(id) ? '<span class="tag ai">AI concept</span>' : i === 0 ? '<span class="tag">Cover</span>' : ''}<button type="button" class="x" data-rm="${id}" aria-label="Remove photo">×</button>
+      <div class="pa">${ai.has(id) ? '' : `<button type="button" data-ai="${id}">AI after repairs</button>`}${i ? `<button type="button" data-cv="${id}">Make cover</button>` : ''}</div></div>`).join('')
+      + (ph.length < 15 ? '<label class="addph"><input type="file" id="phFile" accept="image/*" multiple><span><b>+ Add photos</b><br>They go on the buyer page</span></label>' : '');
+    $('phGrid').querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => { const r = await call('/api/dealpage', { action: 'removePhoto', dealId: cur.id, id: b.dataset.rm }); if (r.ok) { pg.page = r.j.page; drawPhotos(); } });
+    $('phGrid').querySelectorAll('[data-cv]').forEach(b => b.onclick = async () => { const r = await call('/api/dealpage', { action: 'movePhoto', dealId: cur.id, id: b.dataset.cv }); if (r.ok) { pg.page = r.j.page; drawPhotos(); } });
+    $('phGrid').querySelectorAll('[data-ai]').forEach(b => b.onclick = () => render(`/d/${pg.page.token}/${b.dataset.ai}.jpg`, b));
+    const f = $('phFile'); if (f) f.onchange = () => addPhotos([...f.files]);
+  }
+  async function addPhotos(files) {
+    $('phErr').textContent = ''; const lab = $('phGrid').querySelector('.addph span');
+    for (let i = 0; i < files.length; i++) {
+      if (lab) lab.textContent = `Uploading ${i + 1} of ${files.length}…`;
+      const data = await shrink(fileUrl(files[i])); if (!data) continue;
+      const r = await call('/api/dealpage', { action: 'addPhoto', dealId: cur.id, data });
+      if (!r.ok) { $('phErr').textContent = r.j.error || 'Upload failed.'; break; }
+      pg.page = r.j.page;
+    }
+    drawPhotos();
+  }
+  let rSrc = '', rImg = '';
+  async function render(src, btn) {
+    rSrc = src; $('phErr').textContent = ''; const t = btn?.textContent; if (btn) { btn.disabled = true; btn.textContent = 'Rendering… 20–40s'; }
+    const photo = await shrink(src, 1536, .86);
+    const r = photo ? await call('/api/render', { photo, repairs: [] }) : { ok: false, j: { error: 'Couldn\'t read that photo.' } };
+    if (btn) { btn.disabled = false; btn.textContent = t; }
+    if (!r.ok) { $('phErr').textContent = r.j.error || 'Render failed. Try again.'; return; }
+    rImg = r.j.image; $('rBefore').src = photo; $('rAfter').src = rImg; $('rDl').href = rImg; $('rend').hidden = false; $('rend').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  $('rAgain').onclick = () => render(rSrc, $('rAgain'));
+  $('rAdd').onclick = async () => {
+    $('rAdd').disabled = true; const data = await shrink(rImg, 1600, .84);
+    const r = await call('/api/dealpage', { action: 'addPhoto', dealId: cur.id, data, ai: true }); $('rAdd').disabled = false;
+    if (!r.ok) { $('phErr').textContent = r.j.error || 'Couldn\'t add it.'; return; }
+    pg.page = r.j.page; drawPhotos(); $('rend').hidden = true; toast('Added to the buyer page, labeled as an AI concept');
+  };
+
+  // Send to buyers: email blast, or texts (GoHighLevel when connected, else one tap per buyer)
+  let mode = 'email', tEdited = false, texted = new Set(), sid = '';
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const phD = v => { const d = String(v || '').replace(/\D/g, ''); return d.length === 11 && d[0] === '1' ? d.slice(1) : d.length === 10 ? d : ''; };
+  const fits = (b, d, price) => { const a = d.address || {}, areas = (b.areas || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean);
+    const inArea = !areas.length || areas.some(x => [a.city, a.zip, a.county].filter(Boolean).some(v => String(v).toLowerCase().includes(x) || x.includes(String(v).toLowerCase())));
+    return inArea && (!price || ((!b.maxPrice || b.maxPrice >= price) && (!b.minPrice || b.minPrice <= price))); };
+  let picked = new Set();
+  function drawBuyers(reset) {
+    const p = priceOf(cur), canUse = b => mode === 'email' ? (b.email && !b.unsub) : !!phD(b.phone);
+    const list = buyers.filter(canUse);
+    if (reset) picked = new Set(list.filter(b => fits(b, cur, p)).map(b => b.id));
+    const sorted = [...list].sort((a, z) => fits(z, cur, p) - fits(a, cur, p));
+    $('bl').innerHTML = sorted.length ? sorted.map(b => `<label class="brow"><input type="checkbox" value="${b.id}" ${picked.has(b.id) ? 'checked' : ''}><span class="bm"><b>${esc(b.name || b.company || 'Buyer')}</b><small>${esc([mode === 'email' ? b.email : b.phone, b.areas].filter(Boolean).join(' · '))}</small></span>${fits(b, cur, p) ? '<span class="fit">Fits</span>' : ''}${mode === 'text' && !ghl?.connected ? (texted.has(b.id) ? '<span class="done">Texted ✓</span>' : `<a class="btn ghost" data-sms="${b.id}" href="#">Text</a>`) : ''}</label>`).join('')
+      : `<div class="dempty">No buyers with ${mode === 'email' ? 'an email' : 'a phone number'} yet. Add them in <a href="/app#buyers">Buyers</a>.</div>`;
+    $('bl').querySelectorAll('input').forEach(i => i.onchange = () => { i.checked ? picked.add(i.value) : picked.delete(i.value); sendBtns(); });
+    $('bl').querySelectorAll('[data-sms]').forEach(a => a.onclick = e => { const b = buyers.find(x => x.id === a.dataset.sms); const d = phD(b?.phone); if (!d) { e.preventDefault(); return; }
+      a.href = `sms:+1${d}${isIOS ? '&' : '?'}body=${encodeURIComponent(personal(b))}`; texted.add(b.id); setTimeout(() => drawBuyers(), 400); logText(); });
+    sendBtns();
+  }
+  const chosen = () => buyers.filter(b => picked.has(b.id) && (mode === 'email' ? b.email && !b.unsub : phD(b.phone)));
+  $('bAll').onclick = () => { buyers.forEach(b => picked.add(b.id)); drawBuyers(); };
+  $('bFit').onclick = () => drawBuyers(true);
+  function setMode(m) {
+    mode = m; document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', b.dataset.m === m));
+    $('mEmail').hidden = m !== 'email'; $('mText').hidden = m !== 'text';
+    if (m === 'text') { if (!tEdited) $('tMsg').value = smsDefault(); if (!ghl) call('/api/buyers', { action: 'ghlStatus' }).then(r => { ghl = r.j || { connected: false }; drawBuyers(); }); }
+    drawBuyers(true);
+  }
+  document.querySelectorAll('.seg button').forEach(b => b.onclick = () => setMode(b.dataset.m));
+  const smsDefault = () => { const a = cur.address || {}, n = cur.numbers || {}, p = priceOf(cur);
+    return ['Hi {first}, off-market deal:', [a.street, a.city].filter(Boolean).join(', '), [p && `Price ${money(p)}`, n.arv && `ARV ${money(n.arv)}`, n.repairs && `Repairs ~${money(n.repairs)}`].filter(Boolean).join(' · '), pg?.page?.on && pg.url ? `Photos and offers: ${pg.url}` : '', 'Want it?'].filter(Boolean).join('\n'); };
+  const personal = b => $('tMsg').value.replace(/\{first\}/g, String(b.name || '').split(/\s+/)[0] || 'there');
+  $('tMsg').addEventListener('input', () => { tEdited = true; });
+  function sendBtns() {
+    const n = chosen().length;
+    $('eSend').textContent = n ? `Email ${n} buyer${n === 1 ? '' : 's'}` : 'Email buyers'; $('eSend').disabled = !n;
+    if (mode !== 'text') return;
+    if (ghl?.connected) { $('tHow').textContent = 'Sends from your GoHighLevel number. Replies land in your GHL inbox.'; $('tActs').innerHTML = `<button type="button" class="btn" id="tGo" ${n ? '' : 'disabled'}>Text ${n} buyer${n === 1 ? '' : 's'}</button>`; $('tGo').onclick = ghlSend; }
+    else { $('tHow').innerHTML = `Tap <b>Text</b> next to each buyer: it opens your Messages app with the deal filled in. <a href="/underwriting#${cur.id}">Connect GoHighLevel</a> to text everyone at once.`; $('tActs').innerHTML = ''; }
+  }
+  const logText = () => { if (!sid) sid = Math.random().toString(36).slice(2, 10); call('/api/buyers', { action: 'texted', dealId: cur.id, sid, n: texted.size }); };
+  $('eSend').onclick = async () => {
+    const ids = chosen().map(b => b.id); if (!ids.length) return;
+    $('eErr').textContent = ''; $('eSend').disabled = true; $('eSend').textContent = 'Sending…';
+    const r = await call('/api/buyers', { action: 'blast', dealId: cur.id, ids, price: priceOf(cur), note: $('eNote').value, showing: pg?.page?.showing || '' });
+    sendBtns();
+    if (!r.ok) { $('eErr').textContent = r.j.error || 'Couldn\'t send.'; return; }
+    toast(`Emailed ${r.j.sent} buyer${r.j.sent === 1 ? '' : 's'}`); window.JK?.confetti?.();
+  };
+  async function ghlSend() {
+    const q = chosen(); if (!q.length) return; if (!sid) sid = Math.random().toString(36).slice(2, 10);
+    $('tErr').textContent = ''; $('tGo').disabled = true; $('tBar').hidden = false; let done = 0, fail = 0;
+    for (let i = 0; i < q.length; i += 20) {
+      const part = q.slice(i, i + 20);
+      const r = await call('/api/buyers', { action: 'ghlSend', dealId: cur.id, ids: part.map(b => b.id), message: $('tMsg').value, sid, prior: done, price: priceOf(cur) });
+      if (!r.ok) { $('tErr').textContent = r.j.error || 'Texting stopped.'; fail += part.length; break; }
+      for (const x of r.j.results || []) x.ok ? done++ : fail++;
+      $('tBar').firstElementChild.style.width = Math.round((i + part.length) / q.length * 100) + '%';
+    }
+    $('tGo').disabled = false; setTimeout(() => { $('tBar').hidden = true; }, 800);
+    if (done) toast(`Texted ${done} buyer${done === 1 ? '' : 's'}${fail ? `, ${fail} failed` : ''}`);
+  }
+
+  // Offers
+  const POF = { cash: 'Cash (POF)', hard: 'Hard money', other: 'Other funding' };
+  function drawOffers() {
+    const O = (pg?.offers || []).slice().sort((a, z) => z.at - a.at), offers = O.filter(o => o.kind === 'offer');
+    const best = offers.filter(o => o.status !== 'declined').reduce((m, o) => (!m || o.price > m.price ? o : m), null), fresh = O.filter(o => o.status === 'new').length;
+    $('nOff').textContent = O.length; $('nOff').classList.toggle('hot', fresh > 0);
+    const ph = v => { const d = phD(v); return d ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : v; };
+    $('offs').innerHTML = O.length ? O.map(o => `<div class="off ${o === best && offers.length > 1 ? 'top' : ''}"><div>${o.kind === 'offer' ? `<div class="pr">${money(o.price)}${o === best && offers.length > 1 ? ' <small style="display:inline;color:var(--ok);font-weight:600">Highest</small>' : ''}</div>` : '<div class="pr" style="font-size:16px">Showing request</div>'}
+      <div class="who">${esc(o.name)}</div><small>${esc([ph(o.phone), o.email].filter(Boolean).join(' · '))}</small><small>${esc([o.close && 'Close in ' + o.close, POF[o.pof], o.when].filter(Boolean).join(' · '))}</small>${o.note ? `<small style="color:var(--ink2);margin-top:4px">“${esc(o.note)}”</small>` : ''}</div>
+      <div style="text-align:right"><span class="st ${o.status}">${{ new: 'New', accepted: 'Accepted', declined: 'Declined', contacted: 'Contacted' }[o.status] || o.status}</span><small style="margin-top:6px">${new Date(o.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</small></div>
+      <div class="oa">${phD(o.phone) ? `<a class="btn ghost" href="tel:+1${phD(o.phone)}">Call</a><a class="btn ghost" href="sms:+1${phD(o.phone)}">Text</a>` : ''}${o.email ? `<a class="btn ghost" href="mailto:${esc(o.email)}">Email</a>` : ''}${o.kind === 'offer' && o.status !== 'accepted' ? `<button type="button" class="btn" data-acc="${o.id}">Accept</button>` : ''}${o.status === 'new' ? `<button type="button" class="btn ghost" data-st="contacted" data-id="${o.id}">Mark contacted</button><button type="button" class="btn ghost" data-st="declined" data-id="${o.id}">Decline</button>` : ''}</div></div>`).join('')
+      : `<div class="dempty">No offers yet. When buyers make an offer or ask for a showing on the buyer page, it shows up here and you get an email.</div>`;
+    $('offs').querySelectorAll('[data-st]').forEach(b => b.onclick = async () => { const r = await call('/api/dealpage', { action: 'offerStatus', dealId: cur.id, id: b.dataset.id, status: b.dataset.st }); if (r.ok) { pg.offers = r.j.offers; drawOffers(); } });
+    $('offs').querySelectorAll('[data-acc]').forEach(b => b.onclick = async () => {
+      const o = O.find(x => x.id === b.dataset.acc); if (!o || !confirm(`Accept ${o.name}'s offer of ${money(o.price)}? The deal moves to Under offer with them as the buyer.`)) return;
+      const r = await call('/api/dealpage', { action: 'offerStatus', dealId: cur.id, id: o.id, status: 'accepted' }); if (r.ok) pg.offers = r.j.offers;
+      await saveDeal({ status: 'offer', buyer: { ...(cur.buyer || {}), name: o.name, phone: o.phone, email: o.email } });
+      drawOffers(); toast(`${o.name} is the buyer. Mark it Sold when it's assigned.`);
+    });
+  }
+
+  if (pin) start(); else { /* logged-in accounts see the PIN box: this is an owner-only preview */ }
+})();
+</script>
+</body>
+</html>
