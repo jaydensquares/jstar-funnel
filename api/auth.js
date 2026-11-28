@@ -48,7 +48,7 @@ export default async function handler(req, res) {
       if (b.agree !== true) return res.status(400).json({ error: 'Check the box to agree to the Terms and Privacy Policy.' });
       if (await getUserByEmail(email)) { await slow(); return res.status(409).json({ error: 'An account with that email already exists. Log in instead.' }); }
       if (await getUserBySlug(slug)) return res.status(409).json({ error: 'That username is taken.' });
-      const u0 = await createUser({ name, email, password, company, slug, phone });
+      const u0 = await createUser({ name, email, password, company, slug, phone, role: str(b.role, 20) });
       // Referral: ?ref=<username> of an account with a plan
       const ref = /^[a-z0-9-]{3,30}$/.test(str(b.ref, 30).toLowerCase()) ? await getUserBySlug(str(b.ref, 30).toLowerCase()).catch(() => null) : null;
       // Affiliate: ?via=<code> (cash commission to the affiliate). It takes the place of a customer referral.
@@ -189,6 +189,7 @@ export default async function handler(req, res) {
           ...u.settings,
           notifyEmail: EMAIL.test(str(s.notifyEmail, 120)) ? str(s.notifyEmail, 120).toLowerCase() : u.settings.notifyEmail,
           address: str(s.address ?? u.settings.address, 160),
+          role: ['wholesaler', 'dispo', 'both'].includes(s.role) ? s.role : (u.settings.role || 'wholesaler'),
           metaPixelId: fix(s.metaPixelId ?? '', /^\d{6,20}$/, 20),
           metaCapiToken: str(s.metaCapiToken ?? u.settings.metaCapiToken, 400),
           googleAdsId: fix(s.googleAdsId ?? '', /^(AW|G)-[A-Z0-9]{4,20}$/i, 24),
